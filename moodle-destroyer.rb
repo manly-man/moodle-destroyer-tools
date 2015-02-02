@@ -2,6 +2,9 @@
 
 require 'csv'
 
+puts "This script is seriously buggy. Use the Python version!"
+exit 1
+
 if ARGV.length < 2
   puts "Usage: moodle-destroyer moodle-file grading-file [output-file]"
   puts "Please run this command in the directory where your CSV files are located."
