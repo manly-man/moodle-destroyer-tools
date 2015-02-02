@@ -53,10 +53,10 @@ def exZip(zip):
 def creategradingfile(dir):
     groupsUnsorted = []
     for file in os.listdir(dir):
-        groupsUnsorted.append(file.split("-")[0][7:])
+        groupsUnsorted.append(file.split("-")[0])
     groups = sorted(list(set(groupsUnsorted)))
     gradingfile = open("gradingfile.csv", 'w')
-    gradingfile.write("Gruppe, Bewertung, Feedback als Kommentar\n")
+    gradingfile.write("Gruppe,Bewertung,Feedback als Kommentar\n")
     for group in groups:
         gradingfile.write(group+",,\n")
     gradingfile.close()
