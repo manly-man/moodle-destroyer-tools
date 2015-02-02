@@ -50,6 +50,18 @@ def exZip(zip):
     z.extractall(path=os.path.join(os.getcwd(), expath))
     os.remove(os.path.join(os.getcwd(), zip))
 
+def creategradingfile(dir):
+    groupsUnsorted = []
+    for file in os.listdir(dir):
+        groupsUnsorted.append(file.split("-")[0][7:])
+    groups = sorted(list(set(groupsUnsorted)))
+    gradingfile = open("gradingfile.csv", 'w')
+    gradingfile.write("Gruppe, Bewertung, Feedback als Kommentar\n")
+    for group in groups:
+        gradingfile.write(group+",,\n")
+    gradingfile.close()
+
+
 ZIPFILENAME = sys.argv[-1]
 ZIPFILENAME = os.path.split(ZIPFILENAME)[-1][0:-4].replace(' ', '')
 #unzip file
@@ -76,3 +88,5 @@ remove_duplicates(os.getcwd())
 for file in os.listdir(os.getcwd()):
     if isZip(file):
         exZip(file)
+
+creategradingfile(os.getcwd())
