@@ -5,11 +5,13 @@ This repository is a collection of scripts manly-man uses for correcting exercis
 ---
 ## Description and usage
 
-* moodle-destroyer.rb:
+* moodle-destroyer.py:
   - Creates a csv file that can be uploaded into moodle.
-  - Usage: `moodle-destroyer moodle-file grading-file [output-file]`
+  - Usage: `moodle-destroyer.py moodle-file grading-file output-file`
   - Run this command in the directory where your CSV files are located.
 * moodle.extractor.py:
   - Unzips exercise submissions
   - Usage: `moodle-extractor.py zipfile`
   - Run this command in the directory where your Zip is located.
+  
+**DO NOT USE moodle-destroyer.rb !!**
