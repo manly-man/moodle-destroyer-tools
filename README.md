@@ -1,8 +1,9 @@
-# **Moodle Destroyer Tools**
+# Moodle Destroyer Tools
 
-This repository is a collection of scripts manly-man uses for correcting exercises. Conquer the moodle world with the best tools provided by manly-man. Use at own risk!
+This repository is a collection of scripts used for grading assigments.
+Conquer the moodle world with the best tools provided by manly-man.
+**Use at your own risk!**
 
----
 ## Description and usage
 
 * moodle-destroyer.py:
