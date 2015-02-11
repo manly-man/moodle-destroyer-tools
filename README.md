@@ -15,3 +15,19 @@ This repository is a collection of scripts manly-man uses for correcting exercis
   - Run this command in the directory where your Zip is located.
   
 **DO NOT USE moodle-destroyer.rb !!**
+
+## Development
+
+Before starting to develop on manly-man moodle scripts you should run the `boostrap` script.
+This will setup `git-flow` with the default settings.
+
+We recommend [`git-flow AVH Edition`](https://github.com/petervanderdoes/gitflow/).
+For detailed installation instructions have a look at [https://github.com/petervanderdoes/gitflow/wiki](https://github.com/petervanderdoes/gitflow/wiki)
+
+### Working with git-flow
+
+1. Start a new feature with `git-flow feature start FEATURE_NAME` (this creates a new branch)
+2. Hack on your feature
+3. Finish your feature with `git-flow feature stop FEATURE_NAME` (this merges the branch into `develop`)
+
+ 
