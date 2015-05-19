@@ -8,8 +8,20 @@ Conquer the moodle world with the best tools provided by manly-man.
 
 * moodle-destroyer.py:
   - Creates a csv file that can be uploaded into moodle.
-  - Usage: `moodle-destroyer.py moodle-file grading-file output-file`
+  - Usage: ```python moodle-destroyer --helpi``` to show usage infos.
   - Run this command in the directory where your CSV files are located.
+  - Single user mode: matching to "Vollständiger Name" instead of "Gruppe"
+  - Feedback Flag: Set only if gradingfile provides no "Feedback als Kommentar" column. (smart programming led to reverse yoda
+    conditions.)
+```
+optional arguments: -h, --help            show this help message and exit
+  -d DESTROY DESTROY, --destroy DESTROY DESTROY
+                        grading-file, moodle-file, result-file
+  -r RESULT, --result RESULT
+                        result-file
+  -s, --single          is in single mode
+  -f, --feedback        no feedback column in grading
+```
 * moodle.extractor.py:
   - Unzips exercise submissions
   - Usage: `moodle-extractor.py zipfile`
