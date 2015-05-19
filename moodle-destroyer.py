@@ -20,16 +20,10 @@ parser.add_argument("-s", "--single",
                     default=False,
                     help="is in single mode")
 parser.add_argument("-f", "--feedback",
-                    action="store_true",
+                    action="store_false",
                     default=True,
                     help="no feedback column in grading")
-
 args=parser.parse_args()
-
-if len(sys.argv) == 1:
-    print("Usage: moodle-destroyer moodle-file grading-file output-file")
-    print("use in folder where your Zip is located")
-    sys.exit(1)
 
 if args.destroy[0] != None:
     GRADING_FILE = args.destroy[0].name
@@ -70,7 +64,15 @@ with open(GRADING_FILE, 'rU', newline='') as grading, \
     for line in gradinglist:
         for row in moodlelist:
             #print(line['Gruppe'],"\nrow:",row['Gruppe'])
-            if line['Gruppe'] == row['Gruppe']:
-                row['Bewertung'] = line['Bewertung']
-                row['Feedback als Kommentar'] = line['Feedback als Kommentar']
-                writer.writerow(row)
+            if args.single:
+                if line['Vollständiger Name'] == row['Vollständiger Name']:
+                    row['Bewertung'] = line['Bewertung']
+                    if args.feedback:
+                        row['Feedback als Kommentar'] = line['Feedback als Kommentar']
+                    writer.writerow(row)
+            else:
+                if line['Gruppe'] == row['Gruppe']:
+                    row['Bewertung'] = line['Bewertung']
+                    if args.feedback:
+                        row['Feedback als Kommentar'] = line['Feedback als Kommentar']
+                    writer.writerow(row)
