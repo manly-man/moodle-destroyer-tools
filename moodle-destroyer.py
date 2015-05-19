@@ -23,6 +23,9 @@ parser.add_argument("-f", "--feedback",
                     action="store_false",
                     default=True,
                     help="no feedback column in grading")
+parser.add_argument("-v", "--version", 
+                    action="version", 
+                    version="version 0.2.0")
 args=parser.parse_args()
 
 if args.destroy[0] != None:
