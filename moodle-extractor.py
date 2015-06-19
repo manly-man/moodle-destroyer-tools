@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+# -*- coding: utf-8 -*-
 #small script for orderly unzipping of moodle excercise submission downloads
 #basic usage: call with path to zipfile
 #TODO: change this fuckup with tmpdir, copy it to folder where zipfile is located
