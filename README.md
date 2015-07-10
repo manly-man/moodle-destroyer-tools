@@ -36,8 +36,6 @@ optional arguments:
   -v, --version         show program's version number and exit
 ``` 
   - Run this command in the directory where your Zip is located.
-  
-**DO NOT USE moodle-destroyer.rb !!**
 
 ## Development
 
