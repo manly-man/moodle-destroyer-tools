@@ -7,7 +7,6 @@
 # TODO: add functions to extract: tarballs, rar
 # TODO: detect if UNIX formatted file, if not "dos2unix"
 # TODO: handle .rar and files which are not compressed
-# TODO: add switch for grading-file! i dont need them
 # TODO: make
 import sys
 import os
