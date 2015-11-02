@@ -148,7 +148,6 @@ def handle_single_mode(zipfilename, curr_path, unzip_path):
 
     # change into folder
     os.chdir(unzip_path)
-    print(os.path.split(os.getcwd())[0])
     zip = zipfile.ZipFile(os.path.join(os.path.split(os.getcwd())[0],
                                        args.extract[0].name))
     namelist = zip.namelist()
@@ -157,11 +156,9 @@ def handle_single_mode(zipfilename, curr_path, unzip_path):
     # remove duplicates
     unique_names = []
     [unique_names.append(x) for x in namelist if x not in unique_names]
-    print(unique_names)
 
     # extrctall
     zip.extractall()
-    print(os.getcwd())
 
     # create user folders
     for name in unique_names:
