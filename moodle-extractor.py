@@ -79,15 +79,14 @@ def ex_zip(zip):
     os.remove(os.path.join(os.getcwd(), zip))
 
 
-def create_grading_file(dir):
-    groups_unsorted = []
-    for file in os.listdir(dir):
-        groups_unsorted.append(file.split("-")[0])
-    groups = sorted(list(set(groups_unsorted)))
+def create_grading_file(list, mode="GROUP"):
     gradingfile = open("gradingfile.csv", 'w')
-    gradingfile.write("Gruppe,Bewertung,Feedback als Kommentar\n")
-    for group in groups:
-        gradingfile.write(group+",,\n")
+    if mode == "GROUP":
+        gradingfile.write("Gruppe,Bewertung,Feedback als Kommentar\n")
+    elif mode == "SINGLE":
+        gradingfile.write("Vollständiger Name,Bewertung,Feedback als Kommentar\n")
+    for item in list:
+        gradingfile.write(item+",,\n")
     gradingfile.close()
 
 
@@ -136,7 +135,11 @@ def main():
 
         # ich soll keine doppelte verneinung nicht verwenden...
         if not args.no_grading_file:
-            create_grading_file(os.getcwd())
+            groups_unsorted = []
+            for file in os.listdir(os.getcwd()):
+                groups_unsorted.append(file.split("-")[0])
+            groups = sorted(list(set(groups_unsorted)))
+            create_grading_file(groups)
     else:  # single user mode
         print("single user mode ...")
         curr_path = os.getcwd()
@@ -175,11 +178,7 @@ def main():
                 shutil.move(filename, filename.split("_")[0])
 
         if not args.no_grading_file:
-            gradingfile = open("gradingfile.csv", 'w')
-            gradingfile.write("Vollständiger Name,Bewertung,Feedback als Kommentar\n")
-            for name in sorted(unique_names):
-                gradingfile.write(name+",,\n")
-            gradingfile.close()
+            create_grading_file(unique_names, "SINGLE")
 
 # create gradingfile for single users
 
