@@ -24,10 +24,18 @@ optional arguments: -h, --help            show this help message and exit
 ```
 * moodle.extractor.py:
   - Unzips exercise submissions
-  - Usage: `moodle-extractor.py zipfile`
+  - Usage:
+```
+usage: Moodle Extractor [-h] -e EXTRACT [-s] [-v]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -e EXTRACT, --extract EXTRACT
+                        zip file to extract
+  -s, --single          Single User Mode, default is Group mode
+  -v, --version         show program's version number and exit
+``` 
   - Run this command in the directory where your Zip is located.
-  
-**DO NOT USE moodle-destroyer.rb !!**
 
 ## Development
 
