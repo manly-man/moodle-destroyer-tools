@@ -15,6 +15,7 @@ import shutil
 import zipfile
 import hashlib
 import random
+
 # import argparse
 # from os.path import expanduser
 
@@ -59,14 +60,14 @@ def remove_duplicates(directory, ENC="latin-1"):
 # check if Archivefile
 # true if zip
 # false if somethingelse
-def isZip(filename):
+def is_zip(filename):
     # there is a method: RTFM ;)
     # https://docs.python.org/3/library/zipfile.html
     return zipfile.is_zipfile(filename)
 
 
 # take zip archive , make folder, extract it, deletes archive
-def exZip(zip):
+def ex_zip(zip):
     expath = zip.split("-")[0]
     try:
         os.makedirs(expath)
@@ -78,7 +79,7 @@ def exZip(zip):
     os.remove(os.path.join(os.getcwd(), zip))
 
 
-def creategradingfile(dir):
+def create_grading_file(dir):
     groupsUnsorted = []
     for file in os.listdir(dir):
         groupsUnsorted.append(file.split("-")[0])
@@ -130,12 +131,12 @@ def main():
 
         # iterate through archives and extract
         for file in os.listdir(os.getcwd()):
-            if isZip(file):
-                exZip(file)
+            if is_zip(file):
+                ex_zip(file)
 
         # ich soll keine doppelte verneinung nicht verwenden...
         if not args.no_grading_file:
-            creategradingfile(os.getcwd())
+            create_grading_file(os.getcwd())
     else:  # single user mode
         print("single user mode ...")
         curr_path = os.getcwd()
