@@ -106,6 +106,79 @@ def parse_zipfilename():
     return os.path.split(ZIPFILENAME)[-1][0:-4].replace(' ', '')
 
 
+def handle_group_mode(zipfilename):
+    CURR_PATH = os.getcwd()
+    UNZIP_PATH = os.path.join(CURR_PATH, zipfilename)
+
+    if not os.path.isdir(UNZIP_PATH):
+        # pathnotexisting
+        os.makedirs(UNZIP_PATH)
+    else:
+        # path existing, delete and create
+        shutil.rmtree(os.path.join(CURR_PATH))
+        os.makedirs(UNZIP_PATH)
+
+    # unpack zip
+    os.chdir(UNZIP_PATH)
+    zip = zipfile.ZipFile(os.path.join(CURR_PATH, args.extract[0].name))
+    zip.extractall()
+    # iterate trough files
+    remove_duplicates(os.getcwd(), ENC)
+
+    # iterate through archives and extract
+    for file in os.listdir(os.getcwd()):
+        if is_zip(file):
+            ex_zip(file)
+
+    # ich soll keine doppelte verneinung nicht verwenden...
+    if not args.no_grading_file:
+        groups_unsorted = []
+        for file in os.listdir(CURR_PATH):
+            groups_unsorted.append(file.split("-")[0])
+        groups = sorted(list(set(groups_unsorted)))
+        create_grading_file(groups)
+
+
+def handle_single_mode(zipfilename):
+    curr_path = os.getcwd()
+    unzip_path = os.path.join(curr_path, zipfilename)
+
+    if not os.path.isdir(unzip_path):
+        os.makedirs(unzip_path)
+    else:
+        pass
+
+    # change into folder
+    os.chdir(unzip_path)
+    print(os.path.split(os.getcwd())[0])
+    zip = zipfile.ZipFile(os.path.join(os.path.split(os.getcwd())[0],
+                                       args.extract[0].name))
+    namelist = zip.namelist()
+    namelist = [name.split("_")[0] for name in namelist]
+
+    # remove duplicates
+    unique_names = []
+    [unique_names.append(x) for x in namelist if x not in unique_names]
+    print(unique_names)
+
+    # extrctall
+    zip.extractall()
+    print(os.getcwd())
+
+    # create user folders
+    for name in unique_names:
+        os.makedirs(name)
+
+    # move files into folders
+    dirfilelist = next(os.walk(os.getcwd()))[2]
+    for filename in dirfilelist:
+        if filename.split("_")[0] in unique_names:
+            shutil.move(filename, filename.split("_")[0])
+
+    if not args.no_grading_file:
+        create_grading_file(unique_names, "SINGLE")
+
+
 def main():
 
     if len(sys.argv) == 1:
@@ -116,75 +189,9 @@ def main():
     ZIPFILENAME = parse_zipfilename()
 
     if not args.single:
-        CURR_PATH = os.getcwd()
-        UNZIP_PATH = os.path.join(CURR_PATH, ZIPFILENAME)
-
-        if not os.path.isdir(UNZIP_PATH):
-            # pathnotexisting
-            os.makedirs(UNZIP_PATH)
-        else:
-            # path existing, delete and create
-            shutil.rmtree(os.path.join(CURR_PATH))
-            os.makedirs(UNZIP_PATH)
-
-        # unpack zip
-        os.chdir(UNZIP_PATH)
-        zip = zipfile.ZipFile(os.path.join(CURR_PATH, args.extract[0].name))
-        zip.extractall()
-        # iterate trough files
-        remove_duplicates(os.getcwd(), ENC)
-
-        # iterate through archives and extract
-        for file in os.listdir(os.getcwd()):
-            if is_zip(file):
-                ex_zip(file)
-
-        # ich soll keine doppelte verneinung nicht verwenden...
-        if not args.no_grading_file:
-            groups_unsorted = []
-            for file in os.listdir(CURR_PATH):
-                groups_unsorted.append(file.split("-")[0])
-            groups = sorted(list(set(groups_unsorted)))
-            create_grading_file(groups)
+        handle_group_mode(ZIPFILENAME)
     else:  # single user mode
-        print("single user mode ...")
-        curr_path = os.getcwd()
-        unzip_path = os.path.join(curr_path, ZIPFILENAME)
-
-        if not os.path.isdir(unzip_path):
-            os.makedirs(unzip_path)
-        else:
-            pass
-
-        # change into folder
-        os.chdir(unzip_path)
-        print(os.path.split(os.getcwd())[0])
-        zip = zipfile.ZipFile(os.path.join(os.path.split(os.getcwd())[0],
-                                           args.extract[0].name))
-        namelist = zip.namelist()
-        namelist = [name.split("_")[0] for name in namelist]
-
-        # remove duplicates
-        unique_names = []
-        [unique_names.append(x) for x in namelist if x not in unique_names]
-        print(unique_names)
-
-        # extrctall
-        zip.extractall()
-        print(os.getcwd())
-
-        # create user folders
-        for name in unique_names:
-            os.makedirs(name)
-
-        # move files into folders
-        dirfilelist = next(os.walk(os.getcwd()))[2]
-        for filename in dirfilelist:
-            if filename.split("_")[0] in unique_names:
-                shutil.move(filename, filename.split("_")[0])
-
-        if not args.no_grading_file:
-            create_grading_file(unique_names, "SINGLE")
+        handle_single_mode(ZIPFILENAME)
 
 # create gradingfile for single users
 
