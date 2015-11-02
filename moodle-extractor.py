@@ -52,10 +52,9 @@ def remove_duplicates(directory, ENC="latin-1"):
 # true if zip
 # false if somethingelse
 def isZip(filename):
-    if filename.split(".")[-1] == "zip":
-        return True
-    else:
-        return False
+    # there is a method: RTFM ;)
+    # https://docs.python.org/3/library/zipfile.html
+    return zipfile.is_zipfile(filename)
 
 
 # take zip archive , make folder, extract it, deletes archive
