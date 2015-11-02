@@ -43,6 +43,10 @@ parser.add_argument("-v", "--version",
 
 args = parser.parse_args()
 
+GRADING_FILE_NAME = "gradingfile.csv"
+SINGLE_MODE_CSV_HEADER = "Vollständiger Name,Bewertung,Feedback als Kommentar\n"
+GROUP_MODE_CSV_HEADER = "Gruppe,Bewertung,Feedback als Kommentar\n"
+
 
 # iterate through files and delete duplicates based on filehash
 def remove_duplicates(directory, ENC="latin-1"):
@@ -80,11 +84,11 @@ def ex_zip(zip):
 
 
 def create_grading_file(list, mode="GROUP"):
-    gradingfile = open("gradingfile.csv", 'w')
+    gradingfile = open(GRADING_FILE_NAME, 'w')
     if mode == "GROUP":
-        gradingfile.write("Gruppe,Bewertung,Feedback als Kommentar\n")
+        gradingfile.write(GROUP_MODE_CSV_HEADER)
     elif mode == "SINGLE":
-        gradingfile.write("Vollständiger Name,Bewertung,Feedback als Kommentar\n")
+        gradingfile.write(SINGLE_MODE_CSV_HEADER)
     for item in list:
         gradingfile.write(item+",,\n")
     gradingfile.close()
