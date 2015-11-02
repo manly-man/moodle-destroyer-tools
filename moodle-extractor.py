@@ -106,7 +106,7 @@ def parse_zipfilename():
     return os.path.split(ZIPFILENAME)[-1][0:-4].replace(' ', '')
 
 
-def handle_group_mode(zipfilename, curr_path, unzip_path):
+def create_unzip_folder(curr_path, unzip_path):
 
     if not os.path.isdir(unzip_path):
         # pathnotexisting
@@ -115,6 +115,11 @@ def handle_group_mode(zipfilename, curr_path, unzip_path):
         # path existing, delete and create
         shutil.rmtree(os.path.join(curr_path))
         os.makedirs(unzip_path)
+
+
+def handle_group_mode(zipfilename, curr_path, unzip_path):
+
+    create_unzip_folder(curr_path, unzip_path)
 
     # unpack zip
     os.chdir(unzip_path)
@@ -139,10 +144,7 @@ def handle_group_mode(zipfilename, curr_path, unzip_path):
 
 def handle_single_mode(zipfilename, curr_path, unzip_path):
 
-    if not os.path.isdir(unzip_path):
-        os.makedirs(unzip_path)
-    else:
-        pass
+    create_unzip_folder(curr_path, unzip_path)
 
     # change into folder
     os.chdir(unzip_path)
