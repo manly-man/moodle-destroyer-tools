@@ -104,8 +104,6 @@ def main():
 
     # deal with stupid filenames...
     ENC = "latin-1"
-    TITLE = "moodle"
-    EXCOUNT = 3
 
     ZIPFILENAME = os.path.split(ZIPFILENAME)[-1][0:-4].replace(' ', '')
 
