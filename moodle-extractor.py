@@ -80,10 +80,10 @@ def ex_zip(zip):
 
 
 def create_grading_file(dir):
-    groupsUnsorted = []
+    groups_unsorted = []
     for file in os.listdir(dir):
-        groupsUnsorted.append(file.split("-")[0])
-    groups = sorted(list(set(groupsUnsorted)))
+        groups_unsorted.append(file.split("-")[0])
+    groups = sorted(list(set(groups_unsorted)))
     gradingfile = open("gradingfile.csv", 'w')
     gradingfile.write("Gruppe,Bewertung,Feedback als Kommentar\n")
     for group in groups:
@@ -112,18 +112,18 @@ def main():
 
     if not args.single:
         CURR_PATH = os.getcwd()
-        UNZIPPATH = os.path.join(CURR_PATH, ZIPFILENAME)
+        UNZIP_PATH = os.path.join(CURR_PATH, ZIPFILENAME)
 
-        if not os.path.isdir(UNZIPPATH):
+        if not os.path.isdir(UNZIP_PATH):
             # pathnotexisting
-            os.makedirs(UNZIPPATH)
+            os.makedirs(UNZIP_PATH)
         else:
             # path existing, delete and create
             shutil.rmtree(os.path.join(CURR_PATH))
-            os.makedirs(UNZIPPATH)
+            os.makedirs(UNZIP_PATH)
 
         # unpack zip
-        os.chdir(UNZIPPATH)
+        os.chdir(UNZIP_PATH)
         zip = zipfile.ZipFile(os.path.join(CURR_PATH, args.extract[0].name))
         zip.extractall()
         # iterate trough files
@@ -140,15 +140,15 @@ def main():
     else:  # single user mode
         print("single user mode ...")
         curr_path = os.getcwd()
-        unzippath = os.path.join(curr_path, ZIPFILENAME)
+        unzip_path = os.path.join(curr_path, ZIPFILENAME)
 
-        if not os.path.isdir(unzippath):
-            os.makedirs(unzippath)
+        if not os.path.isdir(unzip_path):
+            os.makedirs(unzip_path)
         else:
             pass
 
         # change into folder
-        os.chdir(unzippath)
+        os.chdir(unzip_path)
         print(os.path.split(os.getcwd())[0])
         zip = zipfile.ZipFile(os.path.join(os.path.split(os.getcwd())[0],
                                            args.extract[0].name))
