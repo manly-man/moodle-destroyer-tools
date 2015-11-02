@@ -106,21 +106,19 @@ def parse_zipfilename():
     return os.path.split(ZIPFILENAME)[-1][0:-4].replace(' ', '')
 
 
-def handle_group_mode(zipfilename):
-    CURR_PATH = os.getcwd()
-    UNZIP_PATH = os.path.join(CURR_PATH, zipfilename)
+def handle_group_mode(zipfilename, curr_path, unzip_path):
 
-    if not os.path.isdir(UNZIP_PATH):
+    if not os.path.isdir(unzip_path):
         # pathnotexisting
-        os.makedirs(UNZIP_PATH)
+        os.makedirs(unzip_path)
     else:
         # path existing, delete and create
-        shutil.rmtree(os.path.join(CURR_PATH))
-        os.makedirs(UNZIP_PATH)
+        shutil.rmtree(os.path.join(curr_path))
+        os.makedirs(unzip_path)
 
     # unpack zip
-    os.chdir(UNZIP_PATH)
-    zip = zipfile.ZipFile(os.path.join(CURR_PATH, args.extract[0].name))
+    os.chdir(unzip_path)
+    zip = zipfile.ZipFile(os.path.join(curr_path, args.extract[0].name))
     zip.extractall()
     # iterate trough files
     remove_duplicates(os.getcwd(), ENC)
@@ -133,15 +131,13 @@ def handle_group_mode(zipfilename):
     # ich soll keine doppelte verneinung nicht verwenden...
     if not args.no_grading_file:
         groups_unsorted = []
-        for file in os.listdir(CURR_PATH):
+        for file in os.listdir(curr_path):
             groups_unsorted.append(file.split("-")[0])
         groups = sorted(list(set(groups_unsorted)))
         create_grading_file(groups)
 
 
-def handle_single_mode(zipfilename):
-    curr_path = os.getcwd()
-    unzip_path = os.path.join(curr_path, zipfilename)
+def handle_single_mode(zipfilename, curr_path, unzip_path):
 
     if not os.path.isdir(unzip_path):
         os.makedirs(unzip_path)
@@ -187,11 +183,13 @@ def main():
         sys.exit(1)
 
     ZIPFILENAME = parse_zipfilename()
+    CURR_PATH = os.getcwd()
+    UNZIP_PATH = os.path.join(CURR_PATH, ZIPFILENAME)
 
     if not args.single:
-        handle_group_mode(ZIPFILENAME)
+        handle_group_mode(ZIPFILENAME, CURR_PATH, UNZIP_PATH)
     else:  # single user mode
-        handle_single_mode(ZIPFILENAME)
+        handle_single_mode(ZIPFILENAME, CURR_PATH, UNZIP_PATH)
 
 # create gradingfile for single users
 
