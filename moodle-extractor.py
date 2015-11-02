@@ -47,6 +47,9 @@ GRADING_FILE_NAME = "gradingfile.csv"
 SINGLE_MODE_CSV_HEADER = "Vollständiger Name,Bewertung,Feedback als Kommentar\n"
 GROUP_MODE_CSV_HEADER = "Gruppe,Bewertung,Feedback als Kommentar\n"
 
+# deal with stupid filenames...
+ENC = "latin-1"
+
 
 # iterate through files and delete duplicates based on filehash
 def remove_duplicates(directory, ENC="latin-1"):
@@ -94,22 +97,23 @@ def create_grading_file(list, mode="GROUP"):
     gradingfile.close()
 
 
-def main():
-
+def parse_zipfilename():
     if args.extract[0] != None:
         ZIPFILENAME = args.extract[0].name
     else:
         raise Exception
+
+    return os.path.split(ZIPFILENAME)[-1][0:-4].replace(' ', '')
+
+
+def main():
 
     if len(sys.argv) == 1:
         print("usage: command.py zipfile")
         print("use in folder where your Zip is located")
         sys.exit(1)
 
-    # deal with stupid filenames...
-    ENC = "latin-1"
-
-    ZIPFILENAME = os.path.split(ZIPFILENAME)[-1][0:-4].replace(' ', '')
+    ZIPFILENAME = parse_zipfilename()
 
     if not args.single:
         CURR_PATH = os.getcwd()
@@ -138,7 +142,7 @@ def main():
         # ich soll keine doppelte verneinung nicht verwenden...
         if not args.no_grading_file:
             groups_unsorted = []
-            for file in os.listdir(os.getcwd()):
+            for file in os.listdir(CURR_PATH):
                 groups_unsorted.append(file.split("-")[0])
             groups = sorted(list(set(groups_unsorted)))
             create_grading_file(groups)
@@ -159,8 +163,8 @@ def main():
                                            args.extract[0].name))
         namelist = zip.namelist()
         namelist = [name.split("_")[0] for name in namelist]
-        # remove duplicates
 
+        # remove duplicates
         unique_names = []
         [unique_names.append(x) for x in namelist if x not in unique_names]
         print(unique_names)
