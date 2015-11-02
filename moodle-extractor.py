@@ -26,10 +26,17 @@ parser.add_argument("-e", "--extract",
                     required=True,
                     type=argparse.FileType('rU'),
                     help="zip file to extract")
+
 parser.add_argument("-s", "--single",
                     action="store_true",
                     default=False,
                     help="Single User Mode, default is Group mode")
+
+parser.add_argument("-ng", "--no-grading-file",
+                    action="store_true",
+                    default=False,
+                    help="Do not generate grading-file")
+
 parser.add_argument("-v", "--version",
                     action="version",
                     version="version 0.2.0")
@@ -127,7 +134,9 @@ def main():
             if isZip(file):
                 exZip(file)
 
-        creategradingfile(os.getcwd())
+        # ich soll keine doppelte verneinung nicht verwenden...
+        if not args.no_grading_file:
+            creategradingfile(os.getcwd())
     else:  # single user mode
         print("single user mode ...")
         curr_path = os.getcwd()
@@ -165,11 +174,12 @@ def main():
             if filename.split("_")[0] in unique_names:
                 shutil.move(filename, filename.split("_")[0])
 
-        gradingfile = open("gradingfile.csv", 'w')
-        gradingfile.write("Vollständiger Name,Bewertung,Feedback als Kommentar\n")
-        for name in sorted(unique_names):
-            gradingfile.write(name+",1,\n")
-        gradingfile.close()
+        if not args.no_grading_file:
+            gradingfile = open("gradingfile.csv", 'w')
+            gradingfile.write("Vollständiger Name,Bewertung,Feedback als Kommentar\n")
+            for name in sorted(unique_names):
+                gradingfile.write(name+",1,\n")
+            gradingfile.close()
 
 # create gradingfile for single users
 
