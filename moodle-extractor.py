@@ -1,27 +1,31 @@
 #!/usr/bin/env python
 
-#small script for orderly unzipping of moodle excercise submission downloads
-#basic usage: call with path to zipfile
-#TODO: change this fuckup with tmpdir, copy it to folder where zipfile is located
-#TODO: add functions to extract: tarballs, rar
-#TODO: detect if UNIX formatted file, if not "dos2unix"
-#TODO: make
-import sys, os
+# small script for orderly unzipping of moodle excercise submission downloads
+# basic usage: call with path to zipfile
+# TODO: change this fuckup with tmpdir, copy it to folder where zipfile is
+# located
+# TODO: add functions to extract: tarballs, rar
+# TODO: detect if UNIX formatted file, if not "dos2unix"
+# TODO: make
+import sys
+import os
 import shutil
 import zipfile
 import hashlib
-#import argparse
-#from os.path import expanduser
+# import argparse
+# from os.path import expanduser
 if len(sys.argv) == 1:
     print("usage: command.py zipfile")
     print("use in folder where your Zip is located")
     sys.exit(1)
 
-ENC = "latin-1" #deal with stupid filenames...
+# deal with stupid filenames...
+ENC = "latin-1"
 TITLE = "moodle"
 EXCOUNT = 3
 
-#iterate through files and delete duplicates based on filehash
+
+# iterate through files and delete duplicates based on filehash
 def remove_duplicates(directory):
     unique = []
     for filename in os.listdir(directory):
@@ -33,7 +37,8 @@ def remove_duplicates(directory):
         else:
             os.remove(filename)
 
-#check if Archivefile
+
+# check if Archivefile
 # true if zip
 # false if somethingelse
 def isZip(filename):
@@ -42,13 +47,15 @@ def isZip(filename):
     else:
         return False
 
-#take zip archive , make folder, extract it, deletes archive
+
+# take zip archive , make folder, extract it, deletes archive
 def exZip(zip):
     expath = zip.split("-")[0]
     os.makedirs(expath)
     z = zipfile.ZipFile(zip)
     z.extractall(path=os.path.join(os.getcwd(), expath))
     os.remove(os.path.join(os.getcwd(), zip))
+
 
 def creategradingfile(dir):
     groupsUnsorted = []
@@ -64,27 +71,27 @@ def creategradingfile(dir):
 
 ZIPFILENAME = sys.argv[-1]
 ZIPFILENAME = os.path.split(ZIPFILENAME)[-1][0:-4].replace(' ', '')
-#unzip file
+# unzip file
 
 CURR_PATH = os.getcwd()
 UNZIPPATH = os.path.join(CURR_PATH, ZIPFILENAME)
 
 if not os.path.isdir(UNZIPPATH):
-    #pathnotexisting
+    # pathnotexisting
     os.makedirs(UNZIPPATH)
 else:
-    #path existing, delete and create
+    # path existing, delete and create
     shutil.rmtree(os.path.join(CURR_PATH))
     os.makedirs(UNZIPPATH)
 
-#unpack zip
+# unpack zip
 os.chdir(UNZIPPATH)
 zip = zipfile.ZipFile(os.path.join(CURR_PATH, sys.argv[-1]))
 zip.extractall()
-#iterate trough files
+# iterate trough files
 remove_duplicates(os.getcwd())
 
-#iterate through archives and extract
+# iterate through archives and extract
 for file in os.listdir(os.getcwd()):
     if isZip(file):
         exZip(file)
