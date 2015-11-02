@@ -178,7 +178,7 @@ def main():
             gradingfile = open("gradingfile.csv", 'w')
             gradingfile.write("Vollständiger Name,Bewertung,Feedback als Kommentar\n")
             for name in sorted(unique_names):
-                gradingfile.write(name+",1,\n")
+                gradingfile.write(name+",,\n")
             gradingfile.close()
 
 # create gradingfile for single users
