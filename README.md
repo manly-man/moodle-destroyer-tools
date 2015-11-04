@@ -4,6 +4,15 @@ This repository is a collection of scripts used for grading assigments.
 Conquer the moodle world with the best tools provided by manly-man.
 **Use at your own risk!**
 
+## Prepare moodle
+
+To use the moodle-destroyer tools, please make sure you configured your submissions like shown in the screenshot.
+
+![moodle-settings](https://raw.githubusercontent.com/manly-man/moodle-destroyer-tools/develop/images/moodle-settings.png)
+
+* `Offline grading worksheet` enables the download of the grading-file.
+* `Feedback comments` enables a feedback-column in the grading-file
+
 ## Description and usage
 
 * moodle-destroyer.py:
