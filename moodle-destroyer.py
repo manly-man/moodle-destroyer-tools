@@ -24,10 +24,11 @@ parser.add_argument("-f", "--feedback",
                     action="store_false",
                     default=True,
                     help="no feedback column in grading")
-parser.add_argument("-v", "--version", 
-                    action="version", 
+parser.add_argument("-v", "--version",
+                    action="version",
                     version="version 0.2.0")
-args=parser.parse_args()
+
+args = parser.parse_args()
 
 if args.destroy[0] != None:
     GRADING_FILE = args.destroy[0].name
@@ -52,9 +53,9 @@ with open(GRADING_FILE, 'rU', newline='') as grading, \
     reader_moodle = csv.DictReader(moodle)
 
     header = reader_moodle.fieldnames
-    writer = csv.DictWriter(result, \
-                            header, \
-                            quotechar='"', \
+    writer = csv.DictWriter(result,
+                            header,
+                            quotechar='"',
                             quoting=csv.QUOTE_NONNUMERIC)
     writer.writeheader()
     moodlelist = []
@@ -67,7 +68,7 @@ with open(GRADING_FILE, 'rU', newline='') as grading, \
 
     for line in gradinglist:
         for row in moodlelist:
-            #print(line['Gruppe'],"\nrow:",row['Gruppe'])
+            # print(line['Gruppe'],"\nrow:",row['Gruppe'])
             if args.single:
                 if line['Vollständiger Name'] == row['Vollständiger Name']:
                     row['Bewertung'] = line['Bewertung']
