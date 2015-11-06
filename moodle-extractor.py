@@ -39,7 +39,7 @@ parser.add_argument("-ng", "--no-grading-file",
 
 parser.add_argument("-v", "--version",
                     action="version",
-                    version="version 0.3.0")
+                    version="version 0.3.1")
 
 args = parser.parse_args()
 
