@@ -136,7 +136,7 @@ def handle_group_mode(zipfilename, curr_path, unzip_path):
     # ich soll keine doppelte verneinung nicht verwenden...
     if not args.no_grading_file:
         groups_unsorted = []
-        for file in os.listdir(curr_path):
+        for file in os.listdir(unzip_path):
             groups_unsorted.append(file.split("-")[0])
         groups = sorted(list(set(groups_unsorted)))
         create_grading_file(groups)
