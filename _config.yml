@@ -1,0 +1,45 @@
+url: https://manly-man.github.io
+baseurl: /moodle-destroyer-tools
+
+# Site settings
+title: Moodle Destroyer Tools
+description: "Use Moodle the"
+
+# Color settings (hex-codes without the leading hash-tag)
+color:
+  primary: fed136
+  secondary: fec503  
+  secondary-dark: 333
+
+# Team names, titles and social links
+people:
+- name: onc
+  pic: onc
+  position: Lead Developer
+  social:
+    - title: github
+      url: https://github.com/onc
+    - title: twitter
+      url: https://twitter.com/On_Ze
+
+- name: halbtuerke
+  pic: halbtuerke
+  position: Lead Developer
+  social:
+    - title: github
+      url: https://github.com/halbtuerke
+
+- name: deubzerm
+  pic: deubzerm
+  position: Lead Developer
+  social:
+    - title: github
+      url: https://github.com/deubzerm
+
+social:
+  - title: github
+    url: https://github.com/manly-man
+
+# Build settings
+markdown: kramdown
+permalink: pretty
