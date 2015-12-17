@@ -14,7 +14,7 @@ argParser = argparse.ArgumentParser(prefix_chars='-');
 
 argParser.add_argument('-m','--moodle', help='moodle url', required=False)
 argParser.add_argument('-u', '--user', help='username', required=False)
-argParser.add_argument('-c', '--config', help='config file', required=False, type=argparse.FileType(mode='r+', encoding='utf8'))
+argParser.add_argument('-c', '--config', help='config file', required=False, type=argparse.FileType(mode='w', encoding='utf8'))
 
 args = argParser.parse_args();
 
@@ -41,7 +41,7 @@ tokenJson = json.loads(tokenRequest.text)
 token = tokenJson['token']
 
 cfgParser['moodle'] = { 
-        'url':url, 
+        'url':moodleUrl, 
         'user':userName,
         'token':token}
 
