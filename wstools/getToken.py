@@ -33,17 +33,26 @@ else:
 
 userPassword = getpass.getpass(prompt=' Please insert user password.\n It will not be saved, it is required to get a token.\nPassword: ')
 
-url = 'https://'+moodleUrl+'/login/token.php'
-postData = {'username':userName, 'password':userPassword, 'service':'moodle_mobile_app'}
-tokenRequest = requests.post(url, postData)
+tokenUrl = 'https://'+moodleUrl+'/login/token.php'
+tokenPostData = {'username':userName, 'password':userPassword, 'service':'moodle_mobile_app'}
+tokenRequest = requests.post(tokenUrl, tokenPostData)
 
 tokenJson = json.loads(tokenRequest.text)
 token = tokenJson['token']
 
-cfgParser['moodle'] = { 
+uidUrl = 'https://'+moodleUrl+'/webservice/rest/server.php'
+uidPostData = {'wstoken':token, 'moodlewsrestformat': 'json', 'wsfunction':'core_webservice_get_site_info'}
+uidRequest = requests.post(uidUrl, uidPostData)
+
+uidJson = json.loads(uidRequest.text)
+uid = uidJson['userid']
+
+cfgParser['moodle'] = {
         'url':moodleUrl, 
         'user':userName,
-        'token':token}
+        'uid':uid,
+        'token':token
+        }
 
 with open(cfgPath, 'w') as cfgFile:
     cfgParser.write(cfgFile)
