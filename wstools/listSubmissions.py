@@ -1,12 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+''' get_submissions params
+  'assignmentids' => new external_multiple_structure(
+      new external_value(PARAM_INT, 'assignment id'),
+      '1 or more assignment ids',
+      VALUE_REQUIRED),
+  'status' => new external_value(PARAM_ALPHA, 'status', VALUE_DEFAULT, ''),
+  'since' => new external_value(PARAM_INT, 'submitted since', VALUE_DEFAULT, 0),
+  'before' => new external_value(PARAM_INT, 'submitted before', VALUE_DEFAULT, 0)
+'''
+
 import argparse
 import configparser
 import getpass
 import json
 import requests
 import os.path
-
 class Assignment:
     def __init__(self, aid, submissions):
         self.aid= aid
