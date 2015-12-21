@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+''' login/token.php params
+// MDL-43119 Token valid for 3 months (12 weeks).
+$username = required_param('username', PARAM_USERNAME);
+$password = required_param('password', PARAM_RAW);
+$serviceshortname  = required_param('service',  PARAM_ALPHANUMEXT);
+'''
 import argparse
 import configparser
 import getpass
