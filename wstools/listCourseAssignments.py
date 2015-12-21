@@ -31,7 +31,12 @@ request2 = requests.post(url, postData2)
 
 assignments = json.loads(request2.text)
 
+
 for course in assignments['courses']:
     print(str(course['id']) + ' ' + course['fullname'])
+    alist=[]
     for assignment in course['assignments']:
-        print(' '+str(assignment['id']) + ' ' +assignment['name'])
+        alist.append([assignment['id'], assignment['name']])
+    alist.sort()
+    for a in alist:
+        print(' ' + str(a))
