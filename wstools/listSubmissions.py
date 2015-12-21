@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-''' get_submissions params
+""" get_submissions params
   'assignmentids' => new external_multiple_structure(
       new external_value(PARAM_INT, 'assignment id'),
       '1 or more assignment ids',
@@ -8,8 +7,7 @@
   'status' => new external_value(PARAM_ALPHA, 'status', VALUE_DEFAULT, ''),
   'since' => new external_value(PARAM_INT, 'submitted since', VALUE_DEFAULT, 0),
   'before' => new external_value(PARAM_INT, 'submitted before', VALUE_DEFAULT, 0)
-'''
-
+"""
 global singleUser
 import argparse
 import configparser
@@ -22,7 +20,9 @@ class Assignment:
         self.aid= aid
         self.subs = []
         for s in submissions:
-            self.subs.append(Submission(s['id'],s['userid'],s['groupid'],s['plugins']))
+            self.subs.append(
+                    Submission(s['id'],s['userid'],s['groupid'],s['plugins'])
+                    )
 
     def __str__(self):
         string = str(self.aid) + '\n'
@@ -101,19 +101,31 @@ class Editorfield:
         self.fmt = ed['format']
 
 
-#class AssignmentDecoder(json.JSONDecoder):
-#    def decode(self, json_string):
-#        obj = super(AssignmentDecoder, self).decode(json_string)
-
-
 cfgPath = os.path.expanduser('~/.config/moodle_destroyer')
 
 cfgParser = configparser.ConfigParser()
 argParser = argparse.ArgumentParser(prefix_chars='-');
 
-argParser.add_argument('aids', help='one or more assignment IDs',type=int, metavar='id', nargs='+')
-argParser.add_argument('-s', '--single', help='single user mode', action='store_true', default=False)
-argParser.add_argument('-c', '--config', help='config file', required=False, type=argparse.FileType(mode='r', encoding='utf8'), default=cfgPath)
+argParser.add_argument(
+        'aids',
+        help='one or more assignment IDs',
+        type=int,
+        metavar='id',
+        nargs='+'
+        )
+argParser.add_argument(
+        '-s', '--single',
+        help='single user mode',
+        action='store_true',
+        default=False
+        )
+argParser.add_argument(
+        '-c', '--config',
+        help='config file',
+        required=False,
+        type=argparse.FileType(mode='r', encoding='utf8'),
+        default=cfgPath
+        )
 
 args = argParser.parse_args()
 
@@ -124,8 +136,14 @@ moodleUrl = cfgParser['moodle']['url']
 token = cfgParser['moodle']['token']
 uid = cfgParser['moodle']['uid']
 aids = args.aids
+
 url = 'https://'+moodleUrl+'/webservice/rest/server.php'
-postData2 = {'wstoken':token, 'moodlewsrestformat': 'json', 'wsfunction':'mod_assign_get_submissions', 'assignmentids[]': [aids]}
+postData2 = {
+        'wstoken':token,
+        'moodlewsrestformat': 'json',
+        'wsfunction': 'mod_assign_get_submissions',
+        'assignmentids[]': [aids]
+        }
 request2 = requests.post(url, postData2)
 
 asJson = json.loads(request2.text)
