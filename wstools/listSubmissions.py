@@ -10,6 +10,7 @@
   'before' => new external_value(PARAM_INT, 'submitted before', VALUE_DEFAULT, 0)
 '''
 
+global singleUser
 import argparse
 import configparser
 import getpass
@@ -40,11 +41,19 @@ class Submission:
         #times
 
     def __str__(self):
-        if 0 == self.gid:
-            return ''
-        string = ' ' + str(self.gid) + '\n'
+        string = ''
         for p in self.plugs:
             string += str(p)
+        if singleUser:
+            if '' != string:
+                string = ' ' + str(self.uid) + '\n' + string
+
+        else:
+            if 0 == self.gid:
+                return ''
+            if '' != string:
+                string = ' ' + str(self.gid) + '\n' + string
+
         return string
 
 class Plugin:
@@ -103,12 +112,14 @@ cfgParser = configparser.ConfigParser()
 argParser = argparse.ArgumentParser(prefix_chars='-');
 
 argParser.add_argument('aids', help='one or more assignment IDs',type=int, metavar='id', nargs='+')
+argParser.add_argument('-s', '--single', help='single user mode', action='store_true', default=False)
 argParser.add_argument('-c', '--config', help='config file', required=False, type=argparse.FileType(mode='r', encoding='utf8'), default=cfgPath)
 
 args = argParser.parse_args()
 
 cfgParser.read_file(args.config)
 
+singleUser = args.single
 moodleUrl = cfgParser['moodle']['url']
 token = cfgParser['moodle']['token']
 uid = cfgParser['moodle']['uid']
@@ -125,33 +136,3 @@ for a in asJson['assignments']:
 
 for a in assignments:
     print(a)
-
-#for assignment in asJson['assignments']:
-#    print(str(assignment['assignmentid']))
-#
-#    alist=[]
-#    for group in assignment['submissions']:
-#        plist=[]
-#        for plugin in group['plugins']:
-#            if(plugin['type'] == 'file'):                
-#                flist = []
-#                for filearea in plugin['fileareas']:
-#                    #print(str(filearea))
-#                    if 'files' in filearea:
-#                        for f in filearea['files']:
-#                            flist.append(f['fileurl'])
-#                if len(flist) > 0:
-#                    flist.sort()
-#                    plist.append([plugin['type'],flist])
-#                   # plist.sort()
-#                    print(' ' + str(group['groupid']))
-#                    alist.append([group['groupid'],plist])
-#                    print('  ' + f['fileurl'])
-#
-#alist.sort()
-#
-#
-#            for file in plugin['filearias']:
-#    alist.sort()
-#    for a in alist:
-###        print(' ' + str(a))
