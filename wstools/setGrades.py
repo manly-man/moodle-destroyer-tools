@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 '''mod_assign_save_grade params
   'assignmentid' => new external_value(PARAM_INT, 'The assignment id to operate on'),
   'userid' => new external_value(PARAM_INT, 'The student id to operate on'),
