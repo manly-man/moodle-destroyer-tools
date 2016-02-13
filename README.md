@@ -25,7 +25,7 @@ To use the moodle-destroyer tools, please make sure you configured your submissi
 ```
 optional arguments: -h, --help            show this help message and exit
   -d DESTROY DESTROY, --destroy DESTROY DESTROY
-                        grading-file, moodle-file, result-file
+                        grading-file, moodle-file
   -r RESULT, --result RESULT
                         result-file
   -s, --single          is in single mode
