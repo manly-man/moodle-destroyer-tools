@@ -10,7 +10,7 @@ parser.add_argument("-d", "--destroy",
                     nargs=2,
                     required=True,
                     type=argparse.FileType('rU'),
-                    help="grading-file, moodle-file, result-file")
+                    help="grading-file, moodle-file")
 parser.add_argument("-r", "--result",
                     nargs=1,
                     required=False,
