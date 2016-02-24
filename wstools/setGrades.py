@@ -80,39 +80,20 @@
 
 
 '''
-import argparse
-import configparser
-import getpass
-import json
-import requests
-import os.path
+from MoodleDestroyer import MoodleDestroyer
 
-cfgPath = os.path.expanduser('~/.config/moodle_destroyer')
+md = MoodleDestroyer()
+#md.argParser.add_argument('aids', help='one or more assignment IDs',type=int, metavar='id', nargs='+')
+md.argParser.add_argument('-a', '--assignment', help='assignment id', required=True)
+md.argParser.add_argument('-u', '--user', help='user id', required=True)
+md.argParser.add_argument('-g', '--grade', help='grade for assignment', required=True)
 
-cfgParser = configparser.ConfigParser()
-argParser = argparse.ArgumentParser(prefix_chars='-');
+md.initialize()
 
-#argParser.add_argument('aids', help='one or more assignment IDs',type=int, metavar='id', nargs='+')
-argParser.add_argument('-c', '--config', help='config file', required=False, type=argparse.FileType(mode='r', encoding='utf8'), default=cfgPath)
-argParser.add_argument('-a', '--assignment', help='assignment id', required=True)
-argParser.add_argument('-u', '--user', help='user id', required=True)
-argParser.add_argument('-g', '--grade', help='grade for assignment', required=True)
-
-args = argParser.parse_args()
-
-cfgParser.read_file(args.config)
-
-moodleUrl = cfgParser['moodle']['url']
-token = cfgParser['moodle']['token']
-
-url = 'https://'+moodleUrl+'/webservice/rest/server.php'
-postData = {
-        'wstoken':token,
-        'moodlewsrestformat': 'json',
-        'wsfunction':'mod_assign_save_grade',
-        'assignmentid': args.assignment,
-        'userid': args.user,
-        'grade': args.grade,
+result = md.rest('mod_assign_save_grade', {
+        'assignmentid': md.args.assignment,
+        'userid': md.args.user,
+        'grade': md.args.grade,
         'attemptnumber': -1,
         'addattempt': 0,
         'workflowstate': "a", #i dunno
@@ -120,6 +101,5 @@ postData = {
         'plugindata[assignfeedbackcomments_editor][text]': 'no text',
         'plugindata[assignfeedbackcomments_editor][format]': 2, #plain
         'plugindata[files_filemanager]': 0 # no file
-        }
-request = requests.post(url, postData)
-print(request.text)
+    })
+print(result)

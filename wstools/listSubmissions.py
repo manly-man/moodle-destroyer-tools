@@ -9,12 +9,7 @@
   'before' => new external_value(PARAM_INT, 'submitted before', VALUE_DEFAULT, 0)
 """
 global singleUser
-import argparse
-import configparser
-import getpass
-import json
-import requests
-import os.path
+from MoodleDestroyer import MoodleDestroyer
 class Assignment:
     def __init__(self, aid, submissions):
         self.aid= aid
@@ -101,52 +96,29 @@ class Editorfield:
         self.fmt = ed['format']
 
 
-cfgPath = os.path.expanduser('~/.config/moodle_destroyer')
-
-cfgParser = configparser.ConfigParser()
-argParser = argparse.ArgumentParser(prefix_chars='-');
-
-argParser.add_argument(
+md = MoodleDestroyer()
+md.argParser.add_argument(
         'aids',
         help='one or more assignment IDs',
         type=int,
         metavar='id',
         nargs='+'
         )
-argParser.add_argument(
+md.argParser.add_argument(
         '-s', '--single',
         help='single user mode',
         action='store_true',
         default=False
         )
-argParser.add_argument(
-        '-c', '--config',
-        help='config file',
-        required=False,
-        type=argparse.FileType(mode='r', encoding='utf8'),
-        default=cfgPath
-        )
 
-args = argParser.parse_args()
+md.initialize()
 
-cfgParser.read_file(args.config)
+singleUser = md.args.single
+aids = md.args.aids
 
-singleUser = args.single
-moodleUrl = cfgParser['moodle']['url']
-token = cfgParser['moodle']['token']
-uid = cfgParser['moodle']['uid']
-aids = args.aids
-
-url = 'https://'+moodleUrl+'/webservice/rest/server.php'
-postData2 = {
-        'wstoken':token,
-        'moodlewsrestformat': 'json',
-        'wsfunction': 'mod_assign_get_submissions',
+asJson = md.rest('mod_assign_get_submissions', {
         'assignmentids[]': [aids]
-        }
-request2 = requests.post(url, postData2)
-
-asJson = json.loads(request2.text)
+    })
 
 assignments = []
 for a in asJson['assignments']:

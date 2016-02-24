@@ -1,40 +1,11 @@
 #!/usr/bin/env python3
-import argparse
-import configparser
-import getpass
-import json
-import requests
-import os.path
+from MoodleDestroyer import MoodleDestroyer
 
-cfgPath = os.path.expanduser('~/.config/moodle_destroyer')
-
-cfgParser = configparser.ConfigParser()
-argParser = argparse.ArgumentParser(prefix_chars='-');
-
-argParser.add_argument(
-        '-c', '--config',
-        help='config file',
-        required=False,
-        type=argparse.FileType(mode='r', encoding='utf8'),
-        default=cfgPath
-        )
-
-args = argParser.parse_args()
-cfgParser.read_file(args.config)
-
-moodleUrl = cfgParser['moodle']['url']
-token = cfgParser['moodle']['token']
-uid = cfgParser['moodle']['uid']
-
-url = 'https://'+moodleUrl+'/webservice/rest/server.php'
-postData2 = {
-        'wstoken': token,
-        'moodlewsrestformat': 'json',
-        'wsfunction': 'core_enrol_get_users_courses',
-        'userid': uid
-        }
-request2 = requests.post(url, postData2)
-courses = json.loads(request2.text)
+md = MoodleDestroyer()
+md.initialize()
+courses = md.rest('core_enrol_get_users_courses', {
+        'userid': md.uid
+    })
 
 clist = []
 for course in courses:
