@@ -5,14 +5,8 @@ $username = required_param('username', PARAM_USERNAME);
 $password = required_param('password', PARAM_RAW);
 $serviceshortname  = required_param('service',  PARAM_ALPHANUMEXT);
 """
-import argparse
-import configparser
 import getpass
-import json
-import requests
-import os.path
-
-cfgPath = os.path.expanduser('~/.config/moodle_destroyer')
+from MoodleDestroyer import MoodleDestroyer
 
 passwordText = """
  Please insert user password.
@@ -25,71 +19,53 @@ Moodle: """
 
 moodleUsernameText = 'Your Moodle username: '
 
-cfgParser = configparser.ConfigParser()
-argParser = argparse.ArgumentParser(prefix_chars='-');
+md = MoodleDestroyer()
 
-argParser.add_argument(
+md.argParser.add_argument(
     '-m', '--moodle',
     help='moodle url',
     required=False
     )
-argParser.add_argument(
+md.argParser.add_argument(
     '-u', '--user',
     help='username',
     required=False
     )
-argParser.add_argument(
-    '-c', '--config',
-    help='config file',
-    required=False,
-    type=argparse.FileType(mode='w', encoding='utf8')
-    )
 
-args = argParser.parse_args();
+md.initialize()
 
+if md.args.config is not None:
+    cfgPath = md.args.config
 
-if args.config is not None:
-    cfgPath = args.config
-
-if args.moodle is None:
-    moodleUrl = input(moodleUrlText)
+if md.args.moodle is None:
+    md.moodleUrl = input(moodleUrlText)
 else:
-    moodleUrl = args.moodle
+    md.moodleUrl = md.args.moodle
 
-if None == args.user:
+if None == md.args.user:
     userName = input(moodleUsernameText)
 else:
-    userName = args.user
+    userName = md.args.user
 
 userPassword = getpass.getpass(prompt=passwordText)
 
 
-tokenUrl = 'https://'+moodleUrl+'/login/token.php'
-tokenPostData = {
+tokenJson = md.rest_direct('/login/token.php', {
         'username':userName,
         'password':userPassword,
         'service':'moodle_mobile_app'
-        }
-tokenRequest = requests.post(tokenUrl, tokenPostData)
-tokenJson = json.loads(tokenRequest.text)
-token = tokenJson['token']
+    })
+md.token = tokenJson['token']
 
-uidUrl = 'https://'+moodleUrl+'/webservice/rest/server.php'
-uidPostData = {
-        'wstoken':token,
-        'moodlewsrestformat': 'json',
-        'wsfunction':'core_webservice_get_site_info'
-        }
-uidRequest = requests.post(uidUrl, uidPostData)
-uidJson = json.loads(uidRequest.text)
+uidJson = md.rest('core_webservice_get_site_info')
 uid = uidJson['userid']
 
-cfgParser['moodle'] = {
-        'url':moodleUrl,
+md.cfgParser['moodle'] = {
+        'url':md.moodleUrl,
         'user':userName,
         'uid':uid,
-        'token':token
+        'token':md.token
         }
 
 with open(cfgPath, 'w') as cfgFile:
-    cfgParser.write(cfgFile)
+    md.cfgParser.write(cfgFile)
