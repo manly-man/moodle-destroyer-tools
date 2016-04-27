@@ -42,7 +42,7 @@ if md.args.moodle is None:
 else:
     md.moodleUrl = md.args.moodle
 
-if None == md.args.user:
+if None is md.args.user:
     userName = input(moodleUsernameText)
 else:
     userName = md.args.user
