@@ -137,7 +137,7 @@ def handle_group_mode(zipfilename, curr_path, unzip_path):
     if not args.no_grading_file:
         groups_unsorted = []
         for file in os.listdir(unzip_path):
-            groups_unsorted.append(file.split("-")[0])
+            groups_unsorted.append(file.split("--")[1])
         groups = sorted(list(set(groups_unsorted)))
         create_grading_file(groups)
 
