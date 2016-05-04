@@ -75,7 +75,7 @@ def is_zip(filename):
 
 # take zip archive , make folder, extract it, deletes archive
 def ex_zip(zip):
-    expath = zip.split("-")[0]
+    expath = zip.split("--")[1]
     try:
         os.makedirs(expath)
     except FileExistsError:
@@ -128,17 +128,17 @@ def handle_group_mode(zipfilename, curr_path, unzip_path):
     # iterate trough files
     remove_duplicates(os.getcwd(), ENC)
 
+    #get group names for gradingfile. does not work after unzipping
+    groups_unsorted = [file.split("--")[1] for file in os.listdir(unzip_path)]
+    groups = sorted(list(set(groups_unsorted)))
+
     # iterate through archives and extract
-    for file in os.listdir(os.getcwd()):
-        if is_zip(file):
-            ex_zip(file)
+    zips = [file for file in os.listdir() if zipfile.is_zipfile(file)]
+    for zip in zips:
+        ex_zip(zip)
 
     # ich soll keine doppelte verneinung nicht verwenden...
     if not args.no_grading_file:
-        groups_unsorted = []
-        for file in os.listdir(unzip_path):
-            groups_unsorted.append(file.split("--")[1])
-        groups = sorted(list(set(groups_unsorted)))
         create_grading_file(groups)
 
 
