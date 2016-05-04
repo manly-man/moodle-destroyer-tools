@@ -113,7 +113,7 @@ def create_unzip_folder(curr_path, unzip_path):
         os.makedirs(unzip_path)
     else:
         # path existing, delete and create
-        shutil.rmtree(os.path.join(curr_path))
+        shutil.rmtree(os.path.join(unzip_path))
         os.makedirs(unzip_path)
 
 
