@@ -24,6 +24,11 @@ parser.add_argument("-f", "--feedback",
                     action="store_false",
                     default=True,
                     help="no feedback column in grading")
+parser.add_argument("-e", "--english",
+                    action="store_true",
+                    default=False,
+                    help="if moodle course is in englisch \\\
+                          match to renamed header fields")
 parser.add_argument("-v", "--version",
                     action="version",
                     version="version 0.2.0")
@@ -68,16 +73,30 @@ with open(GRADING_FILE, 'rU', newline='') as grading, \
 
     for line in gradinglist:
         for row in moodlelist:
-            # print(line['Gruppe'],"\nrow:",row['Gruppe'])
-            if args.single:
-                if line['Vollständiger Name'] == row['Vollständiger Name']:
-                    row['Bewertung'] = line['Bewertung']
-                    if args.feedback:
-                        row['Feedback als Kommentar'] = line['Feedback als Kommentar']
-                    writer.writerow(row)
+            if args.english is True: #english headers
+                if args.single:
+                    if line['Full Name'] == row['Full Name'] :
+                        row['Grade'] = line['Grade']
+                        if args.feedback:
+                            row['Feedback comments'] = line['Feedback comments']
+                        writer.writerow(row)
+                else:
+                    if line['Group'] == row['Group']:
+                        row['Grade'] = line['Grade']
+                        if args.feedback:
+                            row['Feedback comments'] = line['Feedback comments']
+                        writer.writerow(row)
             else:
-                if line['Gruppe'] == row['Gruppe']:
-                    row['Bewertung'] = line['Bewertung']
-                    if args.feedback:
-                        row['Feedback als Kommentar'] = line['Feedback als Kommentar']
-                    writer.writerow(row)
+            # print(line['Gruppe'],"\nrow:",row['Gruppe'])
+                if args.single:
+                    if line['Vollständiger Name'] == row['Vollständiger Name'] :
+                        row['Bewertung'] = line['Bewertung']
+                        if args.feedback:
+                            row['Feedback als Kommentar'] = line['Feedback als Kommentar']
+                        writer.writerow(row)
+                else:
+                    if line['Gruppe'] == row['Gruppe']:
+                        row['Bewertung'] = line['Bewertung']
+                        if args.feedback:
+                            row['Feedback als Kommentar'] = line['Feedback als Kommentar']
+                        writer.writerow(row)
