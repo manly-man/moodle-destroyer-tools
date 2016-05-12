@@ -9,8 +9,10 @@ import getpass
 from MoodleDestroyer import MoodleDestroyer
 
 passwordText = """
- Please insert user password.
+ Please insert your Moodle password.
  It will not be saved, it is required to get a token.
+ Attention: keep your token safe until MDL-53400 is resolved.
+ Until then it CANNOT be reset.
 Password: """
 
 moodleUrlText = """
