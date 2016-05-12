@@ -37,6 +37,12 @@ parser.add_argument("-ng", "--no-grading-file",
                     default=False,
                     help="Do not generate grading-file")
 
+parser.add_argument("-l", "--language",
+                    nargs=1,
+                    choices=['de', 'en'],
+                    default=['de'],
+                    help='choose language of gradingfile headerfields {de|en}')
+
 parser.add_argument("-v", "--version",
                     action="version",
                     version="version 0.3.1")
@@ -44,8 +50,11 @@ parser.add_argument("-v", "--version",
 args = parser.parse_args()
 
 GRADING_FILE_NAME = "gradingfile.csv"
-SINGLE_MODE_CSV_HEADER = "Vollständiger Name,Bewertung,Feedback als Kommentar\n"
-GROUP_MODE_CSV_HEADER = "Gruppe,Bewertung,Feedback als Kommentar\n"
+SINGLE_MODE_CSV_HEADER_DE = "Vollständiger Name,Bewertung,Feedback als Kommentar\n"
+GROUP_MODE_CSV_HEADER_DE = "Gruppe,Bewertung,Feedback als Kommentar\n"
+
+SINGLE_MODE_CSV_HEADER_EN = "Full name,Grade,Feedback comments\n"
+GROUP_MODE_CSV_HEADER_EN = "Group,Grade,Feedback comments\n"
 
 # deal with stupid filenames...
 ENC = "latin-1"
@@ -86,14 +95,24 @@ def ex_zip(zip):
     os.remove(os.path.join(os.getcwd(), zip))
 
 
-def create_grading_file(list, mode="GROUP"):
+def create_grading_file(list, mode="GROUP", language="de"):
     gradingfile = open(GRADING_FILE_NAME, 'w')
-    if mode == "GROUP":
-        gradingfile.write(GROUP_MODE_CSV_HEADER)
-    elif mode == "SINGLE":
-        gradingfile.write(SINGLE_MODE_CSV_HEADER)
-    for item in list:
-        gradingfile.write(item+",,\n")
+    if language == "de":
+        if mode == "GROUP":
+            gradingfile.write(GROUP_MODE_CSV_HEADER_DE)
+        elif mode == "SINGLE":
+            gradingfile.write(SINGLE_MODE_CSV_HEADER_DE)
+        for item in list:
+            gradingfile.write(item.replace('_',' ')
++",,\n")
+    elif language == "en":
+        if mode == "GROUP":
+            gradingfile.write(GROUP_MODE_CSV_HEADER_EN)
+        elif mode == "SINGLE":
+            gradingfile.write(SINGLE_MODE_CSV_HEADER_EN)
+        for item in list:
+            gradingfile.write(item.replace('_',' ')
++",,\n")
     gradingfile.close()
 
 
@@ -139,7 +158,7 @@ def handle_group_mode(zipfilename, curr_path, unzip_path):
 
     # ich soll keine doppelte verneinung nicht verwenden...
     if not args.no_grading_file:
-        create_grading_file(groups)
+        create_grading_file(groups,language=args.language[0])
 
 
 def handle_single_mode(zipfilename, curr_path, unzip_path):
@@ -171,7 +190,7 @@ def handle_single_mode(zipfilename, curr_path, unzip_path):
             shutil.move(filename, filename.split("_")[0])
 
     if not args.no_grading_file:
-        create_grading_file(unique_names, "SINGLE")
+        create_grading_file(unique_names, "SINGLE", language=args.language[0])
 
 
 def main():
