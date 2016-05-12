@@ -24,9 +24,10 @@ parser.add_argument("-f", "--feedback",
                     action="store_false",
                     default=True,
                     help="no feedback column in grading")
-parser.add_argument("-e", "--english",
-                    action="store_true",
-                    default=False,
+parser.add_argument("-l", "--language",
+                    nargs=1,
+                    choices=['de', 'en'],
+                    default=['de'],
                     help="if moodle course is in englisch \\\
                           match to renamed header fields")
 parser.add_argument("-v", "--version",
@@ -73,7 +74,7 @@ with open(GRADING_FILE, 'rU', newline='') as grading, \
 
     for line in gradinglist:
         for row in moodlelist:
-            if args.english is True: #english headers
+            if args.language[0] == 'en': #english headers
                 if args.single:
                     if line['Full Name'] == row['Full Name'] :
                         row['Grade'] = line['Grade']
@@ -86,7 +87,7 @@ with open(GRADING_FILE, 'rU', newline='') as grading, \
                         if args.feedback:
                             row['Feedback comments'] = line['Feedback comments']
                         writer.writerow(row)
-            else:
+            elif args.language[0] == 'de':
             # print(line['Gruppe'],"\nrow:",row['Gruppe'])
                 if args.single:
                     if line['Vollständiger Name'] == row['Vollständiger Name'] :
