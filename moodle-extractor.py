@@ -56,6 +56,10 @@ GROUP_MODE_CSV_HEADER_DE = "Gruppe,Bewertung,Feedback als Kommentar\n"
 SINGLE_MODE_CSV_HEADER_EN = "Full name,Grade,Feedback comments\n"
 GROUP_MODE_CSV_HEADER_EN = "Group,Grade,Feedback comments\n"
 
+FIELD_SEPERATOR = "--"
+NAME_POSITION_GROUP = 1
+NAME_POSITION_SINGLE = 2
+
 # deal with stupid filenames...
 ENC = "latin-1"
 
@@ -148,7 +152,9 @@ def handle_group_mode(zipfilename, curr_path, unzip_path):
     remove_duplicates(os.getcwd(), ENC)
 
     #get group names for gradingfile. does not work after unzipping
-    groups_unsorted = [file.split("--")[1] for file in os.listdir(unzip_path)]
+    groups_unsorted = [file.split(FIELD_SEPERATOR)
+                       [NAME_POSITION_GROUP]
+                       for file in os.listdir(unzip_path)]
     groups = sorted(list(set(groups_unsorted)))
 
     # iterate through archives and extract
@@ -170,8 +176,10 @@ def handle_single_mode(zipfilename, curr_path, unzip_path):
     zip = zipfile.ZipFile(os.path.join(os.path.split(os.getcwd())[0],
                                        args.extract[0].name))
     namelist = zip.namelist()
-    namelist = [name.split("_")[0] for name in namelist]
-
+    
+    namelist = [name.split(FIELD_SEPERATOR)
+               [NAME_POSITION_SINGLE]
+               for name in namelist]
     # remove duplicates
     unique_names = []
     [unique_names.append(x) for x in namelist if x not in unique_names]
@@ -186,8 +194,8 @@ def handle_single_mode(zipfilename, curr_path, unzip_path):
     # move files into folders
     dirfilelist = next(os.walk(os.getcwd()))[2]
     for filename in dirfilelist:
-        if filename.split("_")[0] in unique_names:
-            shutil.move(filename, filename.split("_")[0])
+        if filename.split("--")[2] in unique_names:
+            shutil.move(filename, filename.split("--")[2])
 
     if not args.no_grading_file:
         create_grading_file(unique_names, "SINGLE", language=args.language[0])
