@@ -8,6 +8,8 @@
   'since' => new external_value(PARAM_INT, 'submitted since', VALUE_DEFAULT, 0),
   'before' => new external_value(PARAM_INT, 'submitted before', VALUE_DEFAULT, 0)
 """
+
+import json
 global singleUser
 from MoodleDestroyer import MoodleDestroyer
 class Assignment:
@@ -16,7 +18,7 @@ class Assignment:
         self.subs = []
         for s in submissions:
             self.subs.append(
-                    Submission(s['id'],s['userid'],s['groupid'],s['plugins'])
+                    Submission(s['id'], s['userid'], s['groupid'], s['plugins'])
                     )
 
     def __str__(self):
@@ -96,33 +98,38 @@ class Editorfield:
         self.fmt = ed['format']
 
 
-md = MoodleDestroyer()
-md.argParser.add_argument(
-        'aids',
-        help='one or more assignment IDs',
-        type=int,
-        metavar='id',
-        nargs='+'
-        )
-md.argParser.add_argument(
-        '-s', '--single',
-        help='single user mode',
-        action='store_true',
-        default=False
-        )
+def main():
+    md = MoodleDestroyer()
+    md.argParser.add_argument(
+            'aids',
+            help='one or more assignment IDs',
+            type=int,
+            metavar='id',
+            nargs='+'
+            )
+    md.argParser.add_argument(
+            '-s', '--single',
+            help='single user mode',
+            action='store_true',
+            default=False
+            )
 
-md.initialize()
+    md.initialize()
 
-singleUser = md.args.single
-aids = md.args.aids
+    singleUser = md.args.single
+    aids = md.args.aids
 
-asJson = md.rest('mod_assign_get_submissions', {
-        'assignmentids[]': [aids]
-    })
+    asJson = md.rest('mod_assign_get_submissions', {
+            'assignmentids[]': [aids]
+        })
 
-assignments = []
-for a in asJson['assignments']:
-    assignments.append(Assignment(a['assignmentid'], a['submissions']))
+    print(json.dumps(asJson, indent=1, ensure_ascii=False))
+    assignments = []
+    for a in asJson['assignments']:
+        assignments.append(Assignment(a['assignmentid'], a['submissions']))
 
-for a in assignments:
-    print(a)
+    for a in assignments:
+        print(a)
+
+if __name__ == '__main__':
+    main()
