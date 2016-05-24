@@ -6,6 +6,7 @@ $password = required_param('password', PARAM_RAW);
 $serviceshortname  = required_param('service',  PARAM_ALPHANUMEXT);
 """
 import getpass
+import configargparse
 from MoodleDestroyer import MoodleDestroyer
 
 passwordText = """
@@ -21,53 +22,60 @@ Moodle: """
 
 moodleUsernameText = 'Your Moodle username: '
 
-md = MoodleDestroyer()
+def main():
+    cap = configargparse.getArgumentParser(name='mdt', default_config_files=['/home/bone/.config/mdtconfig'])
 
-md.argParser.add_argument(
-    '-m', '--moodle',
-    help='moodle url',
-    required=False
-    )
-md.argParser.add_argument(
-    '-u', '--user',
-    help='username',
-    required=False
-    )
+    md = MoodleDestroyer()
 
-md.initialize()
+    md.argParser.add_argument(
+        '-m', '--moodle',
+        help='moodle url',
+        required=False
+        )
+    md.argParser.add_argument(
+        '-u', '--user',
+        help='username',
+        required=False
+        )
 
-if md.args.config is not None:
-    cfgPath = md.args.config
+    md.initialize()
 
-if md.args.moodle is None:
-    md.moodleUrl = input(moodleUrlText)
-else:
-    md.moodleUrl = md.args.moodle
+    if md.args.config is not None:
+        cfgPath = md.args.config
 
-if None is md.args.user:
-    userName = input(moodleUsernameText)
-else:
-    userName = md.args.user
+    if md.args.moodle is None:
+        md.moodleUrl = input(moodleUrlText)
+    else:
+        md.moodleUrl = md.args.moodle
 
-userPassword = getpass.getpass(prompt=passwordText)
+    if None is md.args.user:
+        userName = input(moodleUsernameText)
+    else:
+        userName = md.args.user
+
+    userPassword = getpass.getpass(prompt=passwordText)
 
 
-tokenJson = md.rest_direct('/login/token.php', {
-        'username':userName,
-        'password':userPassword,
-        'service':'moodle_mobile_app'
-    })
-md.token = tokenJson['token']
+    tokenJson = md.rest_direct('/login/token.php', {
+            'username':userName,
+            'password':userPassword,
+            'service':'moodle_mobile_app'
+        })
+    md.token = tokenJson['token']
 
-uidJson = md.rest('core_webservice_get_site_info')
-uid = uidJson['userid']
+    uidJson = md.rest('core_webservice_get_site_info')
+    uid = uidJson['userid']
 
-md.cfgParser['moodle'] = {
-        'url':md.moodleUrl,
-        'user':userName,
-        'uid':uid,
-        'token':md.token
-        }
+    md.cfgParser['moodle'] = {
+            'url':md.moodleUrl,
+            'user':userName,
+            'uid':uid,
+            'token':md.token
+            }
 
-with open(cfgPath, 'w') as cfgFile:
-    md.cfgParser.write(cfgFile)
+    with open(cfgPath, 'w') as cfgFile:
+        md.cfgParser.write(cfgFile)
+
+if __name__ == '__main__':
+    print('__name__ == __main__')
+    main()

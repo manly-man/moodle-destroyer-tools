@@ -5,15 +5,15 @@ import json
 import requests
 import os.path
 
-class MoodleDestroyer:
 
-    def __init__(self, cfgFile='~/.config/moodle_destroyer'):
-        self.cfgFile = cfgFile
+class MoodleDestroyer:
+    def __init__(self, cfg_file='~/.config/moodle_destroyer'):
+        self.cfgFile = cfg_file
 
         cfgPath = os.path.expanduser(self.cfgFile)
 
         self.cfgParser = configparser.ConfigParser()
-        self.argParser = argparse.ArgumentParser(prefix_chars='-');
+        self.argParser = argparse.ArgumentParser(prefix_chars='-')
 
         self.argParser.add_argument(
                 '-c', '--config',
@@ -25,7 +25,7 @@ class MoodleDestroyer:
         self.initialized = False
 
     def initialize(self):
-        if (self.initialized):
+        if self.initialized:
             return
 
         self.args = self.argParser.parse_args()
