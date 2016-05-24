@@ -90,7 +90,7 @@ def auth():
     return options
 
 
-def _get_assignment_list(options):
+def _get_assignments_from_server(options):
     """returns assignments for for all options.courseids"""
 
     function = 'mod_assign_get_assignments'
@@ -98,51 +98,51 @@ def _get_assignment_list(options):
 
     reply = rest(options, function, wsargs=args)
 
-    for course in reply['courses']:
-        alist = []
-        for assignment in course['assignments']:
-            alist.append([assignment['id'], assignment['name']])
-        alist.sort()
-
     assignments = []
     for course in reply['courses']:
         assignments += course['assignments']
 
-    if options.all:
-        now = datetime.now()
-        due_assignments = []
-        for assignment in assignments:
-            due_date = datetime.fromtimestamp(assignment['duedate'])
-            diff = now - due_date
-            if now > due_date and diff.days < 25 * 7:
-                due_assignments.append(assignment)
+    # if not options.all:
+    #     now = datetime.now()
+    #     due_assignments = []
+    #     for assignment in assignments:
+    #         due_date = datetime.fromtimestamp(assignment['duedate'])
+    #         diff = now - due_date
+    #         if now > due_date and diff.days < 25 * 7:
+    #             due_assignments.append(assignment)
+    #     return due_assignments
 
     return assignments
 
 
-def _get_course_list(options):
+def _get_course_list_from_server(options):
     function = 'core_enrol_get_users_courses'
     args = {'userid': options.uid}
     reply = rest(options, function, wsargs=args)
-
-    course_list = []
-    for course in reply:
-        course_list.append([course['fullname'], course['shortname'], course['id']])
-
-    course_list.sort()
-    return course_list
+    return reply
 
 
-def _get_submissions(options):
+def _get_submissions_from_server(options):
     function = 'mod_assign_get_submissions'
-    args = {'assignmentids[]': [options.aids]}
+    args = {'assignmentids[]': options.assignmentids}
 
     reply = rest(options, function, wsargs=args)
-    submissions = []
-    for a in reply['assignments']:
-        submissions.append(Assignment(a))
+    submissions = [a for a in reply['assignments']]
+    # submissions = [
+    # for a in reply['assignments']:
+    #     submissions.append(Assignment(a))
 
     return submissions
+
+
+def _get_grades_from_server(options):
+    function = 'mod_assign_get_grades'
+    args = {'assignmentids[]': options.assignmentids}
+    optargs = {'since': 0}  # only return records, where timemodified >= since
+
+    reply = rest(options, function, wsargs=args)
+    grades = [a for a in reply['assignments']]
+    return grades
 
 
 def _get_choices_from_list(choices, text):
@@ -198,8 +198,11 @@ def init():
         print('repo already initilized, use --force to overwrite config')
         return
 
-    course_list = _get_course_list(options)
-
+    courses = _get_course_list_from_server(options)
+    course_list = []
+    for course in courses:
+        course_list.append([course['fullname'], course['shortname'], course['id']])
+    course_list.sort()
     if options.courseids is None or options.force:
         choices = _get_choices_from_list(course_list, input_text)
         for c in choices:
@@ -211,12 +214,8 @@ def init():
         config_file.write('courseids = ' + str(options.courseids))
 
 
-def sync():
-    config = configargparse.getArgumentParser(name='mdt')
-    config.add_argument('--url')
-    config.add_argument('-c', '--courseids', nargs='+', help='moodle course id', type=int, action='append')
-    [options, unparsed] = config.parse_known_args()
-
+def _sync_assignments(options):
+    print('syncing assignments ...', end='')
     new_assignments = 0
     updated_assignments = 0
 
@@ -225,25 +224,75 @@ def sync():
             file.write(json.dumps(data, indent=2, ensure_ascii=False, sort_keys=True))
 
     os.makedirs(ASSIGNMENT_FOLDER, exist_ok=True)
-    options.all = True
-    alist = _get_assignment_list(options)
-    for assignment in alist:
+    assignment_list = _get_assignments_from_server(options)
+    for assignment in assignment_list:
         as_config_file = ASSIGNMENT_FOLDER+str(assignment['id'])
         if os.path.isfile(as_config_file):
             with open(as_config_file, 'r') as local_file:
-                local_as_config = json.load(as_config_file)
+                local_as_config = json.load(local_file)
             if local_as_config['timemodified'] < assignment['timemodified']:
                 write_config(as_config_file,assignment)
                 updated_assignments += 1
         else:
             write_config(as_config_file, assignment)
             new_assignments += 1
-    print('finished. new assignments: {}, updated_assignments: {}'.format(new_assignments, updated_assignments))
+    print('finished. new: {}, updated: {}, total: {}'.format(
+        new_assignments, updated_assignments, str(len(assignment_list))))
+    return assignment_list
+
+
+def _sync_submissions(options):
+    print('syncing submissions... ', end='')
+
+    def write_config(filename, data):
+        with open(filename, 'w') as file:
+            file.write(json.dumps(data, indent=2, ensure_ascii=False, sort_keys=True))
+
+    os.makedirs(ASSIGNMENT_FOLDER, exist_ok=True)
+    submissions = _get_submissions_from_server(options)
+    for assignment in submissions:
+        s_config_file = ASSIGNMENT_FOLDER+str(assignment['assignmentid'])+'s'
+        write_config(s_config_file, assignment['submissions'])
+    print('finished: wrote {} submission files'.format(str(len(submissions))))
+    return submissions
+
+
+def _sync_grades(options):
+    print('syncing grades… ', end='')
+
+    def write_config(filename, data):
+        with open(filename, 'w') as file:
+            file.write(json.dumps(data, indent=2, ensure_ascii=False, sort_keys=True))
+
+    os.makedirs(ASSIGNMENT_FOLDER, exist_ok=True)
+    assignments = _get_grades_from_server(options)
+    for assignment in assignments:
+        g_config_file = ASSIGNMENT_FOLDER+str(assignment['assignmentid'])+'g'
+        write_config(g_config_file, assignment['grades'])
+    print('finished. total: {}'.format(str(len(assignments))))
+    return assignments
+
+
+def sync():
+    config = configargparse.getArgumentParser(name='mdt')
+    config.add_argument('--url')
+    config.add_argument('-c', '--courseids', nargs='+', help='moodle course id', type=int, action='append')
+    [options, unparsed] = config.parse_known_args()
+
+    assignments = _sync_assignments(options)
+    options.assignmentids = [a['id'] for a in assignments]
+    submissions = _sync_submissions(options)
+    grades = _sync_grades(options)
+
+
+def status():
+    pass
+
 
 def pull():
     config = configargparse.getArgumentParser(name='mdt')
     config.add_argument('--url')
-    config.add_argument('--courseids', nargs='+', type=int, action='append')
+    config.add_argument('--assignmentids', nargs='+', type=int, action='append')
     config.add_argument('-a', '--all', help='pull all due submissions, even old ones', action='store_true')
     [options, unparsed] = config.parse_known_args()
 
@@ -251,7 +300,7 @@ def pull():
         print('no work tree, try mdt init')
         return
 
-    assignment_list = _get_assignment_list(options)
+    assignment_list = _get_assignments_from_server(options)
 
     for assignment in assignment_list:
         pass
@@ -262,6 +311,11 @@ def pull():
 def rest_direct(url, path, wsargs={}):
     try:
         reply = requests.post('https://' + url + path, wsargs)
+        if 'warnings' in reply:
+            for warning in reply['warnings']:
+                print('{} (id:{}) returned warning code [{}]:{}'.format(
+                    warning['item'], str(warning['itemid']), warning['warningcode'], warning['message']
+                ))
     except ConnectionError:
         print('connection error')
     return json.loads(_parse_mlang(reply.text))
