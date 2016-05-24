@@ -7,14 +7,14 @@ import re
 import sys
 import wsfunc
 
+
 def find_external_subcmds():
     """this gets all files that are in $PATH and match mdt-*
 
     :returns dict with subcmd:full_path
     """
-    # TODO has problems with sub-sub-commands, mtd-init-full will override mdt-init
+
     exec_paths = os.get_exec_path()
-    #exec_paths.append('.')   # TODO remove temp fix until mdt is in $PATH
     mdt_executable_paths = []
     for path in exec_paths:
         mdt_executable_paths += glob.glob(path + '/mdt-*')
@@ -23,7 +23,7 @@ def find_external_subcmds():
 
 def create_global_config_file():
     file = ''
-    if 'XDG_CONFIG_HOME' in os.environ:  # mebbe TODO check ~/.config/user-dirs.dirs
+    if 'XDG_CONFIG_HOME' in os.environ:
         if os.path.isdir(os.environ['XDG_CONFIG_HOME']):
             file = os.environ['XDG_CONFIG_HOME']+'/mdtconfig'
     elif os.path.isdir(os.path.expanduser('~/.config')):
@@ -37,7 +37,7 @@ def create_global_config_file():
 
 
 def find_global_config_file():
-    if 'XDG_CONFIG_HOME' in os.environ:  # mebbe TODO check ~/.config/user-dirs.dirs
+    if 'XDG_CONFIG_HOME' in os.environ:
         if os.path.isfile(os.environ['XDG_CONFIG_HOME']+'/mdtconfig'):
             return os.environ['XDG_CONFIG_HOME']+'/mdtconfig'
     elif os.path.isfile(os.path.expanduser('~/.config/mdtconfig')):
