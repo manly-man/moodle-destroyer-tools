@@ -20,7 +20,10 @@ from datetime import datetime
 __all__ = ['auth', 'init', 'pull', 'sync']
 LOCAL_CONFIG_FOLDER = '.mdt/'
 LOCAL_CONFIG = LOCAL_CONFIG_FOLDER + 'config'
+LOCAL_CONFIG_USERS = LOCAL_CONFIG_FOLDER + 'users'
 ASSIGNMENT_FOLDER = LOCAL_CONFIG_FOLDER + 'assignments/'
+SUBMISSION_FOLDER = LOCAL_CONFIG_FOLDER + 'submissions/'
+GRADE_FOLDER = LOCAL_CONFIG_FOLDER + 'grades/'
 
 
 def auth():
@@ -145,6 +148,19 @@ def _get_grades_from_server(options):
     return grades
 
 
+def _get_users_from_server(options):
+    """returns assignments for for all options.courseids"""
+
+    function = 'core_enrol_get_enrolled_users'
+    users = []
+    for course_id in options.courseids:
+        args = {'courseid': course_id}
+        reply = rest(options, function, wsargs=args)
+        users.append({'courseid': course_id, 'users': reply})
+
+    return users
+
+
 def _get_choices_from_list(choices, text):
     """Lets the user choose from a list
 
@@ -215,7 +231,7 @@ def init():
 
 
 def _sync_assignments(options):
-    print('syncing assignments ...', end='')
+    print('syncing assignments ...', end='', flush=True)
     new_assignments = 0
     updated_assignments = 0
 
@@ -242,7 +258,7 @@ def _sync_assignments(options):
 
 
 def _sync_submissions(options):
-    print('syncing submissions... ', end='')
+    print('syncing submissions... ', end='', flush=True)
 
     def write_config(filename, data):
         with open(filename, 'w') as file:
@@ -258,7 +274,7 @@ def _sync_submissions(options):
 
 
 def _sync_grades(options):
-    print('syncing grades… ', end='')
+    print('syncing grades… ', end='', flush=True)
 
     def write_config(filename, data):
         with open(filename, 'w') as file:
@@ -273,6 +289,21 @@ def _sync_grades(options):
     return assignments
 
 
+def _sync_users(options):
+    print('syncing users… ', end='', flush=True)
+
+    def write_config(filename, data):
+        with open(filename, 'w') as file:
+            file.write(json.dumps(data, indent=2, ensure_ascii=False, sort_keys=True))
+
+    os.makedirs(ASSIGNMENT_FOLDER, exist_ok=True)
+    users = _get_users_from_server(options)
+    u_config_file = LOCAL_CONFIG_USERS
+    write_config(u_config_file, users)
+    print('finished.')
+    return users
+
+
 def sync():
     config = configargparse.getArgumentParser(name='mdt')
     config.add_argument('--url')
@@ -283,9 +314,12 @@ def sync():
     options.assignmentids = [a['id'] for a in assignments]
     submissions = _sync_submissions(options)
     grades = _sync_grades(options)
+    users = _sync_users(options)
 
 
 def status():
+    now = datetime.now()
+
     pass
 
 
@@ -304,8 +338,6 @@ def pull():
 
     for assignment in assignment_list:
         pass
-
-
 
 
 def rest_direct(url, path, wsargs={}):
