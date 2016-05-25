@@ -21,6 +21,7 @@ WORKING_DIRECTORY = None
 LOCAL_CONFIG_FOLDER = '.mdt/'
 LOCAL_CONFIG = LOCAL_CONFIG_FOLDER + 'config'
 LOCAL_CONFIG_USERS = LOCAL_CONFIG_FOLDER + 'users'
+LOCAL_CONFIG_COURSES = LOCAL_CONFIG_FOLDER + 'courses'
 ASSIGNMENT_FOLDER = LOCAL_CONFIG_FOLDER + 'assignments/'
 SUBMISSION_FOLDER = LOCAL_CONFIG_FOLDER + 'submissions/'
 GRADE_FOLDER = LOCAL_CONFIG_FOLDER + 'grades/'
@@ -221,17 +222,24 @@ def init():
         print('repo already initilized, use --force to overwrite config')
         return
 
-    courses = _get_course_list_from_server(options)
-    course_list = []
-    for course in courses:
-        course_list.append([course['fullname'], course['shortname'], course['id']])
-    course_list.sort()
-    if options.courseids is None or options.force:
-        choices = _get_choices_from_list(course_list, input_text)
-        for c in choices:
-            print('using: ' + course_list[c][0])
-        options.courseids = [course_list[c][2] for c in choices]
+    course_data = _get_course_list_from_server(options)
+    course_data_temp = _get_course_list_from_server(options)
+    courses = [Course(c) for c in course_data_temp]
+    courses.sort(key=lambda course: course.name)
 
+    if options.courseids is None or options.force:
+        choices = _get_choices_from_list(courses, input_text)
+        if len(choices) == 0:
+            print('nothing chosen.')
+            return
+        chosen_courses = [courses[c] for c in choices]
+        for c in chosen_courses:
+            print(c)
+            print('using: ' + c.name)
+        options.courseids = [c.id for c in chosen_courses]
+        saved_data = [c for c in course_data if c['id'] in options.courseids]
+        with open(LOCAL_CONFIG_COURSES, 'w') as course_config:
+            json.dump(saved_data, course_config)
     os.makedirs(LOCAL_CONFIG_FOLDER, exist_ok=True)
     with open(LOCAL_CONFIG, 'w') as config_file:
         config_file.write('courseids = ' + str(options.courseids))
@@ -372,19 +380,20 @@ def _pretty_print_work_dir_status(courses):
 
 
 def _merge_local_data(wd, courseids):
+    courses = _load_json_file(wd + LOCAL_CONFIG_COURSES)
     assignments = _merge_json_data_in_folder(wd + ASSIGNMENT_FOLDER)
     submissions = _merge_json_data_in_folder(wd + SUBMISSION_FOLDER)
     grades = _merge_json_data_in_folder(wd + GRADE_FOLDER)
     users = _load_json_file(wd+LOCAL_CONFIG_USERS)
 
-    courses = []
-    for courseid in courseids:
-        course = {'id': courseid}
+    merged = []
+    for course in courses:
         for ulist in users:
-            if ulist['courseid'] == courseid:
+            if ulist['courseid'] == course['id']:
                 course['users'] = ulist['users']
 
-        course_assignments = [a for a in assignments if a['course'] == courseid]
+        course_assignments = [a for a in assignments if a['course'] == course['id']]
+
         for assignment in course_assignments:
             for submission in submissions:
                 if assignment['id'] == submission['assignmentid']:
@@ -394,8 +403,9 @@ def _merge_local_data(wd, courseids):
                     assignment['grades'] = grade['grades']
         course['assignments'] = course_assignments
 
-        courses.append(course)
-    return courses
+        merged.append(course)
+
+    return merged
 
 
 def _pretty_print_assignment_status(courses, assignmentids):
@@ -481,7 +491,14 @@ def status():
     if options.assignmentids is not None:
         _pretty_print_assignment_status(courses, options.assignmentids)
     else:
-        _pretty_print_work_dir_status(courses)
+        pass  # _pretty_print_work_dir_status(courses)
+    print(type(courses))
+    print(type(courses[0]))
+    cc = [Course(c) for c in courses]
+    print(type(cc))
+    print(type(cc[0]))
+    for i in cc:
+        print(i.print_status())
 
 
 def pull():
@@ -531,27 +548,44 @@ def rest(options, function, wsargs={}):
 class Course:
     def __init__(self, data):
         self.id = data.pop('id')
-        self.users = data.pop('users')
-        self.assignments = [Assignment(a) for a in data.pop('assignments')]
         self.name = data.pop('fullname')
+        self.shortname = data.pop('shortname')
+        self.users = []
+        if 'users' in data:
+            self.users = data.pop('users')
+        self.assignments = []
+        if 'assignments' in data:
+            self.assignments = [Assignment(a) for a in data.pop('assignments')]
+
+        self.unparsed = data
+        #todo: map(user:groups), class User
+
+    def __str__(self):
+        return '{:40} id:{:5d} short: {}'.format(self.name[0:39], self.id, self.shortname)
+
+    def print_status(self):
+        print(self)
+        for a in self.assignments:
+            a.print_short_status(indent=1)
 
 
 class Assignment:
     def __init__(self, data):
-        self.id = data.pop('assignmentid')
+        self.id = data.pop('id')
         self.submissions = [Submission(s) for s in data.pop('submissions')]
         self.teamsubmission = 1 == data.pop('teamsubmission')
         self.duedate_timestamp = data.pop('duedate')
-        self.grades = data.pop('grades')
+        self.name = data.pop('name')
+        self.grades = []
+        if 'grades' in data:
+            self.grades = data.pop('grades')
         self.unparsed = data
 
     def __str__(self):
-        string = str(self.id) + '\n'
-        for s in self.submissions:
-            string += str(s)
-        return string
+        return 'assignment[{:d}]: {}'.format(self.id, self.name[0:29])
 
     def submission_count(self):
+        # TODO is wrong for team submission, needs user:group mappings to work.
         return [s.has_content() for s in self.submissions].count(True)
 
     def is_due(self):
@@ -561,9 +595,11 @@ class Assignment:
         return len(self.grades)
 
     def needs_grading(self):
-        return self.grade_count() < self.submission_count()
+        return self.is_due() and self.grade_count() < self.submission_count()
 
-
+    def print_short_status(self, indent=0):
+        fmt_string = ' ' * indent + '{:40} submissions:{:3d} due:{:1} graded:{}'
+        print(fmt_string.format(self.id, self.name[0:39], self.submission_count(), self.is_due(), not self.needs_grading()))
 
 
 class Submission:
@@ -590,15 +626,15 @@ class Submission:
 
 class Plugin:
     def __init__(self, data):
-        self.type = data['type']
-        self.name = data['name']
+        self.type = data.pop('type')
+        self.name = data.pop('name')
         self.efields = []
         self.fareas = []
         if 'editorfields' in data:
             self.efields = [Editorfield(e) for e in data.pop('editorfields')]
         if 'fileareas' in data:
             self.fareas = [Filearea(f) for f in data.pop('fileareas')]
-        self.data = data
+        self.unparsed = data
 
     def __str__(self):
         if self.has_content():
@@ -627,7 +663,7 @@ class Plugin:
 
 class Filearea:
     def __init__(self, data):
-        self.area = data['area']
+        self.area = data.pop('area')
         self.files = []
         if 'files' in data:
             self.files = data.pop('files')
@@ -646,17 +682,17 @@ class Filearea:
 class Editorfield:
     def __init__(self, data):
         self.data = data
-        self.name = data['name']
-        self.descr = data['description']
-        self.text = data['text']
-        self.fmt = data['format']
+        self.name = data.pop('name')
+        self.descr = data.pop('description')
+        self.text = data.pop('text')
+        self.fmt = data.pop('format')
+        self.unparsed = data
 
     def __str__(self):
         if self.has_content():
             return self.name
         else:
             return ''
-
 
     def has_content(self):
         return self.text.strip() != ''
