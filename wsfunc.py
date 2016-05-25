@@ -6,24 +6,31 @@ $password = required_param('password', PARAM_RAW);
 $serviceshortname  = required_param('service',  PARAM_ALPHANUMEXT);
 """
 import configargparse
-import requests
-import json
-import re
-import math
-import os
 from datetime import datetime
+import glob
+import json
+import math
+import re
+import requests
+import os
 
-# from MoodleDestroyer import MoodleDestroyer
-# todo parse {mlang} tags
-# todo implement error handling in rest(direct)
+# TODO determine working directory root somewhere sensible, pass to wsfunc.
 
-__all__ = ['auth', 'init', 'pull', 'sync']
+__all__ = ['auth', 'init', 'pull', 'status', 'sync']
+WORKING_DIRECTORY = None
 LOCAL_CONFIG_FOLDER = '.mdt/'
 LOCAL_CONFIG = LOCAL_CONFIG_FOLDER + 'config'
 LOCAL_CONFIG_USERS = LOCAL_CONFIG_FOLDER + 'users'
 ASSIGNMENT_FOLDER = LOCAL_CONFIG_FOLDER + 'assignments/'
 SUBMISSION_FOLDER = LOCAL_CONFIG_FOLDER + 'submissions/'
 GRADE_FOLDER = LOCAL_CONFIG_FOLDER + 'grades/'
+
+
+def _get_working_directory():
+    if WORKING_DIRECTORY is None:
+        print('not in working directory, this command needs to be')
+        return None
+    return WORKING_DIRECTORY
 
 
 def auth():
@@ -231,23 +238,24 @@ def init():
 
 
 def _sync_assignments(options):
-    print('syncing assignments ...', end='', flush=True)
+    print('syncing assignments… ', end='', flush=True)
     new_assignments = 0
     updated_assignments = 0
+    config_dir = _get_working_directory() + ASSIGNMENT_FOLDER
 
     def write_config(filename, data):
         with open(filename, 'w') as file:
             file.write(json.dumps(data, indent=2, ensure_ascii=False, sort_keys=True))
 
-    os.makedirs(ASSIGNMENT_FOLDER, exist_ok=True)
+    os.makedirs(config_dir, exist_ok=True)
     assignment_list = _get_assignments_from_server(options)
     for assignment in assignment_list:
-        as_config_file = ASSIGNMENT_FOLDER+str(assignment['id'])
+        as_config_file = config_dir+str(assignment['id'])
         if os.path.isfile(as_config_file):
             with open(as_config_file, 'r') as local_file:
                 local_as_config = json.load(local_file)
             if local_as_config['timemodified'] < assignment['timemodified']:
-                write_config(as_config_file,assignment)
+                write_config(as_config_file, assignment)
                 updated_assignments += 1
         else:
             write_config(as_config_file, assignment)
@@ -258,47 +266,48 @@ def _sync_assignments(options):
 
 
 def _sync_submissions(options):
-    print('syncing submissions... ', end='', flush=True)
+    print('syncing submissions… ', end='', flush=True)
+    config_dir = _get_working_directory() + SUBMISSION_FOLDER
 
     def write_config(filename, data):
         with open(filename, 'w') as file:
             file.write(json.dumps(data, indent=2, ensure_ascii=False, sort_keys=True))
 
-    os.makedirs(ASSIGNMENT_FOLDER, exist_ok=True)
+    os.makedirs(config_dir, exist_ok=True)
     submissions = _get_submissions_from_server(options)
     for assignment in submissions:
-        s_config_file = ASSIGNMENT_FOLDER+str(assignment['assignmentid'])+'s'
-        write_config(s_config_file, assignment['submissions'])
+        s_config_file = config_dir+str(assignment['assignmentid'])
+        write_config(s_config_file, assignment)
     print('finished: wrote {} submission files'.format(str(len(submissions))))
     return submissions
 
 
 def _sync_grades(options):
     print('syncing grades… ', end='', flush=True)
+    config_dir = _get_working_directory() + GRADE_FOLDER
 
     def write_config(filename, data):
         with open(filename, 'w') as file:
             file.write(json.dumps(data, indent=2, ensure_ascii=False, sort_keys=True))
 
-    os.makedirs(ASSIGNMENT_FOLDER, exist_ok=True)
+    os.makedirs(config_dir, exist_ok=True)
     assignments = _get_grades_from_server(options)
     for assignment in assignments:
-        g_config_file = ASSIGNMENT_FOLDER+str(assignment['assignmentid'])+'g'
-        write_config(g_config_file, assignment['grades'])
+        g_config_file = config_dir+str(assignment['assignmentid'])
+        write_config(g_config_file, assignment)
     print('finished. total: {}'.format(str(len(assignments))))
     return assignments
 
 
 def _sync_users(options):
     print('syncing users… ', end='', flush=True)
+    u_config_file = _get_working_directory() + LOCAL_CONFIG_USERS
 
     def write_config(filename, data):
         with open(filename, 'w') as file:
             file.write(json.dumps(data, indent=2, ensure_ascii=False, sort_keys=True))
 
-    os.makedirs(ASSIGNMENT_FOLDER, exist_ok=True)
     users = _get_users_from_server(options)
-    u_config_file = LOCAL_CONFIG_USERS
     write_config(u_config_file, users)
     print('finished.')
     return users
@@ -309,6 +318,10 @@ def sync():
     config.add_argument('--url')
     config.add_argument('-c', '--courseids', nargs='+', help='moodle course id', type=int, action='append')
     [options, unparsed] = config.parse_known_args()
+    options.courseids = _unpack(options.courseids)
+
+    if _get_working_directory() is None:
+        return
 
     assignments = _sync_assignments(options)
     options.assignmentids = [a['id'] for a in assignments]
@@ -317,10 +330,75 @@ def sync():
     users = _sync_users(options)
 
 
-def status():
-    now = datetime.now()
+def _merge_json_data_in_folder(path):
+    files = glob.glob(path + '*')
+    data_list = [_load_json_file(file) for file in files]
+    return data_list
 
-    pass
+def _load_json_file(filename):
+    with open(filename) as file:
+        return json.load(file)
+
+
+def _unpack(elements):
+    return [elem[0] for elem in elements]
+
+
+def status():
+    config = configargparse.getArgumentParser(name='mdt')
+    config.add_argument('-c', '--courseids', nargs='+', help='moodle course ids', type=int, action='append')
+    [options, unparsed] = config.parse_known_args()
+    options.courseids = _unpack(options.courseids)
+
+    now = datetime.now()
+    wd = _get_working_directory()
+    if wd is None:
+        return
+
+    assignments = _merge_json_data_in_folder(wd + ASSIGNMENT_FOLDER)
+    submissions = _merge_json_data_in_folder(wd + SUBMISSION_FOLDER)
+    grades = _merge_json_data_in_folder(wd + GRADE_FOLDER)
+    users = _load_json_file(wd+LOCAL_CONFIG_USERS)
+    print('loading finished:')
+    courses = []
+    for courseid in options.courseids:
+        course = {'id': courseid}
+        for ulist in users:
+            if ulist['courseid'] == courseid:
+                course['users'] = ulist['users']
+
+        assignments = [a for a in assignments if a['course'] == courseid]
+        for assignment in assignments:
+            for submission in submissions:
+                if assignment['id'] == submission['assignmentid']:
+                    assignment['submissions'] = submission['submissions']
+            for grade in grades:
+                if assignment['id'] == grade['assignmentid']:
+                    assignment['grades'] = grade['grades']
+        course['assignments'] = assignments
+
+        courses.append(course)
+
+    for course in courses:
+        print('did load for courseid:{:5d}, assignments:{:3d}, users:{:4d}'.format(
+            course['id'], len(course['assignments']), len(course['users'])
+        ))
+        outlist = []
+        for assignment in course['assignments']:
+            out = '  assignmentid:{:5d}'.format(assignment['id'])
+            if 'submissions' in assignment:
+                out += ', submissions:{:4d}'.format(len(assignment['submissions']))
+
+            if 'grades' in assignment:
+                out += ', grades:{:4d}'.format(len(assignment['grades']))
+            else:
+                out += ', grades:{:4d}'.format(0)
+
+            out += ', name = {}'.format(assignment['name'])
+            outlist.append(out)
+
+        for out in sorted(outlist):
+            print(out)
 
 
 def pull():
@@ -348,6 +426,8 @@ def rest_direct(url, path, wsargs={}):
                 print('{} (id:{}) returned warning code [{}]:{}'.format(
                     warning['item'], str(warning['itemid']), warning['warningcode'], warning['message']
                 ))
+        if 'exeption' in reply:
+            print(str(json.dumps(reply, indent=1)))
     except ConnectionError:
         print('connection error')
     return json.loads(_parse_mlang(reply.text))

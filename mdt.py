@@ -60,6 +60,7 @@ def find_work_tree():
         os.chdir(os.pardir)
     if os.path.isdir('.mdt'):
         repo = os.getcwd()
+        wsfunc.WORKING_DIRECTORY = repo + '/'
     os.chdir(cwd)
     return repo
 
