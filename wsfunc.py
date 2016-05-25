@@ -335,18 +335,140 @@ def _merge_json_data_in_folder(path):
     data_list = [_load_json_file(file) for file in files]
     return data_list
 
+
 def _load_json_file(filename):
     with open(filename) as file:
         return json.load(file)
 
 
 def _unpack(elements):
-    return [elem[0] for elem in elements]
+    return [elem[0] for elem in elements if type(elem) is list]
+
+
+def _pretty_print_work_dir_status(courses):
+    for course in courses:
+        course_out = ''
+        course_out += 'courseid:{:5d}'.format(course['id'])
+        course_out += ' assignments:{:3d}'.format(len(course['assignments']))
+        course_out += ' users:{:4d}'.format(len(course['users']))
+        print(course_out)
+        outlist = []
+        for assignment in course['assignments']:
+            out = ''
+            out += ' assignmentid:{:5d}'.format(assignment['id'])
+            out += ' {:40}'.format(str(assignment['name'])[0:39])
+            if 'submissions' in assignment:
+                out += ' submissions:{:4d}'.format(len(assignment['submissions']))
+
+            if 'grades' in assignment:
+                out += ' grades:{:4d}'.format(len(assignment['grades']))
+            else:
+                out += ' grades:{:4d}'.format(0)
+
+            outlist.append(out)
+
+        for out in sorted(outlist):
+            print(out)
+
+
+def _merge_local_data(wd, courseids):
+    assignments = _merge_json_data_in_folder(wd + ASSIGNMENT_FOLDER)
+    submissions = _merge_json_data_in_folder(wd + SUBMISSION_FOLDER)
+    grades = _merge_json_data_in_folder(wd + GRADE_FOLDER)
+    users = _load_json_file(wd+LOCAL_CONFIG_USERS)
+
+    courses = []
+    for courseid in courseids:
+        course = {'id': courseid}
+        for ulist in users:
+            if ulist['courseid'] == courseid:
+                course['users'] = ulist['users']
+
+        course_assignments = [a for a in assignments if a['course'] == courseid]
+        for assignment in course_assignments:
+            for submission in submissions:
+                if assignment['id'] == submission['assignmentid']:
+                    assignment['submissions'] = submission['submissions']
+            for grade in grades:
+                if assignment['id'] == grade['assignmentid']:
+                    assignment['grades'] = grade['grades']
+        course['assignments'] = course_assignments
+
+        courses.append(course)
+    return courses
+
+
+def _pretty_print_assignment_status(courses, assignmentids):
+    def pretty_submission(submission):
+        plugin_out = ''
+        for plugin in submission['plugins']:
+            plugin_out += pretty_plugin(plugin)  #plugin is list of dicts
+        if plugin_out != '':
+            return '  submission id:{:5d}'.format(submission['id']) + plugin_out
+        else:
+            return ''
+
+    def pretty_plugin(plugin):
+        out = ''
+        if 'editorfields' in plugin:
+            out += pretty_editorfield(plugin['editorfields'])
+
+        if 'fileareas' in plugin:
+            out += pretty_file(plugin['fileareas'])
+
+        return out
+
+    def pretty_editorfield(editorfields):
+        out = ''
+        for ef in editorfields:
+            if ef['text'].strip() != '':
+                out += ef['name']
+            else:
+                out += ''  # 'no editorfield'
+        return out
+
+    def pretty_file(fileareas):
+        out = ''
+        for fa in fileareas:
+            if 'files' in fa:
+                out += '{}: filecount: {:2d}'.format(fa['area'],len(fa['files']))
+            else:
+                out += ''  # '{}: no files'.format(fa['area'])
+        return out
+
+    for course in courses:
+        assignments = [a for a in course['assignments'] if a['id'] in assignmentids]
+        if len(assignments) > 0:
+            print('course {:5d}'.format(course['id']))
+            for a in assignments:
+                subs = [Submission(s) for s in a['submissions']]
+                content = [s for s in subs if s.has_content()]
+                if a['teamsubmission'] == 1:
+                    print(' assignment {}, has {:3d} group submissions'.format(a['name'], len(content)))
+                    submitter_count = 0
+                    for s in content:
+                        users = course['users']
+                        submitters = [u['id'] for u in users if len(u['groups']) > 0 and u['groups'][0]['id'] == s.gid]
+                        submitter_count += len(submitters)
+                        print(s, end='')
+                        print(' submitters:{}'.format(str(submitters)))
+                    if 'grades' in a:
+                        print('  have subcount:{:3d}, gradecount:{:3d}'.format(submitter_count, len(a['grades'])))
+                        if submitter_count == len(a['grades']):
+                            print('  all graded, yay')
+                else:
+                    print(' assignment {}, has {:3d} single submissions'.format(a['name'], len(content)))
+
+                # for s in a['submissions']:
+                #     text = pretty_submission(s)
+                #     if text != '':
+                #         print(text)
 
 
 def status():
     config = configargparse.getArgumentParser(name='mdt')
     config.add_argument('-c', '--courseids', nargs='+', help='moodle course ids', type=int, action='append')
+    config.add_argument('-a', '--assignmentids', nargs='+', help='show detailed status for assignment id', type=int)
     [options, unparsed] = config.parse_known_args()
     options.courseids = _unpack(options.courseids)
 
@@ -355,50 +477,11 @@ def status():
     if wd is None:
         return
 
-    assignments = _merge_json_data_in_folder(wd + ASSIGNMENT_FOLDER)
-    submissions = _merge_json_data_in_folder(wd + SUBMISSION_FOLDER)
-    grades = _merge_json_data_in_folder(wd + GRADE_FOLDER)
-    users = _load_json_file(wd+LOCAL_CONFIG_USERS)
-    print('loading finished:')
-    courses = []
-    for courseid in options.courseids:
-        course = {'id': courseid}
-        for ulist in users:
-            if ulist['courseid'] == courseid:
-                course['users'] = ulist['users']
-
-        assignments = [a for a in assignments if a['course'] == courseid]
-        for assignment in assignments:
-            for submission in submissions:
-                if assignment['id'] == submission['assignmentid']:
-                    assignment['submissions'] = submission['submissions']
-            for grade in grades:
-                if assignment['id'] == grade['assignmentid']:
-                    assignment['grades'] = grade['grades']
-        course['assignments'] = assignments
-
-        courses.append(course)
-
-    for course in courses:
-        print('did load for courseid:{:5d}, assignments:{:3d}, users:{:4d}'.format(
-            course['id'], len(course['assignments']), len(course['users'])
-        ))
-        outlist = []
-        for assignment in course['assignments']:
-            out = '  assignmentid:{:5d}'.format(assignment['id'])
-            if 'submissions' in assignment:
-                out += ', submissions:{:4d}'.format(len(assignment['submissions']))
-
-            if 'grades' in assignment:
-                out += ', grades:{:4d}'.format(len(assignment['grades']))
-            else:
-                out += ', grades:{:4d}'.format(0)
-
-            out += ', name = {}'.format(assignment['name'])
-            outlist.append(out)
-
-        for out in sorted(outlist):
-            print(out)
+    courses = _merge_local_data(wd, options.courseids)
+    if options.assignmentids is not None:
+        _pretty_print_assignment_status(courses, options.assignmentids)
+    else:
+        _pretty_print_work_dir_status(courses)
 
 
 def pull():
@@ -421,16 +504,17 @@ def pull():
 def rest_direct(url, path, wsargs={}):
     try:
         reply = requests.post('https://' + url + path, wsargs)
-        if 'warnings' in reply:
-            for warning in reply['warnings']:
+        data = json.loads(reply.text)
+        if 'exception' in data:
+            print(str(json.dumps(data, indent=1)))
+        elif 'warnings' in data:
+            for warning in data['warnings']:
                 print('{} (id:{}) returned warning code [{}]:{}'.format(
                     warning['item'], str(warning['itemid']), warning['warningcode'], warning['message']
                 ))
-        if 'exeption' in reply:
-            print(str(json.dumps(reply, indent=1)))
+        return json.loads(_parse_mlang(reply.text))
     except ConnectionError:
         print('connection error')
-    return json.loads(_parse_mlang(reply.text))
 
 
 def rest(options, function, wsargs={}):
@@ -444,44 +528,72 @@ def rest(options, function, wsargs={}):
     return rest_direct(options.url, wspath, postData)
 
 
+class Course:
+    def __init__(self, data):
+        self.id = data.pop('id')
+        self.users = data.pop('users')
+        self.assignments = [Assignment(a) for a in data.pop('assignments')]
+        self.name = data.pop('fullname')
+
+
 class Assignment:
     def __init__(self, data):
-        self.aid = data['assignmentid']
-        self.subs = [Submission(s) for s in data.pop('submissions')]
-        self.data = data
+        self.id = data.pop('assignmentid')
+        self.submissions = [Submission(s) for s in data.pop('submissions')]
+        self.teamsubmission = 1 == data.pop('teamsubmission')
+        self.duedate_timestamp = data.pop('duedate')
+        self.grades = data.pop('grades')
+        self.unparsed = data
 
     def __str__(self):
-        string = str(self.aid) + '\n'
-        for s in self.subs:
+        string = str(self.id) + '\n'
+        for s in self.submissions:
             string += str(s)
         return string
+
+    def submission_count(self):
+        return [s.has_content() for s in self.submissions].count(True)
+
+    def is_due(self):
+        return self.duedate_timestamp < datetime.now().timestamp()
+
+    def grade_count(self):
+        return len(self.grades)
+
+    def needs_grading(self):
+        return self.grade_count() < self.submission_count()
+
+
 
 
 class Submission:
     def __init__(self, data):
-        self.sid = data['id']
-        self.uid = data['userid']
-        if 'groupid' in data:
-            self.gid = data['groupid']
-        else:
-            self.gid = 0
+        self.id = data.pop('id')
+        self.uid = data.pop('userid')
+        self.gid = data.pop('groupid')
         self.plugs = [Plugin(p) for p in data.pop('plugins')]
-        self.data = data
+        self.unparsed = data
 
     def __str__(self):
-        string = ''
-        for p in self.plugs:
-            string += str(p)
+        out = ''
+        if self.has_content():
+            for p in self.plugs:
+                out += str(p)
+            out = '  id:{:7d} {:5d}:{:5d}'.format(self.id, self.uid, self.gid) + ' ' + out
+            return out
+        else:
+            return ''
 
-        if '' != string:
-            string = ' ' + str(self.uid) + ':' + str(self.gid) + '\n' + string
-        return string
+    def has_content(self):
+        return True in [p.has_content() for p in self.plugs]
 
 
 class Plugin:
     def __init__(self, data):
-        self.kind = data['type']
+        self.type = data['type']
         self.name = data['name']
+        self.efields = []
+        self.fareas = []
         if 'editorfields' in data:
             self.efields = [Editorfield(e) for e in data.pop('editorfields')]
         if 'fileareas' in data:
@@ -489,29 +601,46 @@ class Plugin:
         self.data = data
 
     def __str__(self):
-        if 'file' != self.kind:
+        if self.has_content():
+            out = ''
+            plug = 'plugin:[{}] '
+            if self.has_efield():
+                out += plug.format('efield')
+            if self.has_files():
+                out += plug.format('files')
+            return out
+        else:
             return ''
-        string = ''
-        for fa in self.fareas:
-            string += str(fa)
-        return string
+
+    def has_efield(self):
+        return True in [e.has_content() for e in self.efields]
+
+    def has_files(self):
+        return True in [f.has_content() for f in self.fareas]
+
+    def has_content(self):
+        if self.has_efield() or self.has_files():
+            return True
+        else:
+            return False
 
 
 class Filearea:
     def __init__(self, data):
         self.area = data['area']
-        self.urls = []
+        self.files = []
         if 'files' in data:
-            self.urls = [f['fileurl'] for f in data.pop('files')]
+            self.files = data.pop('files')
         self.data = data
 
     def __str__(self):
-        string = ''
-        if 0 == len(self.urls):
+        if self.has_content():
+            return str(len(self.files))
+        else:
             return ''
-        for u in self.urls:
-            string += '  ' + u + '\n'
-        return string
+
+    def has_content(self):
+        return len(self.files) > 0
 
 
 class Editorfield:
@@ -521,4 +650,14 @@ class Editorfield:
         self.descr = data['description']
         self.text = data['text']
         self.fmt = data['format']
+
+    def __str__(self):
+        if self.has_content():
+            return self.name
+        else:
+            return ''
+
+
+    def has_content(self):
+        return self.text.strip() != ''
 
