@@ -139,8 +139,23 @@ Every value in .mdt/config will override the global values.
 ## Development
 
 ### Documentation
-There is none.
-If you want to help along or have an explanation, ask -1 via [twitter](https://twitter.com/einsweniger/) or mail.
+
+#### Moodle back-end
+
+Moodle Developers do not provide direct access to the Web Service API.
+The WS API Documentation is only available per Moodle instance, so you are left with some choices:
+
+* Ask your Moodle Administrator for it,
+* set-up your own Moodle Instance (I recommend you don't, installation takes a really long time),
+* get it from the [Moodle Demo Server](https://moodle.org/demo/),
+* dig in Moodle's PHP sources (I also recommend against that, use as last resort. Does not help understanding the data structures.)
+
+#### This Code
+
+Well, you are reading it… That is how much documentation there is.
+If you really, really want to help the tool along or ask for an explanation, ask -1 via [twitter](https://twitter.com/einsweniger/) or mail.
+
+### Bootsrap
 
 Before starting to develop on manly-man moodle scripts you should run the `boostrap` script.
 This will setup `git-flow` with the default settings.
