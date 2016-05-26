@@ -226,6 +226,7 @@ def init():
     course_data_temp = _get_course_list_from_server(options)
     courses = [Course(c) for c in course_data_temp]
     courses.sort(key=lambda course: course.name)
+    os.makedirs(LOCAL_CONFIG_FOLDER, exist_ok=True)
 
     if options.courseids is None or options.force:
         choices = _get_choices_from_list(courses, input_text)
@@ -240,7 +241,6 @@ def init():
         saved_data = [c for c in course_data if c['id'] in options.courseids]
         with open(LOCAL_CONFIG_COURSES, 'w') as course_config:
             json.dump(saved_data, course_config)
-    os.makedirs(LOCAL_CONFIG_FOLDER, exist_ok=True)
     with open(LOCAL_CONFIG, 'w') as config_file:
         config_file.write('courseids = ' + str(options.courseids))
 
