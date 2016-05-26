@@ -15,6 +15,12 @@ import requests
 import os
 
 # TODO determine working directory root somewhere sensible, pass to wsfunc.
+# TODO move logic to wstools.py, keep server communication in here.
+# TODO maybe use command pattern for ws functions
+# TODO check if server supports wsfunction
+# TODO handle ws exceptions in sensible manner, collate warnings
+# TODO remove all merging stuff, merge on sync, write only one file, update accordingly
+# TODO after metadata is in one file: on sync: request submissions via last_changed.
 
 __all__ = ['auth', 'init', 'pull', 'status', 'sync']
 WORKING_DIRECTORY = None
