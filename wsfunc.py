@@ -353,32 +353,6 @@ def _unpack(elements):
     return [elem[0] for elem in elements if type(elem) is list]
 
 
-def _pretty_print_work_dir_status(courses):
-    for course in courses:
-        course_out = ''
-        course_out += 'courseid:{:5d}'.format(course['id'])
-        course_out += ' assignments:{:3d}'.format(len(course['assignments']))
-        course_out += ' users:{:4d}'.format(len(course['users']))
-        print(course_out)
-        outlist = []
-        for assignment in course['assignments']:
-            out = ''
-            out += ' assignmentid:{:5d}'.format(assignment['id'])
-            out += ' {:40}'.format(str(assignment['name'])[0:39])
-            if 'submissions' in assignment:
-                out += ' submissions:{:4d}'.format(len(assignment['submissions']))
-
-            if 'grades' in assignment:
-                out += ' grades:{:4d}'.format(len(assignment['grades']))
-            else:
-                out += ' grades:{:4d}'.format(0)
-
-            outlist.append(out)
-
-        for out in sorted(outlist):
-            print(out)
-
-
 def _merge_local_data(wd, courseids):
     courses = _load_json_file(wd + LOCAL_CONFIG_COURSES)
     assignments = _merge_json_data_in_folder(wd + ASSIGNMENT_FOLDER)
@@ -408,97 +382,32 @@ def _merge_local_data(wd, courseids):
     return merged
 
 
-def _pretty_print_assignment_status(courses, assignmentids):
-    def pretty_submission(submission):
-        plugin_out = ''
-        for plugin in submission['plugins']:
-            plugin_out += pretty_plugin(plugin)  #plugin is list of dicts
-        if plugin_out != '':
-            return '  submission id:{:5d}'.format(submission['id']) + plugin_out
-        else:
-            return ''
-
-    def pretty_plugin(plugin):
-        out = ''
-        if 'editorfields' in plugin:
-            out += pretty_editorfield(plugin['editorfields'])
-
-        if 'fileareas' in plugin:
-            out += pretty_file(plugin['fileareas'])
-
-        return out
-
-    def pretty_editorfield(editorfields):
-        out = ''
-        for ef in editorfields:
-            if ef['text'].strip() != '':
-                out += ef['name']
-            else:
-                out += ''  # 'no editorfield'
-        return out
-
-    def pretty_file(fileareas):
-        out = ''
-        for fa in fileareas:
-            if 'files' in fa:
-                out += '{}: filecount: {:2d}'.format(fa['area'],len(fa['files']))
-            else:
-                out += ''  # '{}: no files'.format(fa['area'])
-        return out
-
-    for course in courses:
-        assignments = [a for a in course['assignments'] if a['id'] in assignmentids]
-        if len(assignments) > 0:
-            print('course {:5d}'.format(course['id']))
-            for a in assignments:
-                subs = [Submission(s) for s in a['submissions']]
-                content = [s for s in subs if s.has_content()]
-                if a['teamsubmission'] == 1:
-                    print(' assignment {}, has {:3d} group submissions'.format(a['name'], len(content)))
-                    submitter_count = 0
-                    for s in content:
-                        users = course['users']
-                        submitters = [u['id'] for u in users if len(u['groups']) > 0 and u['groups'][0]['id'] == s.gid]
-                        submitter_count += len(submitters)
-                        print(s, end='')
-                        print(' submitters:{}'.format(str(submitters)))
-                    if 'grades' in a:
-                        print('  have subcount:{:3d}, gradecount:{:3d}'.format(submitter_count, len(a['grades'])))
-                        if submitter_count == len(a['grades']):
-                            print('  all graded, yay')
-                else:
-                    print(' assignment {}, has {:3d} single submissions'.format(a['name'], len(content)))
-
-                # for s in a['submissions']:
-                #     text = pretty_submission(s)
-                #     if text != '':
-                #         print(text)
-
-
 def status():
     config = configargparse.getArgumentParser(name='mdt')
     config.add_argument('-c', '--courseids', nargs='+', help='moodle course ids', type=int, action='append')
     config.add_argument('-a', '--assignmentids', nargs='+', help='show detailed status for assignment id', type=int)
+    config.add_argument('--full', help='display all assignments', action='store_true')
     [options, unparsed] = config.parse_known_args()
     options.courseids = _unpack(options.courseids)
 
-    now = datetime.now()
     wd = _get_working_directory()
     if wd is None:
         return
 
-    courses = _merge_local_data(wd, options.courseids)
+    course_data = _merge_local_data(wd, options.courseids)
+    courses = [Course(c) for c in course_data]
     if options.assignmentids is not None:
-        _pretty_print_assignment_status(courses, options.assignmentids)
+        for c in sorted(courses):
+            print(c)
+            assignments = c.get_assignments(options.assignmentids)
+            for assignment in sorted(assignments):
+                print(assignment.detailed_status_string(indent=1))
+    elif options.full:
+        for i in sorted(courses):
+            i.print_status()
     else:
-        pass  # _pretty_print_work_dir_status(courses)
-    print(type(courses))
-    print(type(courses[0]))
-    cc = [Course(c) for c in courses]
-    print(type(cc))
-    print(type(cc[0]))
-    for i in cc:
-        print(i.print_status())
+        for course in sorted(courses):
+            course.print_short_status()
 
 
 def pull():
@@ -536,13 +445,13 @@ def rest_direct(url, path, wsargs={}):
 
 def rest(options, function, wsargs={}):
     wspath = '/webservice/rest/server.php'
-    postData = {
+    post_data = {
         'wstoken': options.token,
         'moodlewsrestformat': 'json',
         'wsfunction': function
     }
-    postData.update(wsargs)
-    return rest_direct(options.url, wspath, postData)
+    post_data.update(wsargs)
+    return rest_direct(options.url, wspath, post_data)
 
 
 class Course:
@@ -550,78 +459,203 @@ class Course:
         self.id = data.pop('id')
         self.name = data.pop('fullname')
         self.shortname = data.pop('shortname')
-        self.users = []
+
+        self.users = {}
+        self.groups = {}
         if 'users' in data:
-            self.users = data.pop('users')
-        self.assignments = []
+            self.update_users(data.pop('users'))
+
+        self.assignments = {}
         if 'assignments' in data:
-            self.assignments = [Assignment(a) for a in data.pop('assignments')]
+            self.update_assignments(data.pop('assignments'))
 
         self.unparsed = data
-        #todo: map(user:groups), class User
 
     def __str__(self):
         return '{:40} id:{:5d} short: {}'.format(self.name[0:39], self.id, self.shortname)
 
     def print_status(self):
         print(self)
-        for a in self.assignments:
-            a.print_short_status(indent=1)
+        assignments = [a.short_status_string(indent=1) for a in self.assignments.values()]
+        for a in sorted(assignments):
+            print(a)
+
+    def print_short_status(self):
+        print(self)
+        a_status = [a.short_status_string() for a in self.assignments.values() if a.needs_grading()]
+        for a in sorted(a_status):
+            print(a)
+
+    def get_assignments(self, id_list):
+        return [self.assignments[aid] for aid in id_list if aid in self.assignments]
+
+    def update_users(self, data):
+        users = [User(u) for u in data]
+        for user in users:
+            self.users[user.id] = user
+            self.update_groups(user)
+
+    def update_groups(self, user):
+        for group_id, group in user.groups.items():
+            if group_id not in self.groups:
+                self.groups[group_id] = group
+            group = self.groups[group_id]
+            group.members.append(user)
+
+    def update_assignments(self, data):
+        assignments = [Assignment(a, course=self) for a in data]
+        for a in assignments:
+            self.assignments[a.id] = a
 
 
-class Assignment:
+class User:
     def __init__(self, data):
+        self.name = data.pop('fullname')
         self.id = data.pop('id')
-        self.submissions = [Submission(s) for s in data.pop('submissions')]
-        self.teamsubmission = 1 == data.pop('teamsubmission')
-        self.duedate_timestamp = data.pop('duedate')
-        self.name = data.pop('name')
-        self.grades = []
-        if 'grades' in data:
-            self.grades = data.pop('grades')
+        self.roles = data.pop('roles')
+
+        self.groups = {}
+        for g in data.pop('groups'):
+            group = Group(g)
+            self.groups[group.id] = group
+
         self.unparsed = data
 
     def __str__(self):
-        return 'assignment[{:d}]: {}'.format(self.id, self.name[0:29])
+        return '{:20} id:{:5d} groups:{}'.format(self.name, self.id, str(self.groups))
 
-    def submission_count(self):
-        # TODO is wrong for team submission, needs user:group mappings to work.
-        return [s.has_content() for s in self.submissions].count(True)
+
+class Group:
+    def __init__(self, data):
+        self.name = data.pop('name')
+        self.id = data.pop('id')
+        self.description = data.pop('description')
+        self.descriptionformat = data.pop('descriptionformat')
+        self.members = []
+
+    def __str__(self):
+        return '{:10} id:{:5d}'.format(self.name, self.id)
+
+
+class Assignment:
+    def __init__(self, data, course=None):
+        self.id = data.pop('id')
+        self.submissions = [Submission(s, assignment=self) for s in data.pop('submissions')]
+        self.team_submission = 1 == data.pop('teamsubmission')
+        self.due_date = datetime.fromtimestamp(data.pop('duedate'))
+        self.name = data.pop('name')
+        self.grades = {}  # are accessed via user_id
+        if 'grades' in data:
+            self.update_grades(data.pop('grades'))
+        self.course = course
+        self.unparsed = data
+
+    def __str__(self):
+        return '{:40} id:{:5d}'.format(self.name[0:39], self.id)
+
+    def valid_submission_count(self):
+        return len(self.get_valid_submissions())
 
     def is_due(self):
-        return self.duedate_timestamp < datetime.now().timestamp()
+        now = datetime.now()
+        diff = now - self.due_date
+        ignore_older_than = 25 * 7
+        return now > self.due_date and diff.days < ignore_older_than
 
     def grade_count(self):
         return len(self.grades)
 
     def needs_grading(self):
-        return self.is_due() and self.grade_count() < self.submission_count()
+        all_graded = False in [s.is_graded() for s in self.get_valid_submissions()]
+        return self.is_due() and self.grade_count() != self.valid_submission_count()
 
-    def print_short_status(self, indent=0):
-        fmt_string = ' ' * indent + '{:40} submissions:{:3d} due:{:1} graded:{}'
-        print(fmt_string.format(self.id, self.name[0:39], self.submission_count(), self.is_due(), not self.needs_grading()))
+    def short_status_string(self, indent=0):
+        fmt_string = ' ' * indent + str(self) + ' submissions:{:3d} due:{:1} graded:{:1}'
+        return fmt_string.format(self.valid_submission_count(), self.is_due(), not self.needs_grading())
+
+    def detailed_status_string(self, indent=0):
+        string = ' '*indent + str(self)
+        s_status = [s.status_string(indent=indent+1) for s in self.get_valid_submissions()]
+        for s in sorted(s_status):
+            string += '\n' + s
+        return string
+
+    def get_valid_submissions(self):
+        return [s for s in self.submissions if s.has_content()]
+
+    def update_grades(self, data):
+        grades = [Grade(g) for g in data]
+        for g in grades:
+            self.grades[g.user_id] = g
 
 
 class Submission:
-    def __init__(self, data):
+    def __init__(self, data, assignment=None):
         self.id = data.pop('id')
         self.uid = data.pop('userid')
         self.gid = data.pop('groupid')
         self.plugs = [Plugin(p) for p in data.pop('plugins')]
+        self.assignment = assignment
         self.unparsed = data
 
     def __str__(self):
-        out = ''
-        if self.has_content():
-            for p in self.plugs:
-                out += str(p)
-            out = '  id:{:7d} {:5d}:{:5d}'.format(self.id, self.uid, self.gid) + ' ' + out
-            return out
-        else:
-            return ''
+        return 'id:{:7d} {:5d}:{:5d}'.format(self.id, self.uid, self.gid)
 
     def has_content(self):
         return True in [p.has_content() for p in self.plugs]
+
+    def status_string(self, indent=0):
+        if self.assignment is None:
+            return ' ' * indent + str(self)
+        elif self.assignment.team_submission and self.assignment.course is not None:
+            return self.status_team_submission_string(indent=indent)
+        else:
+            return self.status_single_submission(indent=indent)
+
+    def status_team_submission_string(self, indent=0):
+        if self.gid not in self.assignment.course.groups:
+            return ' ' * indent + str(self) + ' could not find group?'
+
+        warnings = ''
+        group = self.assignment.course.groups[self.gid]
+
+        grades = self.assignment.grades
+        members = group.members
+        graded_users = {}
+        ungraded_users = {}
+        for user in members:
+            if user.id in grades:
+                graded_users[user.id] = grades[user.id]
+            else:
+                ungraded_users[user.id] = user
+
+        grade_set = set([grade.value for grade in graded_users.values()])
+        set_size = len(grade_set)
+
+        if len(graded_users) == 0:
+            warnings += ' no grades'
+        elif len(ungraded_users) > 1:
+            warnings += ' has graded and ungraded users'
+        if set_size > 1:
+            warnings += ' grades not equal: ' + str(grade_set)
+
+        if warnings == '':
+            grade = grade_set.pop()
+            return ' ' * indent + '{:20} id:{:7d} grade:{:4}'.format(group.name, self.id, grade)
+        else:
+            return ' ' * indent + '{:20} id:{:7d} WARNING:{}'.format(group.name, self.id, warnings)
+
+
+class Grade:
+    def __init__(self, data):
+        self.id = data.pop('id')
+        self.value = float(data.pop('grade'))
+        self.grader_id = data.pop('grader')
+        self.user_id = data.pop('userid')
+        self.attempt_number = data.pop('attemptnumber')
+        self.date_created = datetime.fromtimestamp(data.pop('timecreated'))
+        self.date_modified = datetime.fromtimestamp(data.pop('timemodified'))
+        self.unparsed = data  # should be empty, completely parsed
 
 
 class Plugin:
