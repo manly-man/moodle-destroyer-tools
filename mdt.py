@@ -7,8 +7,10 @@ import re
 import sys
 import wstools
 
+# TODO
 
-def find_external_subcmds():
+
+def external_subcmds():
     """this gets all files that are in $PATH and match mdt-*
 
     :returns dict with subcmd:full_path
@@ -48,23 +50,6 @@ def find_global_config_file():
         return create_global_config_file()
 
 
-def find_work_tree():
-    """ determines the work tree root by looking at the .mdt folder in cwd or parent folders
-    :returns the work tree root as String or None
-    """
-    cwd = os.getcwd()
-    repo = None
-    while not os.path.isdir('.mdt'):
-        if '/' == os.getcwd():
-            break
-        os.chdir(os.pardir)
-    if os.path.isdir('.mdt'):
-        repo = os.getcwd()
-        wstools.WORKING_DIRECTORY = repo + '/'
-    os.chdir(cwd)
-    return repo
-
-
 def check_for_sub_command():
     if 1 >= len(sys.argv):
         return None
@@ -73,13 +58,13 @@ def check_for_sub_command():
 
 
 def execute_external(sub_command):
+    extern = external_subcmds()
     argv = sys.argv[1:]
-    argv[0] = sub_command
-    print('executing '+repr(argv))
+    argv[0] = extern[sub_command]
     subprocess.run(argv)
 
 
-def find_internal_cmd():
+def internal_cmd():
     return wstools.__all__
 
 
@@ -102,39 +87,37 @@ def exec_path_to_dict(paths):
 def get_config_file_list():
     global_config = find_global_config_file()
     config_files = [global_config]
-    work_tree = find_work_tree()
+    work_tree = wstools.get_work_tree_root()
     if work_tree is not None:
         # default_config_files order is crucial: work_tree cfg overrides global
         config_files.append(work_tree+'/.mdt/config')
     return config_files
 
 
-def main():
-    config_files = get_config_file_list()
-    config = make_config(config_files)
+def print_known_commands():
+    print('you should give a subcommand, i know these:')
+    print('\n internal:')
+    [print('  ' + cmd) for cmd in sorted(internal_cmd())]
+    print('\n external:')
+    [print('  ' + cmd) for cmd in sorted(external_subcmds().keys())]
 
-    ext_sub_commands = find_external_subcmds()
-    int_sub_commands = find_internal_cmd()
+
+def main():
     sub_command = check_for_sub_command()
 
-    # commands = {**ext_sub_commands, **int_sub_commands}  # merge dicts, PEP-448 Additional Unpacking Generalizations
-
     if sub_command is None:
-        print('you should give a subcommand, i know these:')
-        [print('  ' + cmd) for cmd in sorted(int_sub_commands)]
-        [print('  ' + cmd) for cmd in sorted(ext_sub_commands.keys())]
-        exit(1)
+        print_known_commands()
+        raise SystemExit(1)
     elif sub_command == 'help':
-        config.print_help()
-    elif sub_command in int_sub_commands:
+        print_known_commands()
+    elif sub_command in internal_cmd():
         call = getattr(wstools, sub_command)
         call()
-    elif sub_command in ext_sub_commands:
-        execute_external(ext_sub_commands[sub_command])
+    elif sub_command in external_subcmds():
+        execute_external(sub_command)
     else:
-        print('i don\'t know of this subcommand. I know those:\n')
-        [print('  ' + cmd) for cmd in ext_sub_commands.keys()]
-        exit(1)
+        print_known_commands()
+        raise SystemExit(1)
 
 
 if __name__ == '__main__':
