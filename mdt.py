@@ -5,7 +5,7 @@ import subprocess
 import configargparse
 import re
 import sys
-import wsfunc
+import wstools
 
 
 def find_external_subcmds():
@@ -60,7 +60,7 @@ def find_work_tree():
         os.chdir(os.pardir)
     if os.path.isdir('.mdt'):
         repo = os.getcwd()
-        wsfunc.WORKING_DIRECTORY = repo + '/'
+        wstools.WORKING_DIRECTORY = repo + '/'
     os.chdir(cwd)
     return repo
 
@@ -80,7 +80,7 @@ def execute_external(sub_command):
 
 
 def find_internal_cmd():
-    return wsfunc.__all__
+    return wstools.__all__
 
 
 def make_config(configs):
@@ -127,7 +127,7 @@ def main():
     elif sub_command == 'help':
         config.print_help()
     elif sub_command in int_sub_commands:
-        call = getattr(wsfunc, sub_command)
+        call = getattr(wstools, sub_command)
         call()
     elif sub_command in ext_sub_commands:
         execute_external(ext_sub_commands[sub_command])
