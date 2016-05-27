@@ -130,10 +130,10 @@ Every value in .mdt/config will override the global values.
 
 * extend the scripts to detect which commands you Moodle serves.
 * add documentation after decision for a sensible code-architecture.
+* accessing Moodle Quizzes
 
 #### unplanned functionality
 
-* Moodle Quizzes have no Web Service exported functions, must be implemented in Moodle first.
 * Functionality not involving Web Services: We don't want to navigate the front-end DOM. At least -1 doesn't
 
 ## Development

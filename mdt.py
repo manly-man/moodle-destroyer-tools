@@ -129,21 +129,13 @@ def main():
     elif sub_command in int_sub_commands:
         call = getattr(wsfunc, sub_command)
         call()
-
-
+    elif sub_command in ext_sub_commands:
+        execute_external(ext_sub_commands[sub_command])
     else:
         print('i don\'t know of this subcommand. I know those:\n')
         [print('  ' + cmd) for cmd in ext_sub_commands.keys()]
         exit(1)
 
-    #print(find_global_config_file())
-    #argv = sys.argv
-    #print(ext_sub_commands)
-    #print(find_work_tree())
-    #print(os.getcwd())
-    #print(p)
-
-    #opt = p.parse_args()
 
 if __name__ == '__main__':
     main()
