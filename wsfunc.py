@@ -406,8 +406,9 @@ def status():
         for c in sorted(courses):
             print(c)
             assignments = c.get_assignments(options.assignmentids)
-            for assignment in sorted(assignments):
-                print(assignment.detailed_status_string(indent=1))
+            a_status = [a.detailed_status_string() for a in assignments]
+            for s in sorted(a_status):
+                print(s)
     elif options.full:
         for i in sorted(courses):
             i.print_status()
@@ -572,8 +573,8 @@ class Assignment:
         return len(self.grades)
 
     def needs_grading(self):
-        all_graded = False in [s.is_graded() for s in self.get_valid_submissions()]
-        return self.is_due() and self.grade_count() != self.valid_submission_count()
+        all_graded = False not in [s.is_graded() for s in self.get_valid_submissions()]
+        return self.is_due() and not all_graded
 
     def short_status_string(self, indent=0):
         fmt_string = ' ' * indent + str(self) + ' submissions:{:3d} due:{:1} graded:{:1}'
@@ -618,13 +619,8 @@ class Submission:
         else:
             return self.status_single_submission(indent=indent)
 
-    def status_team_submission_string(self, indent=0):
-        if self.gid not in self.assignment.course.groups:
-            return ' ' * indent + str(self) + ' could not find group?'
-
-        warnings = ''
+    def get_team_members_and_grades(self):
         group = self.assignment.course.groups[self.gid]
-
         grades = self.assignment.grades
         members = group.members
         graded_users = {}
@@ -635,21 +631,53 @@ class Submission:
             else:
                 ungraded_users[user.id] = user
 
+        return graded_users, ungraded_users
+
+    def is_graded(self):
+        if self.assignment.team_submission:
+            return self.is_team_graded()
+        else:
+            return self.is_single_submission_graded()
+
+    def is_team_graded(self):
+        grade, warnings = self.get_grade_or_reason_if_team_ungraded()
+        if grade is not None:
+            return True
+        else:
+            return False
+
+    def get_grade_or_reason_if_team_ungraded(self):
+        graded_users, ungraded_users = self.get_team_members_and_grades()
         grade_set = set([grade.value for grade in graded_users.values()])
         set_size = len(grade_set)
-
+        warnings = ''
         if len(graded_users) == 0:
             warnings += ' no grades'
         elif len(ungraded_users) > 1:
             warnings += ' has graded and ungraded users'
         if set_size > 1:
             warnings += ' grades not equal: ' + str(grade_set)
-
         if warnings == '':
-            grade = grade_set.pop()
+            return grade_set.pop(), None
+        else:
+            return None, warnings
+
+    def status_team_submission_string(self, indent=0):
+        if self.gid not in self.assignment.course.groups:
+            return ' ' * indent + str(self) + ' could not find group?'
+        group = self.assignment.course.groups[self.gid]
+
+        grade, warnings = self.get_grade_or_reason_if_team_ungraded()
+        if grade is not None:
             return ' ' * indent + '{:20} id:{:7d} grade:{:4}'.format(group.name, self.id, grade)
         else:
             return ' ' * indent + '{:20} id:{:7d} WARNING:{}'.format(group.name, self.id, warnings)
+
+    def is_single_submission_graded(self):
+        return True
+
+    def status_single_submission(self, indent=0):
+        return indent*' ' + str(self)
 
 
 class Grade:
