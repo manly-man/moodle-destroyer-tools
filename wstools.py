@@ -14,7 +14,6 @@ import re
 import os
 import wsfunc
 
-# TODO determine working directory root somewhere sensible, pass to wsfunc.
 # TODO check if server supports wsfunction
 # TODO remove all merging stuff, merge on sync, write only one file, update accordingly
 # TODO after metadata is in one file: on sync: request submissions via last_changed.
@@ -30,11 +29,20 @@ SUBMISSION_FOLDER = LOCAL_CONFIG_FOLDER + 'submissions/'
 GRADE_FOLDER = LOCAL_CONFIG_FOLDER + 'grades/'
 
 
-def _get_working_directory():
-    if WORKING_DIRECTORY is None:
-        print('not in working directory, this command needs to be')
-        return None
-    return WORKING_DIRECTORY
+def get_work_tree_root():
+    """ determines the work tree root by looking at the .mdt folder in cwd or parent folders
+    :returns the work tree root as String or None
+    """
+    cwd = os.getcwd()
+    repo = None
+    while not os.path.isdir('.mdt'):
+        if '/' == os.getcwd():
+            return None
+        os.chdir(os.pardir)
+    if os.path.isdir('.mdt'):
+        repo = os.getcwd()
+    os.chdir(cwd)
+    return repo + '/'
 
 
 def auth():
@@ -176,7 +184,7 @@ def _sync_assignments(options):
     print('syncing assignments… ', end='', flush=True)
     new_assignments = 0
     updated_assignments = 0
-    config_dir = _get_working_directory() + ASSIGNMENT_FOLDER
+    config_dir = get_work_tree_root() + ASSIGNMENT_FOLDER
 
     os.makedirs(config_dir, exist_ok=True)
     assignment_list = wsfunc.get_assignments(options, course_ids=options.courseids)
@@ -198,7 +206,7 @@ def _sync_assignments(options):
 
 def _sync_submissions(options):
     print('syncing submissions… ', end='', flush=True)
-    config_dir = _get_working_directory() + SUBMISSION_FOLDER
+    config_dir = get_work_tree_root() + SUBMISSION_FOLDER
 
     os.makedirs(config_dir, exist_ok=True)
     submissions = wsfunc.get_submissions(options, assignment_ids=options.assignmentids)
@@ -211,7 +219,7 @@ def _sync_submissions(options):
 
 def _sync_grades(options):
     print('syncing grades… ', end='', flush=True)
-    config_dir = _get_working_directory() + GRADE_FOLDER
+    config_dir = get_work_tree_root() + GRADE_FOLDER
 
     os.makedirs(config_dir, exist_ok=True)
     assignments = wsfunc.get_grades(options, assignment_ids=options.assignmentids)
@@ -224,7 +232,7 @@ def _sync_grades(options):
 
 def _sync_users(options):
     print('syncing users…', end=' ', flush=True)
-    u_config_file = _get_working_directory() + LOCAL_CONFIG_USERS
+    u_config_file = get_work_tree_root() + LOCAL_CONFIG_USERS
 
     users = []
     for cid in options.courseids:
@@ -243,7 +251,7 @@ def sync():
     [options, unparsed] = config.parse_known_args()
     options.courseids = _unpack(options.courseids)
 
-    if _get_working_directory() is None:
+    if get_work_tree_root() is None:
         return
 
     assignments = _sync_assignments(options)
@@ -265,6 +273,8 @@ def _load_json_file(filename):
 
 
 def _unpack(elements):
+    if elements is None:
+        return None
     return [elem[0] for elem in elements if type(elem) is list]
 
 
@@ -305,8 +315,9 @@ def status():
     [options, unparsed] = config.parse_known_args()
     options.courseids = _unpack(options.courseids)
 
-    wd = _get_working_directory()
+    wd = get_work_tree_root()
     if wd is None:
+        print('not in workdir, this commands needs to be')
         return
 
     course_data = _merge_local_data(wd, options.courseids)
