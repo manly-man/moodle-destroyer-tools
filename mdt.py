@@ -78,7 +78,7 @@ def make_config(configs):
 
 
 def exec_path_to_dict(paths):
-    mdt_pattern = re.compile('mdt-\S+')  # TODO add mdt-prefix on packaging
+    mdt_pattern = re.compile('mdt-\S+')
     matches = mdt_pattern.findall(" ".join(paths))  # find all like mdt-*
     cmd_names = [re.compile('^mdt-').sub('', m) for m in matches]  # strip ^mdt-
     return dict(zip(cmd_names, paths))
@@ -111,6 +111,7 @@ def main():
     elif sub_command == 'help':
         print_known_commands()
     elif sub_command in internal_cmd():
+        make_config(get_config_file_list())
         call = getattr(wstools, sub_command)
         call()
     elif sub_command in external_subcmds():
@@ -121,4 +122,14 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+        print('exiting…')
+    except KeyboardInterrupt:
+        print('exiting…')
+        sys.exit(1)
+    except SystemExit:
+        raise
+    except:
+        print('onoz…')
+        raise
