@@ -19,7 +19,6 @@ import wsfunc
 # TODO after metadata is in one file: on sync: request submissions via last_changed.
 
 __all__ = ['auth', 'init', 'pull', 'status', 'sync']
-WORKING_DIRECTORY = None
 LOCAL_CONFIG_FOLDER = '.mdt/'
 LOCAL_CONFIG = LOCAL_CONFIG_FOLDER + 'config'
 LOCAL_CONFIG_USERS = LOCAL_CONFIG_FOLDER + 'users'
@@ -37,6 +36,7 @@ def get_work_tree_root():
     repo = None
     while not os.path.isdir('.mdt'):
         if '/' == os.getcwd():
+            os.chdir(cwd)
             return None
         os.chdir(os.pardir)
     if os.path.isdir('.mdt'):
@@ -511,7 +511,7 @@ class Submission:
         elif self.assignment.team_submission and self.assignment.course is not None:
             return self.status_team_submission_string(indent=indent)
         else:
-            return self.status_single_submission(indent=indent)
+            return self.status_single_submission_string(indent=indent)
 
     def get_team_members_and_grades(self):
         group = self.assignment.course.groups[self.gid]
@@ -570,8 +570,9 @@ class Submission:
     def is_single_submission_graded(self):
         return True
 
-    def status_single_submission(self, indent=0):
-        return indent*' ' + str(self)
+    def status_single_submission_string(self, indent=0):
+        user = self.assignment.course.users[self.uid]
+        return indent*' ' + str(user) + str(self)
 
 
 class Grade:
