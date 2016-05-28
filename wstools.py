@@ -11,6 +11,7 @@ import glob
 import json
 import math
 import re
+import requests
 import os
 import wsfunc
 
@@ -217,6 +218,10 @@ def _sync_submissions(options):
     return submissions
 
 
+def _sync_file_meta(options):
+    pass
+
+
 def _sync_grades(options):
     print('syncing grades… ', end='', flush=True)
     config_dir = get_work_tree_root() + GRADE_FOLDER
@@ -253,7 +258,6 @@ def sync():
 
     if get_work_tree_root() is None:
         return
-
     assignments = _sync_assignments(options)
     options.assignmentids = [a['id'] for a in assignments]
     submissions = _sync_submissions(options)
@@ -311,6 +315,7 @@ def status():
     config = configargparse.getArgumentParser(name='mdt')
     config.add_argument('-c', '--courseids', nargs='+', help='moodle course ids', type=int, action='append')
     config.add_argument('-a', '--assignmentids', nargs='+', help='show detailed status for assignment id', type=int)
+    config.add_argument('-s', '--submissionids', nargs='+', help='show detailed status for submission id', type=int)
     config.add_argument('--full', help='display all assignments', action='store_true')
     [options, unparsed] = config.parse_known_args()
     options.courseids = _unpack(options.courseids)
@@ -322,7 +327,15 @@ def status():
 
     course_data = _merge_local_data(wd, options.courseids)
     courses = [Course(c) for c in course_data]
-    if options.assignmentids is not None:
+    if options.assignmentids is not None and options.submissionids is None:
+        for c in sorted(courses):
+            print(c)
+            assignments = c.get_assignments(options.assignmentids)
+            a_status = [a.detailed_status_string() for a in assignments]
+            for s in sorted(a_status):
+                print(s)
+    elif options.submissionids is not None:
+        # TODO this.
         for c in sorted(courses):
             print(c)
             assignments = c.get_assignments(options.assignmentids)
@@ -340,19 +353,42 @@ def status():
 def pull():
     config = configargparse.getArgumentParser(name='mdt')
     config.add_argument('--url')
-    config.add_argument('--assignmentids', nargs='+', type=int, action='append')
-    config.add_argument('-a', '--all', help='pull all due submissions, even old ones', action='store_true')
+    config.add_argument('-c', '--courseids', nargs='+', help='moodle course ids', type=int, action='append')
+    config.add_argument('-a', '--assignmentids', nargs='+', type=int, required=True)
+    config.add_argument('--all', help='pull all due submissions, even old ones', action='store_true')
     [options, unparsed] = config.parse_known_args()
+    options.courseids = _unpack(options.courseids)
 
-    if len(config._default_config_files) <= 1:
-        print('no work tree, try mdt init')
+    wd = get_work_tree_root()
+    if wd is None:
+        print('not in workdir, this commands needs to be')
         return
 
-    # TODO use local data
-    # assignment_list = wsfunc.get_assignments(options, options.courseids)
-    #
-    # for assignment in assignment_list:
-    #     pass
+    # this is for getting file metadata like size and such.
+    # comp = re.compile(r'.*pluginfile.php'
+    #                   r'/(?P<context_id>[0-9]*)'
+    #                   r'/(?P<component>\w+)'
+    #                   r'/(?P<file_area>\w+)'
+    #                   r'/(?P<item_id>[0-9]*).*')
+    # match = comp.match(url)
+    # print(wsfunc.get_file_meta(options, **match.groupdict()))
+
+    course_data = _merge_local_data(wd, options.courseids)
+    courses = [Course(c) for c in course_data]
+    args = {'token': options.token}
+    assignments = []
+    for c in courses:
+        assignments += c.get_assignments(options.assignmentids)
+    cwd = os.getcwd()
+    for a in assignments:
+        os.makedirs(str(a.id), exist_ok=True)
+        os.chdir(str(a.id))
+        for file in a.get_file_urls():
+            reply = requests.post(file['fileurl'], args)
+            print(file['fileurl'])
+            with open(os.getcwd() + file['filepath'], 'wb') as out_file:
+                out_file.write(reply.content)
+        os.chdir(cwd)
 
 
 class Course:
@@ -489,18 +525,24 @@ class Assignment:
         for g in grades:
             self.grades[g.user_id] = g
 
+    def get_file_urls(self):
+        urls = []
+        for s in self.submissions:
+            urls += s.get_file_urls()
+        return urls
+
 
 class Submission:
     def __init__(self, data, assignment=None):
         self.id = data.pop('id')
-        self.uid = data.pop('userid')
-        self.gid = data.pop('groupid')
+        self.user_id = data.pop('userid')
+        self.group_id = data.pop('groupid')
         self.plugs = [Plugin(p) for p in data.pop('plugins')]
         self.assignment = assignment
         self.unparsed = data
 
     def __str__(self):
-        return 'id:{:7d} {:5d}:{:5d}'.format(self.id, self.uid, self.gid)
+        return 'id:{:7d} {:5d}:{:5d}'.format(self.id, self.user_id, self.group_id)
 
     def has_content(self):
         return True in [p.has_content() for p in self.plugs]
@@ -514,7 +556,7 @@ class Submission:
             return self.status_single_submission_string(indent=indent)
 
     def get_team_members_and_grades(self):
-        group = self.assignment.course.groups[self.gid]
+        group = self.assignment.course.groups[self.group_id]
         grades = self.assignment.grades
         members = group.members
         graded_users = {}
@@ -557,9 +599,9 @@ class Submission:
             return None, warnings
 
     def status_team_submission_string(self, indent=0):
-        if self.gid not in self.assignment.course.groups:
+        if self.group_id not in self.assignment.course.groups:
             return ' ' * indent + str(self) + ' could not find group?'
-        group = self.assignment.course.groups[self.gid]
+        group = self.assignment.course.groups[self.group_id]
 
         grade, warnings = self.get_grade_or_reason_if_team_ungraded()
         if grade is not None:
@@ -571,8 +613,20 @@ class Submission:
         return True
 
     def status_single_submission_string(self, indent=0):
-        user = self.assignment.course.users[self.uid]
+        user = self.assignment.course.users[self.user_id]
         return indent*' ' + str(user) + str(self)
+
+    def has_files(self):
+        for p in self.plugs:
+            if p.has_files():
+                return True
+        return False
+
+    def get_file_urls(self):
+        urls = []
+        for p in self.plugs:
+            urls += p.get_file_urls()
+        return urls
 
 
 class Grade:
@@ -623,6 +677,12 @@ class Plugin:
         else:
             return False
 
+    def get_file_urls(self):
+        urls = []
+        for farea in self.fareas:
+            urls += farea.get_file_urls()
+        return urls
+
 
 class Filearea:
     def __init__(self, data):
@@ -630,7 +690,7 @@ class Filearea:
         self.files = []
         if 'files' in data:
             self.files = data.pop('files')
-        self.data = data
+        self.unparsed = data
 
     def __str__(self):
         if self.has_content():
@@ -641,6 +701,8 @@ class Filearea:
     def has_content(self):
         return len(self.files) > 0
 
+    def get_file_urls(self):
+        return self.files
 
 class Editorfield:
     def __init__(self, data):

@@ -61,6 +61,20 @@ def get_users(options, course_id):
     return {'courseid': course_id, 'users': reply}
 
 
+def get_file_meta(options, context_id, item_id, component='assignsubmission_file', file_area='submission_files', filepath='', filename=''):
+    function = 'core_files_get_files'
+    args = {
+        'contextid': context_id,
+        'component': component,
+        'filearea': file_area,
+        'itemid': item_id,
+        'filepath': filepath,
+        'filename': filename
+    }
+
+    return _rest(options, function=function, wsargs=args)
+
+
 def get_token(options, password):
     args = {
         'username': options.user,
