@@ -13,7 +13,7 @@ import math
 import re
 import requests
 import os
-import wsfunc
+import wsclient
 
 # TODO check if server supports wsfunction
 # TODO remove all merging stuff, merge on sync, write only one file, update accordingly
@@ -23,10 +23,48 @@ __all__ = ['auth', 'init', 'pull', 'status', 'sync']
 LOCAL_CONFIG_FOLDER = '.mdt/'
 LOCAL_CONFIG = LOCAL_CONFIG_FOLDER + 'config'
 LOCAL_CONFIG_USERS = LOCAL_CONFIG_FOLDER + 'users'
+LOCAL_CONFIG_MOODLE = LOCAL_CONFIG_FOLDER + 'moodle'
 LOCAL_CONFIG_COURSES = LOCAL_CONFIG_FOLDER + 'courses'
 ASSIGNMENT_FOLDER = LOCAL_CONFIG_FOLDER + 'assignments/'
 SUBMISSION_FOLDER = LOCAL_CONFIG_FOLDER + 'submissions/'
 GRADE_FOLDER = LOCAL_CONFIG_FOLDER + 'grades/'
+
+
+def create_global_config_file():
+    file = ''
+    if 'XDG_CONFIG_HOME' in os.environ:
+        if os.path.isdir(os.environ['XDG_CONFIG_HOME']):
+            file = os.environ['XDG_CONFIG_HOME']+'/mdtconfig'
+    elif os.path.isdir(os.path.expanduser('~/.config')):
+        file = os.path.expanduser('~/.config/mdtconfig')
+    else:
+        file = os.path.expanduser('~/.mdtconfig')
+    text = 'could not find global config, creating {}'
+    print(text.format(file))
+    open(file, 'w').close()
+    return file
+
+
+def find_global_config_file():
+    if 'XDG_CONFIG_HOME' in os.environ:
+        if os.path.isfile(os.environ['XDG_CONFIG_HOME']+'/mdtconfig'):
+            return os.environ['XDG_CONFIG_HOME']+'/mdtconfig'
+    elif os.path.isfile(os.path.expanduser('~/.config/mdtconfig')):
+        return os.path.expanduser('~/.config/mdtconfig')
+    elif os.path.isfile(os.path.expanduser('~/.mdtconfig')):
+        return os.path.expanduser('~/.mdtconfig')
+    else:
+        return create_global_config_file()
+
+
+def get_config_file_list():
+    global_config = find_global_config_file()
+    cfg_files = [global_config]
+    work_tree = get_work_tree_root()
+    if work_tree is not None:
+        # default_config_files order is crucial: work_tree cfg overrides global
+        cfg_files.append(work_tree+'/.mdt/config')
+    return cfg_files
 
 
 def get_work_tree_root():
@@ -49,11 +87,6 @@ def get_work_tree_root():
 def auth():
     import getpass
     import configparser
-
-    config = configargparse.getArgumentParser(name='mdt')
-    config.add_argument('-u', '--user', help='username', required=False)
-    config.add_argument('-s', '--service', help='the webservice, has to be set explicitly', default='moodle_mobile_app')
-    config.add_argument('-a', '--ask', help='will ask for all credentials, again', action='store_true')
 
     password_text = """
       Please insert your Moodle password.
@@ -83,10 +116,10 @@ def auth():
 
     password = getpass.getpass(prompt=password_text)
 
-    options.token = wsfunc.get_token(options, password=password)
+    options.token = wsclient.get_token(options, password=password)
     del password
 
-    reply = wsfunc.get_site_info(options)
+    reply = wsclient.get_site_info(options)
     options.uid = reply['userid']
     # functions_json = reply['functions']
     # functions = [func_dict['name'] for func_dict in functions_json]
@@ -118,34 +151,14 @@ def _get_choices_from_list(choices, text):
     return chosen
 
 
-def _parse_mlang(string, preferred_lang='en'):
-    # todo make preferred language configurable
-    # creates mlang tuples like ('en', 'eng text')
-    # tuple_regex = re.compile(r'(?:\{mlang (\w{2})\}(.+?)\{mlang\})+?', flags=re.S)
-    # tuples = tuple_regex.findall(string)
-
-    # creates set with possible languages like {'en', 'de'}
-    lang_regex = re.compile(r'\{mlang\s*(\w{2})\}')
-    lang_set = set(lang_regex.findall(string))
-
-    if len(lang_set) > 1:
-        lang_set.discard(preferred_lang)  # removes preferred lang from set, langs in set will be purged
-        discard_mlang = '|'.join(lang_set)
-        pattern = re.compile(r'((?=\{mlang ('+discard_mlang+r')\})(.*?)\{mlang\})+?', flags=re.S)
-        string = pattern.sub('', string)
-
-    strip_mlang = re.compile(r'(\s*\{mlang.*?\}\s*)+?')
-    return strip_mlang.sub('', string)
-
-
 def init():
     """initializes working tree: creates local .mdt/config, with chosen courses"""
-    config = configargparse.getArgumentParser(name='mdt')
-    config.add_argument('--uid')
-    config.add_argument('--url')
-    config.add_argument('--force', help='overwrite the config', action='store_true')
-    config.add_argument('-c', '--courseids', nargs='+', help='moodle course id', type=int, action='append')
     [options, unparsed] = config.parse_known_args()
+
+    client = wsclient.MoodleWebServiceClient(
+        moodle_hostname=options.url,
+        token=options.token
+    )
 
     input_text = '\n  choose courses, seperate with space: '
 
@@ -153,8 +166,8 @@ def init():
         print('repo already initilized, use --force to overwrite config')
         return
 
-    course_data = wsfunc.get_course_list(options, user_id=options.uid)
-    course_data_temp = wsfunc.get_course_list(options, user_id=options.uid)
+    course_data = wsclient.get_course_list(options, user_id=options.uid)
+    course_data_temp = wsclient.get_course_list(options, user_id=options.uid)
     courses = [Course(c) for c in course_data_temp]
     courses.sort(key=lambda course: course.name)
     os.makedirs(LOCAL_CONFIG_FOLDER, exist_ok=True)
@@ -188,7 +201,7 @@ def _sync_assignments(options):
     config_dir = get_work_tree_root() + ASSIGNMENT_FOLDER
 
     os.makedirs(config_dir, exist_ok=True)
-    assignment_list = wsfunc.get_assignments(options, course_ids=options.courseids)
+    assignment_list = wsclient.get_assignments(options, course_ids=options.courseids)
     for assignment in assignment_list:
         as_config_file = config_dir+str(assignment['id'])
         if os.path.isfile(as_config_file):
@@ -210,7 +223,7 @@ def _sync_submissions(options):
     config_dir = get_work_tree_root() + SUBMISSION_FOLDER
 
     os.makedirs(config_dir, exist_ok=True)
-    submissions = wsfunc.get_submissions(options, assignment_ids=options.assignmentids)
+    submissions = wsclient.get_submissions(options, assignment_ids=options.assignmentids)
     for assignment in submissions:
         s_config_file = config_dir+str(assignment['assignmentid'])
         _write_config(s_config_file, assignment)
@@ -227,7 +240,7 @@ def _sync_grades(options):
     config_dir = get_work_tree_root() + GRADE_FOLDER
 
     os.makedirs(config_dir, exist_ok=True)
-    assignments = wsfunc.get_grades(options, assignment_ids=options.assignmentids)
+    assignments = wsclient.get_grades(options, assignment_ids=options.assignmentids)
     for assignment in assignments:
         g_config_file = config_dir+str(assignment['assignmentid'])
         _write_config(g_config_file, assignment)
@@ -241,7 +254,7 @@ def _sync_users(options):
 
     users = []
     for cid in options.courseids:
-        users.append(wsfunc.get_users(options, course_id=cid))
+        users.append(wsclient.get_users(options, course_id=cid))
         print('{:5d}'.format(cid), end=' ', flush=True)
 
     _write_config(u_config_file, users)
@@ -250,9 +263,6 @@ def _sync_users(options):
 
 
 def sync():
-    config = configargparse.getArgumentParser(name='mdt')
-    config.add_argument('--url')
-    config.add_argument('-c', '--courseids', nargs='+', help='moodle course id', type=int, action='append')
     [options, unparsed] = config.parse_known_args()
     options.courseids = _unpack(options.courseids)
 
@@ -312,11 +322,6 @@ def _merge_local_data(wd, courseids):
 
 
 def status():
-    config = configargparse.getArgumentParser(name='mdt')
-    config.add_argument('-c', '--courseids', nargs='+', help='moodle course ids', type=int, action='append')
-    config.add_argument('-a', '--assignmentids', nargs='+', help='show detailed status for assignment id', type=int)
-    config.add_argument('-s', '--submissionids', nargs='+', help='show detailed status for submission id', type=int)
-    config.add_argument('--full', help='display all assignments', action='store_true')
     [options, unparsed] = config.parse_known_args()
     options.courseids = _unpack(options.courseids)
 
@@ -351,11 +356,6 @@ def status():
 
 
 def pull():
-    config = configargparse.getArgumentParser(name='mdt')
-    config.add_argument('--url')
-    config.add_argument('-c', '--courseids', nargs='+', help='moodle course ids', type=int, action='append')
-    config.add_argument('-a', '--assignmentids', nargs='+', type=int, required=True)
-    config.add_argument('--all', help='pull all due submissions, even old ones', action='store_true')
     [options, unparsed] = config.parse_known_args()
     options.courseids = _unpack(options.courseids)
 
@@ -375,20 +375,15 @@ def pull():
 
     course_data = _merge_local_data(wd, options.courseids)
     courses = [Course(c) for c in course_data]
-    args = {'token': options.token}
     assignments = []
     for c in courses:
         assignments += c.get_assignments(options.assignmentids)
-    cwd = os.getcwd()
     for a in assignments:
-        os.makedirs(str(a.id), exist_ok=True)
-        os.chdir(str(a.id))
-        for file in a.get_file_urls():
-            reply = requests.post(file['fileurl'], args)
-            print(file['fileurl'])
-            with open(os.getcwd() + file['filepath'], 'wb') as out_file:
-                out_file.write(reply.content)
-        os.chdir(cwd)
+        a.download_files_and_write_html(token=options.token)
+
+
+def safe_file_name(name):
+    return re.sub(r'\W', '_', name)
 
 
 class Course:
@@ -485,6 +480,9 @@ class Assignment:
         if 'grades' in data:
             self.update_grades(data.pop('grades'))
         self.course = course
+        # if len(data) > 1:
+        #     print('warning, unparsed assignment data = {}'.format(data.keys()))
+
         self.unparsed = data
 
     def __str__(self):
@@ -527,9 +525,41 @@ class Assignment:
 
     def get_file_urls(self):
         urls = []
-        for s in self.submissions:
+        for s in self.get_valid_submissions():
             urls += s.get_file_urls()
         return urls
+
+    def merge_html(self):
+        # TODO deduplicate for group submissions
+        # TODO use mathjax local, not remote cdn.
+        html = '<head><meta charset="UTF-8"></head><body>' \
+               '<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>'
+        for s in self.get_valid_submissions():
+            if s.has_editor_field_content():
+                if self.team_submission:
+                    group = self.course.groups[s.group_id]
+                    html += '\n\n\n<h1>{}</h1>\n\n\n'.format(group.name)
+                else:
+                    user = self.course.users[s.user_id]
+                    html += '\n\n\n<h1>{}</h1>\n\n\n'.format(user.name)
+                html += s.get_editor_field_content()
+        return html + '</body>'
+
+    def download_files_and_write_html(self, token):
+        work_tree = get_work_tree_root()
+        args = {'token': token}
+        dirname = safe_file_name('{}--{:d}'.format(self.name, self.id))
+        os.makedirs(work_tree + dirname, exist_ok=True)
+        os.chdir(dirname)
+        for file in self.get_file_urls():
+            reply = requests.post(file['fileurl'], args)
+            print(file['fileurl'])
+            with open(os.getcwd() + file['filepath'], 'wb') as out_file:
+                out_file.write(reply.content)
+        with open(os.getcwd()+'/00_merged_submissions.html', 'w') as merged_html:
+            merged_html.write(self.merge_html())
+
+        os.chdir(get_work_tree_root())
 
 
 class Submission:
@@ -539,6 +569,12 @@ class Submission:
         self.group_id = data.pop('groupid')
         self.plugs = [Plugin(p) for p in data.pop('plugins')]
         self.assignment = assignment
+        self.timemodified = data.pop('timemodified')
+        self.timecreated = data.pop('timecreated')
+        self.status = data.pop('status')
+        self.attemptnumber = data.pop('attemptnumber')
+        if len(data) > 1:
+            print('warning, unparsed submission data = ' + str(data.keys()))
         self.unparsed = data
 
     def __str__(self):
@@ -610,11 +646,15 @@ class Submission:
             return ' ' * indent + '{:20} id:{:7d} WARNING:{}'.format(group.name, self.id, warnings)
 
     def is_single_submission_graded(self):
-        return True
+        return self.user_id in self.assignment.grades
 
     def status_single_submission_string(self, indent=0):
         user = self.assignment.course.users[self.user_id]
-        return indent*' ' + str(user) + str(self)
+        if self.is_graded():
+            grade = self.assignment.grades[self.user_id]
+            return indent * ' ' + '{:20} grade:{:4}'.format(user.name[0:19], grade.value)
+        else:
+            return indent * ' ' + '{:20} ungraded'.format(user.name[0:19])
 
     def has_files(self):
         for p in self.plugs:
@@ -626,6 +666,40 @@ class Submission:
         urls = []
         for p in self.plugs:
             urls += p.get_file_urls()
+
+        if len(urls) > 1:
+            return self.add_folder_prefix(urls)
+        else:
+            return self.add_file_prefix(urls)
+
+    def has_editor_field_content(self):
+        return True in [p.has_efield() for p in self.plugs]
+
+    def get_editor_field_content(self):
+        content = ''
+        for p in self.plugs:
+            if p.has_efield():
+                content += p.get_editor_field_content()
+        return content
+
+    def get_prefix(self):
+        if self.assignment.team_submission:
+            group = self.assignment.course.groups[self.group_id]
+            return group.name + '--'
+        else:
+            user = self.assignment.course.users[self.user_id]
+            return user.name + '--'
+
+    def add_file_prefix(self, urls):
+        prefix = self.get_prefix()
+        for u in urls:
+            u['filepath'] = '/' + prefix + u['filepath'][1:]
+        return urls
+
+    def add_folder_prefix(self, urls):
+        prefix = self.get_prefix()
+        for u in urls:
+            u['filepath'] = prefix + u['filepath']
         return urls
 
 
@@ -683,6 +757,14 @@ class Plugin:
             urls += farea.get_file_urls()
         return urls
 
+    def get_editor_field_content(self):
+        content = ''
+        if self.has_efield():
+            for e in self.efields:
+                if e.has_content():
+                    content += e.get_content()
+        return content
+
 
 class Filearea:
     def __init__(self, data):
@@ -693,16 +775,17 @@ class Filearea:
         self.unparsed = data
 
     def __str__(self):
+        out = self.area
         if self.has_content():
-            return str(len(self.files))
-        else:
-            return ''
+            out += ' has {:2d} files'.format(len(self.files))
+        return out
 
     def has_content(self):
         return len(self.files) > 0
 
     def get_file_urls(self):
         return self.files
+
 
 class Editorfield:
     def __init__(self, data):
@@ -714,11 +797,51 @@ class Editorfield:
         self.unparsed = data
 
     def __str__(self):
+        out = '{} {}'.format(self.name, self.descr)
         if self.has_content():
-            return self.name
-        else:
-            return ''
+            out += ' has text format {:1d}'.format(self.fmt)
+        return out
 
     def has_content(self):
         return self.text.strip() != ''
 
+    def get_content(self):
+        return self.text
+
+
+config = configargparse.getArgumentParser(name='mdt', default_config_files=get_config_file_list())
+config.add_argument('--url')
+config.add_argument('--token')
+subparsers = config.add_subparsers(help="SUBCMD help")
+
+status_parser = subparsers.add_parser('status', help='display varios information about work tree')
+status_parser.add_argument('-c', '--courseids', nargs='+', help='moodle course ids', type=int, action='append')
+status_parser.add_argument('-a', '--assignmentids', nargs='+', help='show detailed status for assignment id', type=int)
+status_parser.add_argument('-s', '--submissionids', nargs='+', help='show detailed status for submission id', type=int)
+status_parser.add_argument('--full', help='display all assignments', action='store_true')
+
+sync_parser = subparsers.add_parser('sync', help='download metadata from server')
+sync_parser.add_argument('--url')
+sync_parser.add_argument('--token')
+sync_parser.add_argument('-c', '--courseids', nargs='+', help='moodle course id', type=int, action='append')
+
+init_parser = subparsers.add_parser('init', help='initialize work tree')
+init_parser.add_argument('--url')
+init_parser.add_argument('--token')
+init_parser.add_argument('--uid')
+init_parser.add_argument('--force', help='overwrite the config', action='store_true')
+init_parser.add_argument('-c', '--courseids', nargs='+', help='moodle course id', type=int, action='append')
+
+auth_parser = subparsers.add_parser('auth', help='retrieve access token from server')
+auth_parser.add_argument('--url')
+auth_parser.add_argument('--token')
+auth_parser.add_argument('-u', '--user', help='username', required=False)
+auth_parser.add_argument('-s', '--service', help='the webservice, has to be set explicitly', default='moodle_mobile_app')
+auth_parser.add_argument('-a', '--ask', help='will ask for all credentials, again', action='store_true')
+
+pull_parser = subparsers.add_parser('pull', help='retrieve files for grading')
+pull_parser.add_argument('--url')
+pull_parser.add_argument('--token')
+pull_parser.add_argument('-c', '--courseids', nargs='+', help='moodle course ids', type=int, action='append')
+pull_parser.add_argument('-a', '--assignmentids', nargs='+', type=int, required=True)
+pull_parser.add_argument('--all', help='pull all due submissions, even old ones', action='store_true')
