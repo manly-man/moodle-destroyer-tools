@@ -126,7 +126,6 @@ def auth():
     # print(functions)
 
     with open(config._default_config_files[0], 'w') as cfgfile:
-        del options.subcommand  # don't write subcommand to config
         del options.ask
         cfg_parser = configparser.ConfigParser()
         cfg_parser['global moodle settings'] = options.__dict__
@@ -292,7 +291,7 @@ def _unpack(elements):
     return [elem[0] for elem in elements if type(elem) is list]
 
 
-def _merge_local_data(wd, courseids):
+def _merge_local_data(wd, courseids=[]):
     courses = _load_json_file(wd + LOCAL_CONFIG_COURSES)
     assignments = _merge_json_data_in_folder(wd + ASSIGNMENT_FOLDER)
     submissions = _merge_json_data_in_folder(wd + SUBMISSION_FOLDER)
@@ -422,6 +421,8 @@ class Course:
         return [self.assignments[aid] for aid in id_list if aid in self.assignments]
 
     def update_users(self, data):
+        if 'errorcode' in data:
+            return
         users = [User(u) for u in data]
         for user in users:
             self.users[user.id] = user
@@ -559,7 +560,7 @@ class Assignment:
         with open(os.getcwd()+'/00_merged_submissions.html', 'w') as merged_html:
             merged_html.write(self.merge_html())
 
-        os.chdir(get_work_tree_root())
+        os.chdir(work_tree)
 
 
 class Submission:
