@@ -88,6 +88,36 @@ def get_token(options, password):
         print(json.dumps(reply, indent=2, ensure_ascii=False))
 
 
+def set_grade(options, assignment_id, user_id, grade, feedback='', team_submission=False, feedback_format='plain'):
+    function = 'mod_assign_save_grade'
+
+    remark_format = {
+        'moodle': 0,
+        'html': 1,
+        'plain': 2,
+        # don't know why remark format 3 is not defined. Documentation says nothing about it.
+        'markdown': 4
+    }
+    data = {
+        'assignmentid': assignment_id,  # The assignment id to operate on
+        'userid': user_id,  # The student id to operate on
+        'grade': grade,  # The new grade for this user. Ignored if advanced grading used
+        'attemptnumber': -1,  # The attempt number (-1 means latest attempt)
+        'addattempt': 0,  # Allow another attempt if the attempt reopen method is manual
+        'workflowstate': '',  # The next marking workflow state
+        'applytoall': 0,  # If true, this grade will be applied to all members of the group (for group assignments).
+        'plugindata[assignfeedbackcomments_editor][text]': feedback,
+        'plugindata[assignfeedbackcomments_editor][format]': remark_format[feedback_format],
+        'plugindata[files_filemanager]': 0  # The id of a draft area containing files for this feedback. 0 for none
+    }
+
+    if team_submission:
+        data['applytoall'] = 1
+
+    print('submitting: aid:{:5d} uid:{:5d} grade:{:5.1f} group:{}'.format(assignment_id, user_id, grade, str(team_submission)))
+    result = _rest(options, function=function, wsargs=data)
+
+
 def _parse_mlang(string, preferred_lang='en'):
     # todo make preferred language configurable
     # creates mlang tuples like ('en', 'eng text')
@@ -112,9 +142,9 @@ def _rest_direct(url, path, wsargs={}):
     try:
         reply = requests.post('https://' + url + path, wsargs)
         data = json.loads(reply.text)
-        if 'exception' in data:
+        if data is not None and 'exception' in data:
             print(str(json.dumps(data, indent=1)))
-        elif 'warnings' in data:
+        elif data is not None and 'warnings' in data:
             for warning in data['warnings']:
                 print('{} (id:{}) returned warning code [{}]:{}'.format(
                     warning['item'], str(warning['itemid']), warning['warningcode'], warning['message']

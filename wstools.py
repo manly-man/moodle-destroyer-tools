@@ -19,7 +19,7 @@ import wsclient
 # TODO remove all merging stuff, merge on sync, write only one file, update accordingly
 # TODO after metadata is in one file: on sync: request submissions via last_changed.
 
-__all__ = ['auth', 'init', 'pull', 'status', 'sync']
+__all__ = ['auth', 'grade', 'init', 'pull', 'status', 'sync']
 LOCAL_CONFIG_FOLDER = '.mdt/'
 LOCAL_CONFIG = LOCAL_CONFIG_FOLDER + 'config'
 LOCAL_CONFIG_USERS = LOCAL_CONFIG_FOLDER + 'users'
@@ -34,7 +34,7 @@ def create_global_config_file():
     file = ''
     if 'XDG_CONFIG_HOME' in os.environ:
         if os.path.isdir(os.environ['XDG_CONFIG_HOME']):
-            file = os.environ['XDG_CONFIG_HOME']+'/mdtconfig'
+            file = os.environ['XDG_CONFIG_HOME'] + '/mdtconfig'
     elif os.path.isdir(os.path.expanduser('~/.config')):
         file = os.path.expanduser('~/.config/mdtconfig')
     else:
@@ -47,8 +47,8 @@ def create_global_config_file():
 
 def find_global_config_file():
     if 'XDG_CONFIG_HOME' in os.environ:
-        if os.path.isfile(os.environ['XDG_CONFIG_HOME']+'/mdtconfig'):
-            return os.environ['XDG_CONFIG_HOME']+'/mdtconfig'
+        if os.path.isfile(os.environ['XDG_CONFIG_HOME'] + '/mdtconfig'):
+            return os.environ['XDG_CONFIG_HOME'] + '/mdtconfig'
     elif os.path.isfile(os.path.expanduser('~/.config/mdtconfig')):
         return os.path.expanduser('~/.config/mdtconfig')
     elif os.path.isfile(os.path.expanduser('~/.mdtconfig')):
@@ -63,7 +63,7 @@ def get_config_file_list():
     work_tree = get_work_tree_root()
     if work_tree is not None:
         # default_config_files order is crucial: work_tree cfg overrides global
-        cfg_files.append(work_tree+'/.mdt/config')
+        cfg_files.append(work_tree + '/.mdt/config')
     return cfg_files
 
 
@@ -143,7 +143,7 @@ def _get_choices_from_list(choices, text):
     """
 
     digits = str(math.ceil(math.log10(len(choices))))
-    format_str = '{:'+digits+'d} {}'
+    format_str = '{:' + digits + 'd} {}'
     for n, c in enumerate(choices, 0):
         print(format_str.format(n, c))
     chosen = [int(c) for c in input(text).split()]
@@ -202,7 +202,7 @@ def _sync_assignments(options):
     os.makedirs(config_dir, exist_ok=True)
     assignment_list = wsclient.get_assignments(options, course_ids=options.courseids)
     for assignment in assignment_list:
-        as_config_file = config_dir+str(assignment['id'])
+        as_config_file = config_dir + str(assignment['id'])
         if os.path.isfile(as_config_file):
             with open(as_config_file, 'r') as local_file:
                 local_as_config = json.load(local_file)
@@ -224,13 +224,14 @@ def _sync_submissions(options):
     os.makedirs(config_dir, exist_ok=True)
     submissions = wsclient.get_submissions(options, assignment_ids=options.assignmentids)
     for assignment in submissions:
-        s_config_file = config_dir+str(assignment['assignmentid'])
+        s_config_file = config_dir + str(assignment['assignmentid'])
         _write_config(s_config_file, assignment)
     print('finished: wrote {} submission files'.format(str(len(submissions))))
     return submissions
 
 
 def _sync_file_meta(options):
+    # TODO, this
     pass
 
 
@@ -241,7 +242,7 @@ def _sync_grades(options):
     os.makedirs(config_dir, exist_ok=True)
     assignments = wsclient.get_grades(options, assignment_ids=options.assignmentids)
     for assignment in assignments:
-        g_config_file = config_dir+str(assignment['assignmentid'])
+        g_config_file = config_dir + str(assignment['assignmentid'])
         _write_config(g_config_file, assignment)
     print('finished. total: {}'.format(str(len(assignments))))
     return assignments
@@ -291,12 +292,12 @@ def _unpack(elements):
     return [elem[0] for elem in elements if type(elem) is list]
 
 
-def _merge_local_data(wd, courseids=[]):
+def _merge_local_data(wd=get_work_tree_root(), courseids=[]):
     courses = _load_json_file(wd + LOCAL_CONFIG_COURSES)
     assignments = _merge_json_data_in_folder(wd + ASSIGNMENT_FOLDER)
     submissions = _merge_json_data_in_folder(wd + SUBMISSION_FOLDER)
     grades = _merge_json_data_in_folder(wd + GRADE_FOLDER)
-    users = _load_json_file(wd+LOCAL_CONFIG_USERS)
+    users = _load_json_file(wd + LOCAL_CONFIG_USERS)
 
     merged = []
     for course in courses:
@@ -381,7 +382,50 @@ def pull():
         a.download_files_and_write_html(token=options.token)
 
 
-def safe_file_name(name):
+def grade():
+    [options, unparsed] = config.parse_known_args()
+
+    course_data = _merge_local_data()
+    courses = [Course(c) for c in course_data]
+    grading_data = {}
+    for file in options.files:
+        # file_content = file.read()
+        parsed = json.load(file)
+        assignment_id = parsed['assignment_id']
+        grading_data[assignment_id] = parsed['grades']
+
+    upload_data = []
+    for assignment_id, data in grading_data.items():
+        for course in courses:
+            if assignment_id in course.assignments:
+                assignment = course.assignments[assignment_id]
+                upload_data.append(assignment.prepare_grade_upload_data(data))
+
+    print('this will upload the following grades:')
+    grade_format = '  {:>20}:{:6d} {:5.1f} > {}'
+    for graded_assignment in upload_data:
+        print(' assignment {:5d}, teamsubmission: {}'.format(graded_assignment['assignment_id'], graded_assignment['team_submission']))
+        for gdata in graded_assignment['grade_data']:
+            print(grade_format.format(gdata['name'], gdata['user_id'], gdata['grade'], gdata['feedback'][:40]))
+    if 'n' == input('does this look good? [Y/n]: '):
+        print('do it right, then')
+        return
+
+    for graded_assignment in upload_data:
+        as_id = graded_assignment['assignment_id']
+        team = graded_assignment['team_submission']
+        for gdata in graded_assignment['grade_data']:
+            wsclient.set_grade(
+                options=options,
+                assignment_id=as_id,
+                user_id=gdata['user_id'],
+                grade=gdata['grade'],
+                feedback=gdata['feedback'],
+                team_submission=team
+            )
+
+
+def _safe_file_name(name):
     return re.sub(r'\W', '_', name)
 
 
@@ -391,12 +435,12 @@ class Course:
         self.name = data.pop('fullname')
         self.shortname = data.pop('shortname')
 
-        self.users = {}
-        self.groups = {}
+        self.users = {}  # accessed via user.id
+        self.groups = {}  # accessed via group.id
         if 'users' in data:
             self.update_users(data.pop('users'))
 
-        self.assignments = {}
+        self.assignments = {}  # accessed via assignment.id
         if 'assignments' in data:
             self.update_assignments(data.pop('assignments'))
 
@@ -473,10 +517,13 @@ class Group:
 class Assignment:
     def __init__(self, data, course=None):
         self.id = data.pop('id')
-        self.submissions = [Submission(s, assignment=self) for s in data.pop('submissions')]
         self.team_submission = 1 == data.pop('teamsubmission')
         self.due_date = datetime.fromtimestamp(data.pop('duedate'))
         self.name = data.pop('name')
+        self.submissions = {}  # accesed via submission.id
+        self.max_points = data.pop('grade')  # documentation states, this would be the grade 'type'. Go figure?
+        if 'submissions' in data:
+            self.update_submissions(data.pop('submissions'))
         self.grades = {}  # are accessed via user_id
         if 'grades' in data:
             self.update_grades(data.pop('grades'))
@@ -510,14 +557,14 @@ class Assignment:
         return fmt_string.format(self.valid_submission_count(), self.is_due(), not self.needs_grading())
 
     def detailed_status_string(self, indent=0):
-        string = ' '*indent + str(self)
-        s_status = [s.status_string(indent=indent+1) for s in self.get_valid_submissions()]
+        string = ' ' * indent + str(self)
+        s_status = [s.status_string(indent=indent + 1) for s in self.get_valid_submissions()]
         for s in sorted(s_status):
             string += '\n' + s
         return string
 
     def get_valid_submissions(self):
-        return [s for s in self.submissions if s.has_content()]
+        return [s for s in self.submissions.values() if s.has_content()]
 
     def update_grades(self, data):
         grades = [Grade(g) for g in data]
@@ -530,38 +577,93 @@ class Assignment:
             urls += s.get_file_urls()
         return urls
 
+    def update_submissions(self, data):
+        # TODO find out what breaks after this change.
+        for submission in data:
+            sub = Submission(submission, assignment=self)
+            if sub.has_content():
+                self.submissions[sub.id] = sub
+
     def merge_html(self):
         # TODO deduplicate for group submissions
         # TODO use mathjax local, not remote cdn.
         html = '<head><meta charset="UTF-8"></head><body>' \
                '<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>'
+        assembled_tmp = []
         for s in self.get_valid_submissions():
+            tmp = ''
             if s.has_editor_field_content():
                 if self.team_submission:
                     group = self.course.groups[s.group_id]
-                    html += '\n\n\n<h1>{}</h1>\n\n\n'.format(group.name)
+                    tmp += '\n\n\n<h1>{}</h1>\n\n\n'.format(group.name)
                 else:
                     user = self.course.users[s.user_id]
                     html += '\n\n\n<h1>{}</h1>\n\n\n'.format(user.name)
-                html += s.get_editor_field_content()
+                tmp += s.get_editor_field_content()
+            assembled_tmp.append(tmp)
+        for i in sorted(assembled_tmp):
+            html += i
         return html + '</body>'
 
     def download_files_and_write_html(self, token):
         work_tree = get_work_tree_root()
         args = {'token': token}
-        dirname = safe_file_name('{}--{:d}'.format(self.name, self.id))
-        os.makedirs(work_tree + dirname, exist_ok=True)
-        os.chdir(dirname)
+        assignment_directory = _safe_file_name('{}--{:d}'.format(self.name, self.id))
+        os.makedirs(work_tree + assignment_directory, exist_ok=True)
+        os.chdir(work_tree + assignment_directory)
         for file in self.get_file_urls():
             reply = requests.post(file['fileurl'], args)
             print(file['fileurl'])
             with open(os.getcwd() + file['filepath'], 'wb') as out_file:
                 out_file.write(reply.content)
-        with open(os.getcwd()+'/00_merged_submissions.html', 'w') as merged_html:
+        with open(os.getcwd() + '/00_merged_submissions.html', 'w') as merged_html:
             merged_html.write(self.merge_html())
-
+        self.write_grading_file()
         os.chdir(work_tree)
 
+    def write_grading_file(self):
+        grade_file_head = '{{"assignment_id": {:d}, "grades": [\n'
+        grade_file_end = '\n]}'
+        grade_line_format = '{{"name": "{}", "id": {:d}, "grade": 0.0, "feedback":"" }}'
+        grade_file_content = []
+        filename = 'gradingfile.json'
+        if self.team_submission:
+            for s in self.get_valid_submissions():
+                group = self.course.groups[s.group_id]
+                grade_file_content.append(grade_line_format.format(group.name, s.id))
+        else:
+            for s in self.get_valid_submissions():
+                user = self.course.users[s.user_id]
+                grade_file_content.append(grade_line_format.format(user.name, s.id))
+        # checks for existing file and chooses new name, maybe merge data?
+        if os.path.isfile(filename):
+            new_name = 'gradingfile_{:02d}.json'
+            i = 0
+            while os.path.isfile(new_name.format(i)):
+                i += 1
+            filename = new_name.format(i)
+            print('grading file exists, writing to: {}'.format(filename))
+
+        with open(filename, 'w') as grading_file:
+            grading_file.write(
+                grade_file_head.format(self.id) +
+                ',\n'.join(sorted(grade_file_content)) +
+                grade_file_end
+            )
+
+    def prepare_grade_upload_data(self, data):
+        upload_data = {
+            'assignment_id': self.id,
+            'team_submission': self.team_submission
+        }
+        for grade_data in data:
+            submission = self.submissions[grade_data['id']]
+            if self.team_submission:
+                group = self.course.groups[submission.group_id]
+                user = group.members[0]
+                grade_data['user_id'] = user.id
+        upload_data['grade_data'] = data
+        return upload_data
 
 class Submission:
     def __init__(self, data, assignment=None):
@@ -837,7 +939,8 @@ auth_parser = subparsers.add_parser('auth', help='retrieve access token from ser
 auth_parser.add_argument('--url')
 auth_parser.add_argument('--token')
 auth_parser.add_argument('-u', '--user', help='username', required=False)
-auth_parser.add_argument('-s', '--service', help='the webservice, has to be set explicitly', default='moodle_mobile_app')
+auth_parser.add_argument('-s', '--service', help='the webservice, has to be set explicitly',
+                         default='moodle_mobile_app')
 auth_parser.add_argument('-a', '--ask', help='will ask for all credentials, again', action='store_true')
 
 pull_parser = subparsers.add_parser('pull', help='retrieve files for grading')
@@ -846,3 +949,8 @@ pull_parser.add_argument('--token')
 pull_parser.add_argument('-c', '--courseids', nargs='+', help='moodle course ids', type=int, action='append')
 pull_parser.add_argument('-a', '--assignmentids', nargs='+', type=int, required=True)
 pull_parser.add_argument('--all', help='pull all due submissions, even old ones', action='store_true')
+
+grade_parser = subparsers.add_parser('grade', help='retrieve files for grading')
+grade_parser.add_argument('--url')
+grade_parser.add_argument('--token')
+grade_parser.add_argument('files', nargs='+', help='files containing grades', type=configargparse.FileType('r'))
