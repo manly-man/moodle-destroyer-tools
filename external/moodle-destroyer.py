@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+
 import sys
 import csv
 import argparse
@@ -30,17 +30,17 @@ parser.add_argument("-v", "--version",
 
 args = parser.parse_args()
 
-if args.destroy[0] != None:
+if args.destroy[0] is not None:
     GRADING_FILE = args.destroy[0].name
 else:
     raise Exception
 
-if args.destroy[1] != None:
+if args.destroy[1] is not None:
     MOODLE_EXPORT = args.destroy[1].name
 else:
     raise Exception
 
-if args.result[0] != None:
+if args.result[0] is not None:
     RESULT_FILE = args.result[0].name
 else:
     raise Exception

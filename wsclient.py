@@ -1,9 +1,12 @@
 import json
 import re
 import requests
+import warnings
 
-# TODO maybe use command pattern for ws functions
-# TODO handle ws exceptions in sensible manner, collate warnings
+warnings.warn(
+    "DEPRECATED",
+    DeprecationWarning, stacklevel=2
+)
 
 
 def get_assignments(options, course_ids):
@@ -75,19 +78,6 @@ def get_file_meta(options, context_id, item_id, component='assignsubmission_file
     return _rest(options, function=function, wsargs=args)
 
 
-def get_token(options, password):
-    args = {
-        'username': options.user,
-        'password': password,
-        'service': options.service
-    }
-    reply = _rest_direct(options.url, '/login/token.php', wsargs=args)
-    try:
-        return reply['token']
-    except KeyError:
-        print(json.dumps(reply, indent=2, ensure_ascii=False))
-
-
 def set_grade(options, assignment_id, user_id, grade, feedback='', team_submission=False, feedback_format='plain'):
     function = 'mod_assign_save_grade'
 
@@ -154,8 +144,7 @@ def _rest_direct(url, path, wsargs={}):
         print('connection error')
 
 
-def _rest(options, function, wsargs={}):
-    wspath = '/webservice/rest/server.php'
+def _rest(options, function, wsargs={}, wspath='/webservice/rest/server.php'):
     post_data = {
         'wstoken': options.token,
         'moodlewsrestformat': 'json',

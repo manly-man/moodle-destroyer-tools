@@ -1,23 +1,29 @@
 import requests
 from moodle.fieldnames import text_format
-from moodle.fieldnames import json as fn
+from moodle.fieldnames import JsonFieldNames as Jn
 from requests.adapters import HTTPAdapter
+from urllib.parse import parse_qs
 
 # TODO handle ws exceptions in sensible manner, collate warnings: MoodleAdapter?
+# TODO check if server supports wsfunction
 
 
 class MoodleSession(requests.Session):
     def __init__(self, moodle_url, token=None):
         super(MoodleSession, self).__init__()
         self.ws_path = '/webservice/rest/server.php'
-        self.url = moodle_url
         self.token = token
-        # self.mount('https://', MoodleAdapter(moodle_url=moodle_url, token=token))
+        if moodle_url.startswith('http://'):
+            moodle_url = 'https://' + moodle_url[4:]
+        if not moodle_url.startswith('https://'):
+            moodle_url = 'https://' + moodle_url
+        self.url = moodle_url
+        self.mount('https://', MoodleAdapter())
 
     def post_web_service(self, data=None):
         needed_args = {
-                fn.moodle_ws_rest_format: 'json',
-                fn.ws_token: self.token,
+                Jn.moodle_ws_rest_format: 'json',
+                Jn.ws_token: self.token,
         }
         if data is None:
             data = needed_args
@@ -34,8 +40,8 @@ class MoodleSession(requests.Session):
         :return: list of courses where the user is enrolled in.
         """
         data = {
-            fn.ws_function: 'core_enrol_get_users_courses',
-            fn.user_id: user_id,
+            Jn.ws_function: 'core_enrol_get_users_courses',
+            Jn.user_id: user_id,
         }
 
         return self.post_web_service(data)
@@ -59,9 +65,9 @@ class MoodleSession(requests.Session):
         else:
             include_not_enrolled_courses = ''
         data = {
-            fn.ws_function: 'mod_assign_get_assignments',
-            fn.course_ids: course_ids,
-            fn.capabilities: capabilities,
+            Jn.ws_function: 'mod_assign_get_assignments',
+            Jn.course_ids: course_ids,
+            Jn.capabilities: capabilities,
             # fn.include_not_enrolled_courses: include_not_enrolled_courses, #  moodle 3.2
         }
 
@@ -76,21 +82,20 @@ class MoodleSession(requests.Session):
         :return: list of grades, contained in assignments.
         """
         data = {
-            fn.ws_function: 'mod_assign_get_grades',
-            fn.assignment_ids: assignment_ids,
-            fn.since: since,
+            Jn.ws_function: 'mod_assign_get_grades',
+            Jn.assignment_ids: assignment_ids,
+            Jn.since: since,
         }
         return self.post_web_service(data)
 
     def get_site_info(self):
-        """
-        Requests meta data about the site and user.
+        """Requests meta data about the site and user.
         Contains user preferences and some "capabilities".
         Also contains a list of functions allowed by the web service.
 
         :return: said info
         """
-        data = {fn.ws_function: 'core_webservice_get_site_info'}
+        data = {Jn.ws_function: 'core_webservice_get_site_info'}
         return self.post_web_service(data)
 
     def get_submissions_for_assignments(self, assignment_ids, status='', since=0, before=0):
@@ -104,11 +109,11 @@ class MoodleSession(requests.Session):
         :return: submission meta data contained in assignment list.
         """
         data = {
-            fn.ws_function: 'mod_assign_get_submissions',
-            fn.assignment_ids: assignment_ids,
-            fn.status: status,
-            fn.since: since,
-            fn.before: before,
+            Jn.ws_function: 'mod_assign_get_submissions',
+            Jn.assignment_ids: assignment_ids,
+            Jn.status: status,
+            Jn.since: since,
+            Jn.before: before,
         }
 
         return self.post_web_service(data)
@@ -132,15 +137,15 @@ class MoodleSession(requests.Session):
         :return: a list of users
         """
         data = {
-            fn.ws_function: 'core_enrol_get_enrolled_users',
-            fn.course_id: course_id
+            Jn.ws_function: 'core_enrol_get_enrolled_users',
+            Jn.course_id: course_id
         }
         # moodle takes these options like options[0][name]=key, options[0][value]=value
         if options is not None:
             for num, (key, value) in enumerate(options.items(), 0):
                 data.update({
-                    fn.options.format(num, fn.name): key,
-                    fn.options.format(num, fn.value): value,
+                    Jn.options.format(num, Jn.name): key,
+                    Jn.options.format(num, Jn.value): value,
                 })
 
         return self.post_web_service(data)
@@ -173,16 +178,16 @@ class MoodleSession(requests.Session):
         :return: what you asked for … welp?
         """
         data = {
-            fn.ws_function: 'core_files_get_files',
-            fn.context_id: context_id,
-            fn.component: component,
-            fn.file_area: file_area,
-            fn.item_id: item_id,
-            fn.file_path: file_path,
-            fn.file_name: file_name,
-            fn.modified: since,
-            fn.context_level: context_level,
-            fn.instance_id: instance_id,
+            Jn.ws_function: 'core_files_get_files',
+            Jn.context_id: context_id,
+            Jn.component: component,
+            Jn.file_area: file_area,
+            Jn.item_id: item_id,
+            Jn.file_path: file_path,
+            Jn.file_name: file_name,
+            Jn.modified: since,
+            Jn.context_level: context_level,
+            Jn.instance_id: instance_id,
         }
 
         return self.post_web_service(data)
@@ -201,9 +206,9 @@ class MoodleSession(requests.Session):
         :return: a token.
         """
         data = {
-            fn.user_name: user_name,
-            fn.password: password,
-            fn.service: service
+            Jn.user_name: user_name,
+            Jn.password: password,
+            Jn.service: service
         }
         return self.post(self.url+'/login/token.php', data)
 
@@ -227,21 +232,21 @@ class MoodleSession(requests.Session):
         :return:
         """
         data = {
-            fn.ws_function: 'mod_assign_save_grade',
-            fn.assignment_id: assignment_id,
-            fn.user_id: user_id,
-            fn.grade: grade,
-            fn.attempt_number: attempt_number,
-            fn.add_attempt: 0,
-            fn.workflow_state: workflow_state,
-            fn.apply_to_all: 0,
-            fn.assign_feedback_text: feedback_text,
-            fn.assign_feedback_format: text_format[feedback_format],
-            fn.assign_feedback_file: feedback_draft_area_id
+            Jn.ws_function: 'mod_assign_save_grade',
+            Jn.assignment_id: assignment_id,
+            Jn.user_id: user_id,
+            Jn.grade: grade,
+            Jn.attempt_number: attempt_number,
+            Jn.add_attempt: 0,
+            Jn.workflow_state: workflow_state,
+            Jn.apply_to_all: 0,
+            Jn.assign_feedback_text: feedback_text,
+            Jn.assign_feedback_format: text_format[feedback_format],
+            Jn.assign_feedback_file: feedback_draft_area_id
         }
 
         if team_submission:
-            data[fn.apply_to_all] = 1
+            data[Jn.apply_to_all] = 1
         if add_attempt:
             data[add_attempt] = 1
 
@@ -249,7 +254,15 @@ class MoodleSession(requests.Session):
 
 
 class MoodleAdapter(HTTPAdapter):
-    def __init__(self, moodle_url, token=None, **kwargs):
-        self.url = moodle_url
-        self.token = token
+    def __init__(self, **kwargs):
         super(MoodleAdapter, self).__init__(**kwargs)
+
+    def build_response(self, req, resp):
+        response = super().build_response(req, resp)
+        data = parse_qs(req.body)
+        if Jn.ws_function in data:
+            function = data[Jn.ws_function]
+            print('called function: {}'.format(function))
+        invalid_token = {"exception": "moodle_exception", "errorcode": "invalidtoken", "message": "Invalid token - token not found"}
+        return response
+
