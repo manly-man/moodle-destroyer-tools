@@ -2,9 +2,10 @@ import os
 import requests  # TODO remove all requests, move to communication
 
 from datetime import datetime
-
+import re
+from util import worktree
 from moodle.fieldnames import JsonFieldNames as Jn
-
+import warnings
 
 
 class Course:
@@ -184,7 +185,15 @@ class Assignment:
         return html + '</body>'
 
     def download_files_and_write_html(self, token):
-        work_tree = get_work_tree_root()
+        warnings.warn(
+            "DEPRECATED",
+            DeprecationWarning, stacklevel=2
+        )
+
+        def _safe_file_name(name):
+            return re.sub(r'\W', '_', name)
+
+        work_tree = worktree.get_work_tree_root()
         args = {'token': token}
         assignment_directory = _safe_file_name('{}--{:d}'.format(self.name, self.id))
         os.makedirs(work_tree + assignment_directory, exist_ok=True)

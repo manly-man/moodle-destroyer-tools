@@ -57,7 +57,7 @@ def main():
     sub_command = check_for_sub_command()
 
     if sub_command is None:
-        wstools.config.print_help()
+        wstools.make_config_parser().print_help()
         print_known_external_commands()
         raise SystemExit(1)
     elif sub_command in internal_cmd():
@@ -66,7 +66,7 @@ def main():
     elif sub_command in external_subcmds():
         execute_external(sub_command)
     else:
-        wstools.config.print_help()
+        wstools.make_config_parser().print_help()
         print_known_external_commands()
         raise SystemExit(1)
 
