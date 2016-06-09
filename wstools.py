@@ -6,6 +6,7 @@ $password = required_param('password', PARAM_RAW);
 $serviceshortname  = required_param('service',  PARAM_ALPHANUMEXT);
 """
 import configargparse
+from moodle.communication import MoodleSession
 from datetime import datetime
 import glob
 import json
@@ -116,10 +117,19 @@ def auth():
 
     password = getpass.getpass(prompt=password_text)
 
-    options.token = wsclient.get_token(options, password=password)
+    ms = MoodleSession(moodle_url='https://'+options.url)
+    reply = ms.get_token(user_name=options.user, password=password, service=options.service)
+    try:
+        j = reply.json()
+        options.token = j['token']
+        ms.token = options.token
+    except KeyError:
+        print(j)
+        raise SystemExit(1)
+
     del password
 
-    reply = wsclient.get_site_info(options)
+    reply = ms.get_site_info().json()
     options.uid = reply['userid']
     # functions_json = reply['functions']
     # functions = [func_dict['name'] for func_dict in functions_json]
