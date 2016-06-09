@@ -6,25 +6,77 @@ $password = required_param('password', PARAM_RAW);
 $serviceshortname  = required_param('service',  PARAM_ALPHANUMEXT);
 """
 import json
-import re
-
 import configargparse
 
 import wsclient
+
 from moodle.communication import MoodleSession
 from moodle.models import Course
 
 from util import worktree
 from util import interaction
 
-# TODO remove all merging stuff, merge on sync, write only one file, update accordingly
-# TODO after metadata is in one file: on sync: request submissions via last_changed.
+# TODO on sync: request submissions via last_changed.
 
 __all__ = ['auth', 'grade', 'init', 'pull', 'status', 'sync']
 
 
+def make_config_parser():
+    parser = configargparse.ArgumentParser(default_config_files=worktree.get_config_file_list())
+    parser.add_argument('--url')
+    parser.add_argument('--token')
+    subparsers = parser.add_subparsers(help="internal sub command help")
+
+    auth_parser = subparsers.add_parser('auth', help='retrieve access token from server')
+    auth_parser.add_argument('--url')
+    auth_parser.add_argument('--token')
+    auth_parser.add_argument('-u', '--user', help='username', required=False)
+    auth_parser.add_argument('-s', '--service', help='the webservice, has to be set explicitly',
+                             default='moodle_mobile_app')
+    auth_parser.add_argument('-a', '--ask', help='will ask for all credentials, again', action='store_true')
+
+    init_parser = subparsers.add_parser('init', help='initialize work tree')
+    init_parser.add_argument('--url')
+    init_parser.add_argument('--token')
+    init_parser.add_argument('--uid')
+    init_parser.add_argument('--force', help='overwrite the config', action='store_true')
+    init_parser.add_argument('-c', '--courseids', nargs='+', help='moodle course id', type=int, action='append')
+
+    status_parser = subparsers.add_parser('status', help='display various information about work tree')
+    status_parser.add_argument('-c', '--courseids', nargs='+', help='moodle course ids', type=int, action='append')
+    status_parser.add_argument('-a', '--assignmentids', nargs='+', help='show detailed status for assignment id',
+                               type=int)
+    status_parser.add_argument('-s', '--submissionids', nargs='+', help='show detailed status for submission id',
+                               type=int)
+    status_parser.add_argument('--full', help='display all assignments', action='store_true')
+
+    sync_parser = subparsers.add_parser('sync', help='download metadata from server')
+    sync_parser.add_argument('--url')
+    sync_parser.add_argument('--token')
+    sync_parser.add_argument('-c', '--courseids', nargs='+', help='moodle course id', type=int, action='append')
+
+    pull_parser = subparsers.add_parser('pull', help='retrieve files for grading')
+    pull_parser.add_argument('--url')
+    pull_parser.add_argument('--token')
+    pull_parser.add_argument('-c', '--courseids', nargs='+', help='moodle course ids', type=int, action='append')
+    pull_parser.add_argument('-a', '--assignmentids', nargs='+', type=int, required=True)
+    pull_parser.add_argument('--all', help='pull all due submissions, even old ones', action='store_true')
+
+    grade_parser = subparsers.add_parser('grade', help='upload grades from files')
+    grade_parser.add_argument('--url')
+    grade_parser.add_argument('--token')
+    grade_parser.add_argument('files', nargs='+', help='files containing grades', type=configargparse.FileType('r'))
+
+    return parser
+
+
+def _get_options():
+    options, unknown_args = make_config_parser().parse_known_args()
+    return options
+
+
 def auth():
-    [options, unparsed] = config.parse_known_args()
+    options = _get_options()
     settings = {}
 
     if options.ask:
@@ -69,7 +121,7 @@ def auth():
 
 def init():
     """initializes working tree: creates local .mdt/config, with chosen courses"""
-    [options, unparsed] = config.parse_known_args()
+    options = _get_options()
 
     ms = MoodleSession(moodle_url=options.url, token=options.token)
 
@@ -162,7 +214,7 @@ def _sync_users(options):
 def sync():
     worktree.needs_work_tree()
 
-    [options, unparsed] = config.parse_known_args()
+    options = _get_options()
     course_ids = _unpack(options.courseids)
 
     for course in course_ids:
@@ -181,10 +233,10 @@ def _unpack(elements):
 
 
 def status():
-    [options, unparsed] = config.parse_known_args()
+    options = _get_options()
     options.courseids = _unpack(options.courseids)
 
-    course_data = worktree.merge_local_json_data(options.courseids)
+    course_data = worktree.merge_local_json_data()
     courses = [Course(c) for c in course_data]
     if options.assignmentids is not None and options.submissionids is None:
         for c in sorted(courses):
@@ -210,20 +262,21 @@ def status():
 
 
 def pull():
-    [options, unparsed] = config.parse_known_args()
-    options.courseids = _unpack(options.courseids)
+    options = _get_options()
+    course_ids = _unpack(options.courseids)
+    assignment_ids = options.assignmentids
 
-    course_data = worktree.merge_local_json_data(options.courseids)
+    course_data = worktree.merge_local_json_data()
     courses = [Course(c) for c in course_data]
     assignments = []
     for c in courses:
-        assignments += c.get_assignments(options.assignmentids)
+        assignments += c.get_assignments(assignment_ids)
     for a in assignments:
         a.download_files_and_write_html(token=options.token)
 
 
 def grade():
-    [options, unparsed] = config.parse_known_args()
+    options = _get_options()
 
     course_data = worktree.merge_local_json_data()
     courses = [Course(c) for c in course_data]
@@ -263,51 +316,3 @@ def grade():
                 feedback=gdata['feedback'],
                 team_submission=team
             )
-
-
-def _safe_file_name(name):
-    return re.sub(r'\W', '_', name)
-
-
-config = configargparse.getArgumentParser(name='mdt', default_config_files=worktree.get_config_file_list())
-config.add_argument('--url')
-config.add_argument('--token')
-subparsers = config.add_subparsers(help="SUBCMD help")
-
-status_parser = subparsers.add_parser('status', help='display varios information about work tree')
-status_parser.add_argument('-c', '--courseids', nargs='+', help='moodle course ids', type=int, action='append')
-status_parser.add_argument('-a', '--assignmentids', nargs='+', help='show detailed status for assignment id', type=int)
-status_parser.add_argument('-s', '--submissionids', nargs='+', help='show detailed status for submission id', type=int)
-status_parser.add_argument('--full', help='display all assignments', action='store_true')
-
-sync_parser = subparsers.add_parser('sync', help='download metadata from server')
-sync_parser.add_argument('--url')
-sync_parser.add_argument('--token')
-sync_parser.add_argument('-c', '--courseids', nargs='+', help='moodle course id', type=int, action='append')
-
-init_parser = subparsers.add_parser('init', help='initialize work tree')
-init_parser.add_argument('--url')
-init_parser.add_argument('--token')
-init_parser.add_argument('--uid')
-init_parser.add_argument('--force', help='overwrite the config', action='store_true')
-init_parser.add_argument('-c', '--courseids', nargs='+', help='moodle course id', type=int, action='append')
-
-auth_parser = subparsers.add_parser('auth', help='retrieve access token from server')
-auth_parser.add_argument('--url')
-auth_parser.add_argument('--token')
-auth_parser.add_argument('-u', '--user', help='username', required=False)
-auth_parser.add_argument('-s', '--service', help='the webservice, has to be set explicitly',
-                         default='moodle_mobile_app')
-auth_parser.add_argument('-a', '--ask', help='will ask for all credentials, again', action='store_true')
-
-pull_parser = subparsers.add_parser('pull', help='retrieve files for grading')
-pull_parser.add_argument('--url')
-pull_parser.add_argument('--token')
-pull_parser.add_argument('-c', '--courseids', nargs='+', help='moodle course ids', type=int, action='append')
-pull_parser.add_argument('-a', '--assignmentids', nargs='+', type=int, required=True)
-pull_parser.add_argument('--all', help='pull all due submissions, even old ones', action='store_true')
-
-grade_parser = subparsers.add_parser('grade', help='retrieve files for grading')
-grade_parser.add_argument('--url')
-grade_parser.add_argument('--token')
-grade_parser.add_argument('files', nargs='+', help='files containing grades', type=configargparse.FileType('r'))

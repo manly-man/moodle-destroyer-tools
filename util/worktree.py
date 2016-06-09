@@ -75,7 +75,7 @@ def in_tree():
     return get_work_tree_root() is not None
 
 
-def merge_local_json_data(courseids=[]):
+def merge_local_json_data():
     wd = get_work_tree_root()
     if wd is None:
         raise SystemExit(1, 'not in worktree.')
