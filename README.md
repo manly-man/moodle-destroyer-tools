@@ -15,7 +15,7 @@ If that is not possible, you might want to fall back to the master branch.
 
 ### Your PC
 
-have python3 installed and the following additional python-libraries: 
+linux machine with python3 installed and the following additional python-libraries: 
 * configargparse
 * requests
 
@@ -30,8 +30,8 @@ just link mdt.py into your path.
 #### Why you might not want to use this
 
 * everything is changing, this is a development branch, after all
-* code: quality is dubious, interfaces unstable, documentation non-existant.
-* no/wonky error handling
+* code: quality is dubious, interfaces unstable, documentation non-existant. WIP
+* no/wonky error handling, moodle almost always says 200 OK, even on exceptions \o/ WIP
 
 #### If you want to use it anyway:
 
@@ -55,13 +55,13 @@ Every value in .mdt/config will override the global values.
 * auth: get a token for the webservice, do that first. It is interactive
 * init: will list the courses you enrolled in you can interactively select the ones you want to grade.  Don't put in too many, your admin will thank you.
 * sync: retreives the metadata from moodle for your selected courses. If many courses are selected, this will take a while.
-* status: without any arguments, it will only display due assignments, detection is WIP.
+* status: without any arguments, it will only display due assignments, see commandline help.
+* pull: retrieves and stores submissions for grading. Creates a file for grading result and feedback, interface unstable.
+* grade: interprets pull's file with grades in it, submits grades to moodle users, interface unstable.  
 
 #### Planned Subcommands
 
-* pull: retrieves and stores submissions for grading. Creates a file for grading result and Feedback. Is up next.
 * config: like git, could be useful.
-* ?: use grading file from pull as input to submit grades to moodle.
 * ?: maybe help grading even further.
 
 #### planned
@@ -69,12 +69,30 @@ Every value in .mdt/config will override the global values.
 * extend the scripts to detect which commands you Moodle serves.
 * add documentation after decision for a sensible code-architecture.
 * accessing Moodle Quizzes
+* shell completion
+* threaded download
+* curses UI, maybe interactive.
 
 #### unplanned functionality
 
 * Functionality not involving Web Services: We don't want to navigate the front-end DOM. At least -1 doesn't
 
 ## Development
+
+### Where you can help 
+
+Backend:
+
+* moodle.communication: MoodleSession implements Moodle's Web Service API: it is incomplete and has no support for different service versions.
+Implementing those is tedious, especially since Moodles API is pretty wonky: You will almost always receive 200 OK, and will have to handle exceptions on foot.
+
+* moodle.models: contains various half-hearted representations of Moodle data structures. 
+They are badly interconnected and need restructuring. 
+
+Frontend:
+
+* wstools: needs command structure. maybe a curses interface.
+
 
 ### Documentation
 
@@ -93,7 +111,7 @@ The WS API Documentation is only available per Moodle instance, so you are left 
 Well, you are reading it… That is how much documentation there is.
 If you really, really want to help the tool along or ask for an explanation, ask -1 via [twitter](https://twitter.com/einsweniger/) or mail.
 
-### Bootsrap
+### Bootstrap
 
 Before starting to develop on manly-man moodle scripts you should run the `boostrap` script.
 This will setup `git-flow` with the default settings.
