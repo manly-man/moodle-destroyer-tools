@@ -20,3 +20,12 @@ def strip_mlang(string, preferred_lang='en'):
     strip_mlang = re.compile(r'(\s*\{mlang.*?\}\s*)+?')
     return strip_mlang.sub('', string)
 
+# this is for getting file metadata like size and such.
+# comp = re.compile(r'.*pluginfile.php'
+#                   r'/(?P<context_id>[0-9]*)'
+#                   r'/(?P<component>\w+)'
+#                   r'/(?P<file_area>\w+)'
+#                   r'/(?P<item_id>[0-9]*).*')
+# match = comp.match(url)
+# print(wsfunc.get_file_meta(options, **match.groupdict()))
+

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-'''mod_assign_save_grade params
+"""
+mod_assign_save_grade params
   'assignmentid' => new external_value(PARAM_INT, 'The assignment id to operate on'),
   'userid' => new external_value(PARAM_INT, 'The student id to operate on'),
   'grade' => new external_value(PARAM_FLOAT, 'The new grade for this user. Ignored if advanced grading used'),
@@ -50,7 +51,7 @@
                 )
             )
 
-'''
+"""
 
 ''' mod_assign_assign_grades
     /**
