@@ -1,3 +1,6 @@
+import mimetypes
+import os
+
 import requests
 from moodle.fieldnames import text_format
 from moodle.fieldnames import JsonFieldNames as Jn
@@ -18,7 +21,7 @@ class MoodleSession(requests.Session):
         if not moodle_url.startswith('https://'):
             moodle_url = 'https://' + moodle_url
         self.url = moodle_url
-        self.mount('https://', MoodleAdapter())
+        # self.mount('https://', MoodleAdapter())
 
     def post_web_service(self, data=None):
         needed_args = {
@@ -251,6 +254,23 @@ class MoodleSession(requests.Session):
             data[add_attempt] = 1
 
         return self.post_web_service(data)
+
+    def upload_files(self, fd_list, file_path='/', file_area='draft', item_id=0):
+        mimetypes.init()
+
+        upload_info = []
+        for num, fd in enumerate(fd_list,0):
+            upload_info.append(('file_{:d}'.format(num),
+                                (os.path.basename(fd.name), fd, mimetypes.guess_type(fd.name)[0])))
+        print(str(upload_info))
+
+        data = {
+            Jn.file_path: file_path,
+            Jn.file_area: file_area,
+            Jn.item_id: item_id,
+            'token': self.token
+        }
+        return self.post(self.url+'/webservice/upload.php', data, files=upload_info)
 
 
 class MoodleAdapter(HTTPAdapter):

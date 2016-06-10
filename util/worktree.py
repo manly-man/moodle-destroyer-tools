@@ -118,10 +118,6 @@ def _load_json_file(filename):
         return json.load(file)
 
 
-def write_local_course_meta(course_data):
-    _write_config(LOCAL_CONFIG_COURSES, course_data)
-
-
 def write_global_config(config_dict):
     with open(get_global_config_file(), 'w') as file:
         cfg_parser = configparser.ConfigParser()
@@ -134,12 +130,13 @@ def write_local_config(config_data):
 
 
 def _write_config(path, data):
-    with open(path, '') as file:
+    with open(path, 'w') as file:
         file.write(data)
 
 
-def write_local_user_meta(users):
-    _write_config(LOCAL_CONFIG_USERS,users)
+def _write_meta(path, data):
+    with open(path, 'w') as file:
+        json.dump(data, file, indent=2, ensure_ascii=False, sort_keys=True)
 
 
 def create_folders():
@@ -150,26 +147,34 @@ def create_folders():
 
 
 def update_local_assignment_meta(assignment):
-    as_config_file = ASSIGNMENT_FOLDER + assignment['id']
+    as_config_file = ASSIGNMENT_FOLDER + str(assignment['id'])
     if os.path.isfile(as_config_file):
         with open(as_config_file, 'r') as local_file:
             local_as_config = json.load(local_file)
         if local_as_config['timemodified'] < assignment['timemodified']:
-            _write_config(as_config_file, assignment)
+            _write_meta(as_config_file, assignment)
             return True
     else:
-        _write_config(as_config_file, assignment)
+        _write_meta(as_config_file, assignment)
         return False
+
+
+def write_local_user_meta(users):
+    _write_meta(LOCAL_CONFIG_USERS, users)
+
+
+def write_local_course_meta(course_data):
+    _write_meta(LOCAL_CONFIG_COURSES, course_data)
 
 
 def write_local_submission_meta(assignment):
     s_config_file = SUBMISSION_FOLDER + str(assignment['assignmentid'])
-    _write_config(s_config_file, assignment)
+    _write_meta(s_config_file, assignment)
 
 
 def write_local_grade_meta(assignment):
     g_config_file = GRADE_FOLDER + str(assignment['assignmentid'])
-    _write_config(g_config_file, assignment)
+    _write_meta(g_config_file, assignment)
 
 
 def needs_work_tree():
