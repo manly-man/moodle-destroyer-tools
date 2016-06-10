@@ -30,7 +30,7 @@ class JsonFieldNames:
     context_id = 'contextid'
     context_level = 'contextlevel'
     component = 'component'
-    file_area = 'file_area'
+    file_area = 'filearea'
     file_name = 'filename'
     file_path = 'filepath'
     grade = 'grade'
