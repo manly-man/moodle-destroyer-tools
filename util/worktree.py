@@ -87,9 +87,8 @@ def merge_local_json_data():
 
     merged = []
     for course in courses:
-        for ulist in users:
-            if ulist['courseid'] == course['id']:
-                course['users'] = ulist['users']
+        print(courses)
+        course['users'] = users
 
         course_assignments = [a for a in assignments if a['course'] == course['id']]
 
