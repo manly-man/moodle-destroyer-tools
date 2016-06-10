@@ -11,6 +11,7 @@ import configargparse
 from moodle.communication import MoodleSession
 from moodle.fieldnames import JsonFieldNames as Jn
 from moodle.models import Course
+from moodle.parsers import strip_mlang
 
 from util import worktree
 from util import interaction
@@ -139,7 +140,7 @@ def init():
         options.courseids = [c.id for c in chosen_courses]
         saved_data = [c for c in reply.json() if c['id'] in options.courseids]
 
-        worktree.write_local_course_meta(json.dumps(saved_data))
+        worktree.write_local_course_meta(saved_data)
 
     worktree.write_local_config('courseids = ' + str(options.courseids))
 
@@ -148,7 +149,7 @@ def _write_assignments(reply):
     new = 0
     updated = 0
     assignment_ids = []
-    data = reply.json()
+    data = json.loads(strip_mlang(reply.text))
     for course in data[Jn.courses]:
         for assignment in course[Jn.assignments]:
             assignment_ids.append(assignment[Jn.id])
@@ -162,7 +163,7 @@ def _write_assignments(reply):
 
 
 def _write_submissions(reply):
-    data = reply.json()
+    data = json.loads(strip_mlang(reply.text))
     for assignment in data[Jn.assignments]:
         worktree.write_local_submission_meta(assignment)
     print('finished: wrote {:d} submission files'.format(len(data[Jn.assignments])))
@@ -174,7 +175,7 @@ def _sync_file_meta(reply):
 
 
 def _write_grades(reply):
-    data = reply.json()
+    data = json.loads(strip_mlang(reply.text))
     for assignment in data[Jn.assignments]:
         worktree.write_local_grade_meta(assignment)
     print('finished. total: {:d}'.format(len(data[Jn.assignments])))
@@ -185,7 +186,8 @@ def _write_users(session, course_ids):
 
     users = []
     for cid in course_ids:
-        data = session.get_enrolled_users(course_id=cid).json()
+        reply = session.get_enrolled_users(course_id=cid)
+        data = json.loads(strip_mlang(reply.text))
         users += data
         print('{:5d}:got {:4d}'.format(cid, len(data)), end=' ', flush=True)
 
