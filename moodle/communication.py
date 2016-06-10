@@ -259,7 +259,7 @@ class MoodleSession(requests.Session):
         mimetypes.init()
 
         upload_info = []
-        for num, fd in enumerate(fd_list,0):
+        for num, fd in enumerate(fd_list, 0):
             upload_info.append(('file_{:d}'.format(num),
                                 (os.path.basename(fd.name), fd, mimetypes.guess_type(fd.name)[0])))
         print(str(upload_info))
@@ -268,7 +268,7 @@ class MoodleSession(requests.Session):
             Jn.file_path: file_path,
             Jn.file_area: file_area,
             Jn.item_id: item_id,
-            'token': self.token
+            Jn.token: self.token
         }
         return self.post(self.url+'/webservice/upload.php', data, files=upload_info)
 
@@ -284,5 +284,7 @@ class MoodleAdapter(HTTPAdapter):
             function = data[Jn.ws_function]
             print('called function: {}'.format(function))
         invalid_token = {"exception": "moodle_exception", "errorcode": "invalidtoken", "message": "Invalid token - token not found"}
+        invalid_parameter = {'debuginfo': "courseids => Ungültiger Parameterwert gefunden: Only arrays accepted. The bad value is: '4487'", 'exception': 'invalid_parameter_exception', 'errorcode': 'invalidparameter', 'message': 'Ungültiger Parameterwert gefunden'}
+
         return response
 

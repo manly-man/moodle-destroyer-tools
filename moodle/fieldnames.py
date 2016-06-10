@@ -13,20 +13,24 @@ _text_format = {
     4: 'markdown'
 }
 
+
 # maybe use gettext for different versions?
 class JsonFieldNames:
+    id = 'id'
     add_attempt = 'addattempt'
     apply_to_all = 'applytoall'
     assign_feedback_text = 'plugindata[assignfeedbackcomments_editor][text]'
     assign_feedback_format = 'plugindata[assignfeedbackcomments_editor][format]'
     assign_feedback_file = 'plugindata[files_filemanager]'
     assignment_id = 'assignmentid'
-    assignment_ids = 'assignmentids'
+    assignment_ids = 'assignmentids[]'
+    assignments = 'assignments'
     attempt_number = 'attemptnumber'
     before = 'before'
-    capabilities = 'capabilities'
+    capabilities = 'capabilities[]'
     course_id = 'courseid'
-    course_ids = 'courseids'
+    course_ids = 'courseids[]'
+    courses = 'courses'
     context_id = 'contextid'
     context_level = 'contextlevel'
     component = 'component'
@@ -45,6 +49,7 @@ class JsonFieldNames:
     service = 'service'
     since = 'since'
     status = 'status'
+    token = 'token'
     user_id = 'userid'
     user_name = 'username'
     value = 'value'
