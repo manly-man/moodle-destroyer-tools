@@ -2,10 +2,16 @@ import mimetypes
 import os
 
 import requests
+from requests.adapters import HTTPAdapter
+
+from urllib.parse import parse_qs
+
+import moodle.exceptions
 from moodle.fieldnames import text_format
 from moodle.fieldnames import JsonFieldNames as Jn
-from requests.adapters import HTTPAdapter
-from urllib.parse import parse_qs
+from moodle.fieldnames import UrlPaths as Paths
+from moodle.parsers import strip_mlang
+
 
 # TODO handle ws exceptions in sensible manner, collate warnings: MoodleAdapter?
 # TODO check if server supports wsfunction
@@ -14,14 +20,14 @@ from urllib.parse import parse_qs
 class MoodleSession(requests.Session):
     def __init__(self, moodle_url, token=None):
         super(MoodleSession, self).__init__()
-        self.ws_path = '/webservice/rest/server.php'
+        self.ws_path = Paths.web_service
         self.token = token
         if moodle_url.startswith('http://'):
             moodle_url = 'https://' + moodle_url[4:]
         if not moodle_url.startswith('https://'):
             moodle_url = 'https://' + moodle_url
         self.url = moodle_url
-        # self.mount('https://', MoodleAdapter())
+        self.mount('https://', MoodleAdapter())
 
     def post_web_service(self, data=None):
         needed_args = {
@@ -213,7 +219,7 @@ class MoodleSession(requests.Session):
             Jn.password: password,
             Jn.service: service
         }
-        return self.post(self.url+'/login/token.php', data)
+        return self.post(self.url+Paths.token, data)
 
     def save_grade(self, assignment_id, user_id, grade,
                    feedback_text='', team_submission=False, feedback_format='plain',
@@ -270,7 +276,7 @@ class MoodleSession(requests.Session):
             Jn.item_id: item_id,
             Jn.token: self.token
         }
-        return self.post(self.url+'/webservice/upload.php', data, files=upload_info)
+        return self.post(self.url+Paths.upload, data, files=upload_info)
 
 
 class MoodleAdapter(HTTPAdapter):
@@ -279,12 +285,37 @@ class MoodleAdapter(HTTPAdapter):
 
     def build_response(self, req, resp):
         response = super().build_response(req, resp)
-        data = parse_qs(req.body)
-        if Jn.ws_function in data:
-            function = data[Jn.ws_function]
-            print('called function: {}'.format(function))
-        invalid_token = {"exception": "moodle_exception", "errorcode": "invalidtoken", "message": "Invalid token - token not found"}
-        invalid_parameter = {'debuginfo': "courseids => Ungültiger Parameterwert gefunden: Only arrays accepted. The bad value is: '4487'", 'exception': 'invalid_parameter_exception', 'errorcode': 'invalidparameter', 'message': 'Ungültiger Parameterwert gefunden'}
+
+        called_function = ''
+        # check if the request was a web service call, handle response accordingly.
+        if Paths.web_service == response.request.path_url:
+            params = parse_qs(req.body)
+            if Jn.ws_function in params:
+                called_function = params[Jn.ws_function]
+                print('called function: {}'.format(called_function))
+
+        if called_function != '':
+            if 'mod_assign_save_grade' and response.json() is None:
+                # success
+                return response
+            data = response.json()
+            if Jn.exception in data:
+                self.handle_exception(data)
 
         return response
 
+    @staticmethod
+    def handle_exception(data):
+        error_code = data[Jn.error_code]
+        if error_code == Jn.no_permissions:
+            raise moodle.exceptions.AccessDenied(data[Jn.message])
+        elif error_code == Jn.invalid_token:
+            raise moodle.exceptions.InvalidToken(data[Jn.message])
+        else:
+            raise moodle.exceptions.MoodleError(**data)
+
+
+class MoodleResponse(requests.Response):
+    @property
+    def text(self):
+        return strip_mlang(super().text())

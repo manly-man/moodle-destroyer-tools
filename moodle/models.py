@@ -249,6 +249,8 @@ class Assignment:
                 group = self.course.groups[submission.group_id]
                 user = group.members[0]
                 grade_data['user_id'] = user.id
+            else:
+                grade_data['user_id'] = submission.user_id
         upload_data['grade_data'] = data
         return upload_data
 

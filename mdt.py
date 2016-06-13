@@ -2,10 +2,10 @@
 import glob
 import os
 import subprocess
-import configargparse
 import re
 import sys
 import wstools
+from util.worktree import NotInWorkTree
 
 # TODO
 
@@ -80,6 +80,10 @@ if __name__ == '__main__':
         sys.exit(1)
     except SystemExit:
         raise
-    except:
+    except NotInWorkTree as e:
+        print(e)
+        raise SystemExit(1)
+    except Exception as e:
         print('onoz…')
+        print(e)
         raise
