@@ -5,6 +5,7 @@ from datetime import datetime
 import re
 from util import worktree
 from moodle.fieldnames import JsonFieldNames as Jn
+from util.worktree import WorkTree
 import warnings
 
 
@@ -193,7 +194,8 @@ class Assignment:
         def _safe_file_name(name):
             return re.sub(r'\W', '_', name)
 
-        work_tree = worktree.get_work_tree_root()
+        wt = WorkTree(skip_init=True)
+        work_tree = wt.get_work_tree_root()
         args = {'token': token}
         assignment_directory = _safe_file_name('{}--{:d}'.format(self.name, self.id))
         os.makedirs(work_tree + assignment_directory, exist_ok=True)
