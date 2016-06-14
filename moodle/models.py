@@ -380,21 +380,22 @@ class Submission:
     def get_prefix(self):
         if self.assignment.team_submission:
             group = self.assignment.course.groups[self.group_id]
-            return group.name + '--'
+            return group.name
         else:
             user = self.assignment.course.users[self.user_id]
-            return user.name + '--'
+            return user.name
 
     def add_file_prefix(self, urls):
         prefix = self.get_prefix()
         for u in urls:
-            u['filepath'] = '/' + prefix + u['filepath'][1:]
+            u['filepath'] = '/' + prefix + '--' + u['filepath'][1:]
         return urls
 
     def add_folder_prefix(self, urls):
         prefix = self.get_prefix()
+        os.makedirs(prefix, exist_ok=True)
         for u in urls:
-            u['filepath'] = prefix + u['filepath']
+            u['filepath'] = '/' + prefix + u['filepath']
         return urls
 
 
