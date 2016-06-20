@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+
 # small script for orderly unzipping of moodle excercise submission downloads
 # basic usage: call with path to zipfile
 # TODO: change this fuckup with tmpdir, copy it to folder where zipfile is
@@ -21,9 +21,8 @@ import random
 
 parser = argparse.ArgumentParser(prog="Moodle Extractor", prefix_chars="-")
 
-parser.add_argument("-e", "--extract",
+parser.add_argument("zipfile",
                     nargs=1,
-                    required=True,
                     type=argparse.FileType('rU'),
                     help="zip file to extract")
 
@@ -40,8 +39,6 @@ parser.add_argument("-ng", "--no-grading-file",
 parser.add_argument("-v", "--version",
                     action="version",
                     version="version 0.3.1")
-
-args = parser.parse_args()
 
 GRADING_FILE_NAME = "gradingfile.csv"
 SINGLE_MODE_CSV_HEADER = "Vollständiger Name,Bewertung,Feedback als Kommentar\n"
@@ -97,13 +94,14 @@ def create_grading_file(list, mode="GROUP"):
     gradingfile.close()
 
 
-def parse_zipfilename():
-    if args.extract[0] != None:
-        ZIPFILENAME = args.extract[0].name
+def parse_zipfilename(args):
+    print(str(args.zipfile))
+    if args.zipfile[0] is not None:
+        file_name = args.zipfile[0].name
     else:
         raise Exception
 
-    return os.path.split(ZIPFILENAME)[-1][0:-4].replace(' ', '')
+    return os.path.split(file_name)[-1][0:-4].replace(' ', '')
 
 
 def create_unzip_folder(curr_path, unzip_path):
@@ -117,18 +115,18 @@ def create_unzip_folder(curr_path, unzip_path):
         os.makedirs(unzip_path)
 
 
-def handle_group_mode(zipfilename, curr_path, unzip_path):
+def handle_group_mode(zipfilename, curr_path, unzip_path, args):
 
     create_unzip_folder(curr_path, unzip_path)
 
     # unpack zip
     os.chdir(unzip_path)
-    zip = zipfile.ZipFile(os.path.join(curr_path, args.extract[0].name))
+    zip = zipfile.ZipFile(os.path.join(curr_path, args.zipfile[0].name))
     zip.extractall()
     # iterate trough files
     remove_duplicates(os.getcwd(), ENC)
 
-    #get group names for gradingfile. does not work after unzipping
+    # get group names for grading file. does not work after unzipping
     groups_unsorted = [file.split("--")[1] for file in os.listdir(unzip_path)]
     groups = sorted(list(set(groups_unsorted)))
 
@@ -142,14 +140,14 @@ def handle_group_mode(zipfilename, curr_path, unzip_path):
         create_grading_file(groups)
 
 
-def handle_single_mode(zipfilename, curr_path, unzip_path):
+def handle_single_mode(zipfilename, curr_path, unzip_path, args):
 
     create_unzip_folder(curr_path, unzip_path)
 
     # change into folder
     os.chdir(unzip_path)
     zip = zipfile.ZipFile(os.path.join(os.path.split(os.getcwd())[0],
-                                       args.extract[0].name))
+                                       args.zipfile[0].name))
     namelist = zip.namelist()
     namelist = [name.split("_")[0] for name in namelist]
 
@@ -175,20 +173,20 @@ def handle_single_mode(zipfilename, curr_path, unzip_path):
 
 
 def main():
-
+    args = parser.parse_args()
     if len(sys.argv) == 1:
         print("usage: command.py zipfile")
         print("use in folder where your Zip is located")
         sys.exit(1)
 
-    ZIPFILENAME = parse_zipfilename()
+    ZIPFILENAME = parse_zipfilename(args)
     CURR_PATH = os.getcwd()
     UNZIP_PATH = os.path.join(CURR_PATH, ZIPFILENAME)
 
     if not args.single:
-        handle_group_mode(ZIPFILENAME, CURR_PATH, UNZIP_PATH)
+        handle_group_mode(ZIPFILENAME, CURR_PATH, UNZIP_PATH, args)
     else:  # single user mode
-        handle_single_mode(ZIPFILENAME, CURR_PATH, UNZIP_PATH)
+        handle_single_mode(ZIPFILENAME, CURR_PATH, UNZIP_PATH,args)
 
 # create gradingfile for single users
 

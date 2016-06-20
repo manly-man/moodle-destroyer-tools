@@ -138,3 +138,5 @@ tramp
 # cask packages
 .cask/
 
+# pycharm
+.idea/
