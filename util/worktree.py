@@ -42,11 +42,12 @@ class WorkTree:
             os.makedirs('.mdt/assignments', exist_ok=force)
             os.makedirs('.mdt/submissions', exist_ok=force)
             os.makedirs('.mdt/grades', exist_ok=force)
-            with open('.mdt/users', 'w') as users:
-                users.write('[]')
-            with open('.mdt/courses', 'w') as courses:
-                courses.write('[]')
-
+            if force or not os.path.isfile('.mdt/users'):
+                with open('.mdt/users', 'w') as users:
+                    users.write('[]')
+            if force or not os.path.isfile('.mdt/courses'):
+                with open('.mdt/courses', 'w') as courses:
+                    courses.write('[]')
             return os.getcwd() + '/'
         except FileExistsError:
             raise

@@ -61,8 +61,13 @@ def main():
         print_known_external_commands()
         raise SystemExit(1)
     elif sub_command in internal_cmd():
-        call = getattr(wstools, sub_command)
-        call()
+        parser = wstools.make_config_parser()
+        args, unknown = parser.parse_known_args()
+        if 'func' in args:
+            args.func(args)
+        else:
+            call = getattr(wstools, sub_command)
+            call()
     elif sub_command in external_subcmds():
         execute_external(sub_command)
     else:
