@@ -7,6 +7,7 @@ $serviceshortname  = required_param('service',  PARAM_ALPHANUMEXT);
 """
 import json
 import configargparse
+# import argcomplete
 
 from moodle.exceptions import AccessDenied
 from moodle.communication import MoodleSession
@@ -40,6 +41,7 @@ def make_config_parser(work_tree=WorkTree(skip_init=True)):
     _make_config_parser_upload(subparsers, url_token_parser)
     _make_config_parser_config(subparsers, url_token_parser)
 
+    # argcomplete.autocomplete(parser)
     return parser
 
 
@@ -235,8 +237,8 @@ def sync():
     assignment_ids = _write_assignments(moodle.get_assignments(course_ids), wt)
 
     print('syncing submissions… ', end='', flush=True)
-    _write_submissions(moodle.get_submissions_for_assignments(assignment_ids, since=last_sync), wt)
-    # _write_submissions(moodle.get_submissions_for_assignments(assignment_ids))
+    # _write_submissions(moodle.get_submissions_for_assignments(assignment_ids, since=last_sync), wt)
+    _write_submissions(moodle.get_submissions_for_assignments(assignment_ids), wt)
 
     print('syncing grades… ', end='', flush=True)
     # _write_grades(moodle.get_grades(assignment_ids, since=last_sync))
