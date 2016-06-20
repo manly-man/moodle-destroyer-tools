@@ -29,11 +29,12 @@ class WorkTree:
         self.submission_meta = self.meta_root + 'submissions/'
         self.grade_meta = self.meta_root + 'grades/'
 
-        self._course_data = self._load_json_file(self.course_meta)
-        self._user_data = self._load_json_file(self.user_meta)
-        self._assignment_data = self._merge_json_data_in_folder(self.assignment_meta)
-        self._submission_data = self._merge_json_data_in_folder(self.submission_meta)
-        self._grade_data = self._merge_json_data_in_folder(self.grade_meta)
+        if not init:
+            self._course_data = self._load_json_file(self.course_meta)
+            self._user_data = self._load_json_file(self.user_meta)
+            self._assignment_data = self._merge_json_data_in_folder(self.assignment_meta)
+            self._submission_data = self._merge_json_data_in_folder(self.submission_meta)
+            self._grade_data = self._merge_json_data_in_folder(self.grade_meta)
 
     @staticmethod
     def _initialize(force):
@@ -41,6 +42,11 @@ class WorkTree:
             os.makedirs('.mdt/assignments', exist_ok=force)
             os.makedirs('.mdt/submissions', exist_ok=force)
             os.makedirs('.mdt/grades', exist_ok=force)
+            with open('.mdt/users', 'w') as users:
+                users.write('[]')
+            with open('.mdt/courses', 'w') as courses:
+                courses.write('[]')
+
             return os.getcwd() + '/'
         except FileExistsError:
             raise
@@ -150,8 +156,12 @@ class WorkTree:
 
     @staticmethod
     def _load_json_file(filename):
-        with open(filename) as file:
-            return json.load(file)
+        try:
+            with open(filename) as file:
+                return json.load(file)
+        except json.decoder.JSONDecodeError as e:
+            print(e)
+            pass
 
     @staticmethod
     def _write_config(path, data):
