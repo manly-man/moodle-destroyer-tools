@@ -60,7 +60,7 @@ For detailed installation instructions have a look at [https://github.com/peterv
 2. Hack on your feature
 3. Finish your feature with `git-flow feature stop FEATURE_NAME` (this merges the branch into `develop`)
 
- # Moodle Destroyer Tools - Web Service Edition
+# Moodle Destroyer Tools - Web Service Edition
 
 This branch is a work in progress for exploiting the moodle WebService backend for easier grading of assigments.
 Conquer the moodle world with the best tools provided by manly-man.
