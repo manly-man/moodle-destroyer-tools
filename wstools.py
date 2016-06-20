@@ -7,7 +7,6 @@ $serviceshortname  = required_param('service',  PARAM_ALPHANUMEXT);
 """
 import json
 import configargparse
-# import argcomplete
 
 from moodle.exceptions import AccessDenied
 from moodle.communication import MoodleSession
@@ -41,13 +40,7 @@ def make_config_parser(work_tree=WorkTree(skip_init=True)):
     _make_config_parser_upload(subparsers, url_token_parser)
     _make_config_parser_config(subparsers, url_token_parser)
 
-    # argcomplete.autocomplete(parser)
     return parser
-
-
-def _get_options(work_tree=WorkTree(skip_init=True)):
-    options, unknown_args = make_config_parser(work_tree).parse_known_args()
-    return options
 
 
 def _make_config_parser_auth(subparsers, url_token_parser):
@@ -60,32 +53,32 @@ def _make_config_parser_auth(subparsers, url_token_parser):
     auth_parser.add_argument('-s', '--service', help='the webservice, has to be set explicitly',
                              default='moodle_mobile_app')
     auth_parser.add_argument('-a', '--ask', help='will ask for all credentials, again', action='store_true')
+    auth_parser.set_defaults(func=auth)
 
 
-def auth():
+def auth(args):
     wt = WorkTree(skip_init=True)
     _url = 'url'
     _user = 'user'
 
-    options = _get_options(wt)
     settings = {}
 
-    if options.ask:
-        settings[_url] = interaction.input_moodle_url(options.url)
-        settings[_user] = interaction.input_user_name(options.user)
-        del options.ask
+    if args.ask:
+        settings[_url] = interaction.input_moodle_url(args.url)
+        settings[_user] = interaction.input_user_name(args.user)
+        del args.ask
     else:
-        if options.url is None or options.url == '':
+        if args.url is None or args.url == '':
             settings[_url] = interaction.input_moodle_url()
         else:
-            settings[_url] = options.url
+            settings[_url] = args.url
 
-        if options.user is None or options.user == '':
+        if args.user is None or args.user == '':
             settings[_user] = interaction.input_user_name()
         else:
-            settings[_user] = options.user
+            settings[_user] = args.user
 
-    settings['service'] = options.service
+    settings['service'] = args.service
 
     password = interaction.input_password()
 
@@ -119,25 +112,25 @@ def _make_config_parser_init(subparsers, url_token_parser):
     init_parser.add_argument('--uid')
     init_parser.add_argument('--force', help='overwrite the config', action='store_true')
     init_parser.add_argument('-c', '--courseids', nargs='+', help='moodle course id', type=int, action='append')
+    init_parser.set_defaults(func=init)
 
 
-def init():
+def init(args):
     """initializes working tree: creates local .mdt/config, with chosen courses"""
-    options = _get_options()
 
     try:
-        wt = WorkTree(init=True, force=options.force)
+        wt = WorkTree(init=True, force=args.force)
     except FileExistsError:
         print('already initialized')
         raise SystemExit(1)
 
-    ms = MoodleSession(moodle_url=options.url, token=options.token)
+    ms = MoodleSession(moodle_url=args.url, token=args.token)
 
-    reply = ms.get_users_course_list(options.uid)
+    reply = ms.get_users_course_list(args.uid)
     courses = [Course(c) for c in reply.json()]
     courses.sort(key=lambda course: course.name)
 
-    if options.courseids is None or options.force:
+    if args.courseids is None or args.force:
         choices = interaction.input_choices_from_list(courses, '\n  choose courses, seperate with space: ')
         if len(choices) == 0:
             print('nothing chosen.')
@@ -145,74 +138,14 @@ def init():
         chosen_courses = [courses[c] for c in choices]
         for c in chosen_courses:
             print('using: ' + str(c))
-        options.courseids = [c.id for c in chosen_courses]
-        saved_data = [c for c in reply.json() if c['id'] in options.courseids]
+        args.courseids = [c.id for c in chosen_courses]
+        saved_data = [c for c in reply.json() if c['id'] in args.courseids]
 
         wt.write_local_course_meta(saved_data)
 
-    wt.write_local_config('courseids = ' + str(options.courseids))
-    sync()
-
-
-def _write_assignments(reply, worktree):
-    changes = {
-        'new': 0,
-        'updated': 0,
-        'unchanged': 0
-    }
-    assignment_ids = []
-    data = json.loads(strip_mlang(reply.text))
-    for course in data[Jn.courses]:
-        for assignment in course[Jn.assignments]:
-            assignment_ids.append(assignment[Jn.id])
-            as_status = worktree.update_local_assignment_meta(assignment)
-            changes[as_status] += 1
-    print('finished. new: {:d}, updated: {:d}, unchanged: {:d}'.format(
-        changes['new'], changes['updated'], changes['unchanged']))
-    return assignment_ids
-
-
-def _write_submissions(reply, worktree):
-    new = 0
-    updated = 0
-    data = json.loads(strip_mlang(reply.text))
-    for assignment in data[Jn.assignments]:
-        if len(assignment[Jn.submissions]) > 0:
-            if worktree.write_local_submission_meta(assignment):
-                updated += 1
-            else:
-                new += 1
-    print('finished: wrote {:d} new, {:d} updates submission files'.format(new, updated))
-
-
-def _sync_file_meta(reply):
-    # TODO, this
-    pass
-
-
-def _write_grades(reply, worktree):
-    data = json.loads(strip_mlang(reply.text))
-    for assignment in data[Jn.assignments]:
-        worktree.write_local_grade_meta(assignment)
-    print('finished. total: {:d}'.format(len(data[Jn.assignments])))
-
-
-def _write_users(session, course_ids, worktree):
-    print('syncing users…', end=' ', flush=True)
-
-    users = []
-    for cid in course_ids:
-        try:
-            reply = session.get_enrolled_users(course_id=cid)
-            data = json.loads(strip_mlang(reply.text))
-            users += data
-            print('{:5d}:got {:4d}'.format(cid, len(data)), end=' ', flush=True)
-        except AccessDenied as denied:
-            message = '{:d} denied access to users: {}'.format(cid, denied)
-            print(message, end=' ', flush=True)
-
-    worktree.write_local_user_meta(users)
-    print('finished.')
+    wt.write_local_config('courseids = ' + str(args.courseids))
+    args.courseids = [[i] for i in args.courseids]  # pack hotfix, do not liek.
+    sync(args)
 
 
 def _make_config_parser_sync(subparsers, url_token_parser):
@@ -222,16 +155,72 @@ def _make_config_parser_sync(subparsers, url_token_parser):
         parents=[url_token_parser]
     )
     sync_parser.add_argument('-c', '--courseids', nargs='+', help='moodle course id', type=int, action='append')
+    sync_parser.set_defaults(func=sync)
 
 
-def sync():
+def sync(args):
+    def _write_assignments(reply, worktree):
+        changes = {
+            'new': 0,
+            'updated': 0,
+            'unchanged': 0
+        }
+        assignment_ids = []
+        data = json.loads(strip_mlang(reply.text))
+        for course in data[Jn.courses]:
+            for assignment in course[Jn.assignments]:
+                assignment_ids.append(assignment[Jn.id])
+                as_status = worktree.update_local_assignment_meta(assignment)
+                changes[as_status] += 1
+        print('finished. new: {:d}, updated: {:d}, unchanged: {:d}'.format(
+            changes['new'], changes['updated'], changes['unchanged']))
+        return assignment_ids
+
+    def _write_submissions(reply, worktree):
+        new = 0
+        updated = 0
+        data = json.loads(strip_mlang(reply.text))
+        for assignment in data[Jn.assignments]:
+            if len(assignment[Jn.submissions]) > 0:
+                if worktree.write_local_submission_meta(assignment):
+                    updated += 1
+                else:
+                    new += 1
+        print('finished: wrote {:d} new, {:d} updates submission files'.format(new, updated))
+
+    def _sync_file_meta(reply):
+        # TODO, this
+        pass
+
+    def _write_grades(reply, worktree):
+        data = json.loads(strip_mlang(reply.text))
+        for assignment in data[Jn.assignments]:
+            worktree.write_local_grade_meta(assignment)
+        print('finished. total: {:d}'.format(len(data[Jn.assignments])))
+
+    def _write_users(session, course_ids, worktree):
+        print('syncing users…', end=' ', flush=True)
+
+        users = []
+        for cid in course_ids:
+            try:
+                reply = session.get_enrolled_users(course_id=cid)
+                data = json.loads(strip_mlang(reply.text))
+                users += data
+                print('{:5d}:got {:4d}'.format(cid, len(data)), end=' ', flush=True)
+            except AccessDenied as denied:
+                message = '{:d} denied access to users: {}'.format(cid, denied)
+                print(message, end=' ', flush=True)
+
+        worktree.write_local_user_meta(users)
+        print('finished.')
+
     wt = WorkTree()
 
-    options = _get_options(wt)
-    course_ids = _unpack(options.courseids)
+    course_ids = _unpack(args.courseids)
     sync_meta_data = wt.read_sync_meta()
     last_sync = sync_meta_data['last_sync']
-    moodle = MoodleSession(moodle_url=options.url, token=options.token)
+    moodle = MoodleSession(moodle_url=args.url, token=args.token)
 
     print('syncing assignments… ', end='', flush=True)
     assignment_ids = _write_assignments(moodle.get_assignments(course_ids), wt)
@@ -249,12 +238,6 @@ def sync():
     wt.update_sync_meta()
 
 
-def _unpack(elements):
-    if elements is None:
-        return None
-    return [elem[0] for elem in elements if type(elem) is list]
-
-
 def _make_config_parser_status(subparsers, url_token_parser):
     status_parser = subparsers.add_parser('status', help='display various information about work tree')
     status_parser.add_argument('-c', '--courseids', nargs='+', help='moodle course ids', type=int, action='append')
@@ -263,31 +246,31 @@ def _make_config_parser_status(subparsers, url_token_parser):
     status_parser.add_argument('-s', '--submissionids', nargs='+', help='show detailed status for submission id',
                                type=int)
     status_parser.add_argument('--full', help='display all assignments', action='store_true')
+    status_parser.set_defaults(func=status)
 
 
-def status():
+def status(args):
     wt = WorkTree()
-    options = _get_options(wt)
-    options.courseids = _unpack(options.courseids)
+    args.courseids = _unpack(args.courseids)
 
     course_data = wt.data
     courses = [Course(c) for c in course_data]
-    if options.assignmentids is not None and options.submissionids is None:
+    if args.assignmentids is not None and args.submissionids is None:
         for c in sorted(courses):
             print(c)
-            assignments = c.get_assignments(options.assignmentids)
+            assignments = c.get_assignments(args.assignmentids)
             a_status = [a.detailed_status_string() for a in assignments]
             for s in sorted(a_status):
                 print(s)
-    elif options.submissionids is not None:
+    elif args.submissionids is not None:
         # TODO this.
         for c in sorted(courses):
             print(c)
-            assignments = c.get_assignments(options.assignmentids)
+            assignments = c.get_assignments(args.assignmentids)
             a_status = [a.detailed_status_string() for a in assignments]
             for s in sorted(a_status):
                 print(s)
-    elif options.full:
+    elif args.full:
         for i in sorted(courses):
             i.print_status()
     else:
@@ -304,13 +287,13 @@ def _make_config_parser_pull(subparsers, url_token_parser):
     pull_parser.add_argument('-c', '--courseids', nargs='+', help='moodle course ids', type=int, action='append')
     pull_parser.add_argument('-a', '--assignmentids', nargs='+', type=int, required=True)
     pull_parser.add_argument('--all', help='pull all due submissions, even old ones', action='store_true')
+    pull_parser.set_defaults(func=pull)
 
 
-def pull():
+def pull(args):
     wt = WorkTree()
-    options = _get_options(wt)
-    course_ids = _unpack(options.courseids)
-    assignment_ids = options.assignmentids
+    course_ids = _unpack(args.courseids)
+    assignment_ids = args.assignmentids
 
     course_data = wt.data
     courses = [Course(c) for c in course_data]
@@ -318,7 +301,7 @@ def pull():
     for c in courses:
         assignments += c.get_assignments(assignment_ids)
     for a in assignments:
-        a.download_files_and_write_html(token=options.token)
+        a.download_files_and_write_html(token=args.token)
 
 
 def _make_config_parser_grade(subparsers, url_token_parser):
@@ -328,16 +311,16 @@ def _make_config_parser_grade(subparsers, url_token_parser):
         parents=[url_token_parser]
     )
     grade_parser.add_argument('files', nargs='+', help='files containing grades', type=configargparse.FileType('r'))
+    grade_parser.set_defaults(func=grade)
 
 
-def grade():
+def grade(args):
     wt = WorkTree()
-    options = _get_options(wt)
 
     course_data = wt.data
     courses = [Course(c) for c in course_data]
     grading_data = {}
-    for file in options.files:
+    for file in args.files:
         # file_content = file.read()
         parsed = json.load(file)
         assignment_id = parsed['assignment_id']
@@ -360,7 +343,7 @@ def grade():
         print('do it right, then')
         return
 
-    ms = MoodleSession(moodle_url=options.url, token=options.token)
+    ms = MoodleSession(moodle_url=args.url, token=args.token)
     for graded_assignment in upload_data:
         as_id = graded_assignment['assignment_id']
         team = graded_assignment['team_submission']
@@ -379,27 +362,46 @@ def _make_config_parser_upload(subparsers, url_token_parser):
         parents=[url_token_parser]
     )
     upload_parser.add_argument('files', nargs='+', help='files to upload', type=configargparse.FileType('rb'))
+    upload_parser.set_defaults(func=upload)
 
 
-def upload():
-    wt = WorkTree()
-    options = _get_options(wt)
-    files = options.files
-    ms = MoodleSession(options.url, options.token)
+def upload(args):
+    # wt = WorkTree()
+    files = args.files
+    ms = MoodleSession(args.url, args.token)
     reply = ms.upload_files(files)
     j = json.loads(reply.text)
     print(json.dumps(j, indent=2, ensure_ascii=False))
 
 
 def _make_config_parser_config(subparsers, url_token_parser):
-    subparsers.add_parser(
+    config_parser = subparsers.add_parser(
         'config',
         help='shows config values, nothing else'
     )
+    config_parser.set_defaults(func=config)
 
 
-def config():
+def config(args):
     wt = WorkTree()
     parser = make_config_parser(wt)
     parser.parse_known_args()
     parser.print_values()
+
+
+def _unpack(elements):
+    if elements is None:
+        return None
+    return [elem[0] for elem in elements if type(elem) is list]
+
+
+class MoodleDestroyerCommand:
+    def __init__(self, name, help_text):
+        self.name = name
+        self.help = help_text
+
+    def __str__(self):
+        return self.name + ' ' + self.help
+
+    def __call__(self, *args, **kwargs):
+        raise NotImplementedError()
