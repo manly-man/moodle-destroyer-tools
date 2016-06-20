@@ -3,7 +3,6 @@ import requests  # TODO remove all requests, move to communication
 
 from datetime import datetime
 import re
-from util import worktree
 from moodle.fieldnames import JsonFieldNames as Jn
 from util.worktree import WorkTree
 import warnings

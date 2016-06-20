@@ -40,8 +40,6 @@ parser.add_argument("-v", "--version",
                     action="version",
                     version="version 0.3.1")
 
-args = parser.parse_args()
-
 GRADING_FILE_NAME = "gradingfile.csv"
 SINGLE_MODE_CSV_HEADER = "Vollständiger Name,Bewertung,Feedback als Kommentar\n"
 GROUP_MODE_CSV_HEADER = "Gruppe,Bewertung,Feedback als Kommentar\n"
@@ -74,7 +72,7 @@ def is_zip(filename):
 
 # take zip archive , make folder, extract it, deletes archive
 def ex_zip(zip):
-    expath = zip.split("-")[0]
+    expath = zip.split("--")[1]
     try:
         os.makedirs(expath)
     except FileExistsError:
@@ -96,7 +94,7 @@ def create_grading_file(list, mode="GROUP"):
     gradingfile.close()
 
 
-def parse_zipfilename():
+def parse_zipfilename(args):
     print(str(args.zipfile))
     if args.zipfile[0] is not None:
         file_name = args.zipfile[0].name
@@ -117,7 +115,7 @@ def create_unzip_folder(curr_path, unzip_path):
         os.makedirs(unzip_path)
 
 
-def handle_group_mode(zipfilename, curr_path, unzip_path):
+def handle_group_mode(zipfilename, curr_path, unzip_path, args):
 
     create_unzip_folder(curr_path, unzip_path)
 
@@ -128,21 +126,21 @@ def handle_group_mode(zipfilename, curr_path, unzip_path):
     # iterate trough files
     remove_duplicates(os.getcwd(), ENC)
 
+    # get group names for grading file. does not work after unzipping
+    groups_unsorted = [file.split("--")[1] for file in os.listdir(unzip_path)]
+    groups = sorted(list(set(groups_unsorted)))
+
     # iterate through archives and extract
-    for file in os.listdir(os.getcwd()):
-        if is_zip(file):
-            ex_zip(file)
+    zips = [file for file in os.listdir() if zipfile.is_zipfile(file)]
+    for zip in zips:
+        ex_zip(zip)
 
     # ich soll keine doppelte verneinung nicht verwenden...
     if not args.no_grading_file:
-        groups_unsorted = []
-        for file in os.listdir(unzip_path):
-            groups_unsorted.append(file.split("-")[0])
-        groups = sorted(list(set(groups_unsorted)))
         create_grading_file(groups)
 
 
-def handle_single_mode(zipfilename, curr_path, unzip_path):
+def handle_single_mode(zipfilename, curr_path, unzip_path, args):
 
     create_unzip_folder(curr_path, unzip_path)
 
@@ -175,20 +173,20 @@ def handle_single_mode(zipfilename, curr_path, unzip_path):
 
 
 def main():
-
+    args = parser.parse_args()
     if len(sys.argv) == 1:
         print("usage: command.py zipfile")
         print("use in folder where your Zip is located")
         sys.exit(1)
 
-    ZIPFILENAME = parse_zipfilename()
+    ZIPFILENAME = parse_zipfilename(args)
     CURR_PATH = os.getcwd()
     UNZIP_PATH = os.path.join(CURR_PATH, ZIPFILENAME)
 
     if not args.single:
-        handle_group_mode(ZIPFILENAME, CURR_PATH, UNZIP_PATH)
+        handle_group_mode(ZIPFILENAME, CURR_PATH, UNZIP_PATH, args)
     else:  # single user mode
-        handle_single_mode(ZIPFILENAME, CURR_PATH, UNZIP_PATH)
+        handle_single_mode(ZIPFILENAME, CURR_PATH, UNZIP_PATH,args)
 
 # create gradingfile for single users
 
