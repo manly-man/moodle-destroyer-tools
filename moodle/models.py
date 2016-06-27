@@ -107,6 +107,7 @@ class Assignment:
         if 'grades' in data:
             self.update_grades(data.pop('grades'))
         self.course = course
+        self.no_submissions = 1 == data.pop(Jn.no_submissions)
         # if len(data) > 1:
         #     print('warning, unparsed assignment data = {}'.format(data.keys()))
 
@@ -193,6 +194,10 @@ class Assignment:
         def _safe_file_name(name):
             return re.sub(r'\W', '_', name)
 
+        if self.no_submissions:
+            self.write_grading_file()
+            return
+
         wt = WorkTree(skip_init=True)
         work_tree = wt.get_work_tree_root()
         args = {'token': token}
@@ -210,19 +215,27 @@ class Assignment:
         os.chdir(work_tree)
 
     def write_grading_file(self):
-        grade_file_head = '{{"assignment_id": {:d}, "grades": [\n'
+        grade_file_head = '{{"assignment_id": {:d}, "no_submissions": {}, "grades": [\n'
         grade_file_end = '\n]}'
         grade_line_format = '{{"name": "{}", "id": {:d}, "grade": 0.0, "feedback":"" }}'
         grade_file_content = []
         filename = 'gradingfile.json'
         if self.team_submission:
-            for s in self.get_valid_submissions():
-                group = self.course.groups[s.group_id]
-                grade_file_content.append(grade_line_format.format(group.name, s.id))
+            if self.no_submissions:
+                for group in self.course.groups:
+                    grade_file_content.append(grade_line_format.format(group.name, group.id))
+            else:
+                for s in self.get_valid_submissions():
+                    group = self.course.groups[s.group_id]
+                    grade_file_content.append(grade_line_format.format(group.name, s.id))
         else:
-            for s in self.get_valid_submissions():
-                user = self.course.users[s.user_id]
-                grade_file_content.append(grade_line_format.format(user.name, s.id))
+            if self.no_submissions:
+                for user in self.course.users:
+                    grade_file_content.append(grade_line_format.format(user.name, user.id))
+            else:
+                for s in self.get_valid_submissions():
+                    user = self.course.users[s.user_id]
+                    grade_file_content.append(grade_line_format.format(user.name, s.id))
         # checks for existing file and chooses new name, maybe merge data?
         if os.path.isfile(filename):
             new_name = 'gradingfile_{:02d}.json'
@@ -234,7 +247,7 @@ class Assignment:
 
         with open(filename, 'w') as grading_file:
             grading_file.write(
-                grade_file_head.format(self.id) +
+                grade_file_head.format(self.id, str(self.no_submissions).lower()) +
                 ',\n'.join(sorted(grade_file_content)) +
                 grade_file_end
             )
@@ -244,14 +257,23 @@ class Assignment:
             'assignment_id': self.id,
             'team_submission': self.team_submission
         }
-        for grade_data in data:
-            submission = self.submissions[grade_data['id']]
-            if self.team_submission:
-                group = self.course.groups[submission.group_id]
-                user = group.members[0]
-                grade_data['user_id'] = user.id
-            else:
-                grade_data['user_id'] = submission.user_id
+        if self.no_submissions:
+            for grade_data in data:
+                if self.team_submission:
+                    group = self.course.groups[grade_data['id']]
+                    user = group.members[0]
+                    grade_data['user_id'] = user.id
+                else:
+                    grade_data['user_id'] = grade_data['id']
+        else:
+            for grade_data in data:
+                submission = self.submissions[grade_data['id']]
+                if self.team_submission:
+                    group = self.course.groups[submission.group_id]
+                    user = group.members[0]
+                    grade_data['user_id'] = user.id
+                else:
+                    grade_data['user_id'] = submission.user_id
         upload_data['grade_data'] = data
         return upload_data
 

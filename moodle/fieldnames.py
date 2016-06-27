@@ -56,6 +56,7 @@ class JsonFieldNames:
     moodle_ws_rest_format = 'moodlewsrestformat'
     name = 'name'
     no_permissions = 'nopermissions'
+    no_submissions = 'nosubmissions'
     options = 'options[{:d}][{}]'
     required_capability_exception = 'required_capability_exception'
     password = 'password'
