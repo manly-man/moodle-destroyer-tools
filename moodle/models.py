@@ -307,7 +307,7 @@ class Submission:
 
     def is_team_graded(self):
         grade, warnings = self.get_grade_or_reason_if_team_ungraded()
-        if grade is not None and grade.value is not None:
+        if grade is not None:
             return True
         else:
             return False
