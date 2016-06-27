@@ -4,7 +4,7 @@ import sys
 import csv
 import argparse
 
-if __name__ == 'main':
+if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(prog="Moodle Destroyer", prefix_chars="-")
 
