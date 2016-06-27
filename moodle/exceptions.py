@@ -32,3 +32,14 @@ class AccessDenied(MoodleError):
 
     def __str__(self):
         return self.message
+
+
+class InvalidResponse(MoodleError):
+    def __init__(self, message, debug_message):
+        self.exception_name = Jn.invalid_response_exception
+        self.error_code = Jn.invalid_response_exception_errorcode
+        self.message = message
+        self.debug_message = debug_message
+
+    def __str__(self):
+        return self.message + self.debug_message

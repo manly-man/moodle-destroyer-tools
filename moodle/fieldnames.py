@@ -47,6 +47,8 @@ class JsonFieldNames:
     include_not_enrolled_courses = 'includenotenrolledcourses'
     instance_id = 'instanceid'
     invalid_parameter_exception = 'invalid_parameter_exception'
+    invalid_response_exception = 'invalid_response_exception'
+    invalid_response_exception_errorcode = 'invalidresponse'
     invalid_token = 'invalidtoken'
     message = 'message'
     modified = 'modified'
@@ -77,7 +79,6 @@ class UrlPaths:
     token = '/login/token.php'
     upload = '/webservice/upload.php'
     download = '/webservice/pluginfile.php'
-
 
 text_format = LookupDict()
 

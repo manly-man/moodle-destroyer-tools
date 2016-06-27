@@ -311,6 +311,8 @@ class MoodleAdapter(HTTPAdapter):
             raise moodle.exceptions.AccessDenied(data[Jn.message])
         elif error_code == Jn.invalid_token:
             raise moodle.exceptions.InvalidToken(data[Jn.message])
+        elif error_code == Jn.invalid_response_exception_errorcode:
+            raise moodle.exceptions.InvalidResponse(data[Jn.message], data[Jn.debug_info])
         else:
             raise moodle.exceptions.MoodleError(**data)
 
