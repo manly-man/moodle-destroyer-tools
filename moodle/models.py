@@ -307,7 +307,7 @@ class Submission:
 
     def is_team_graded(self):
         grade, warnings = self.get_grade_or_reason_if_team_ungraded()
-        if grade is not None:
+        if grade is not None and grade.value is not None:
             return True
         else:
             return False
@@ -401,7 +401,11 @@ class Submission:
 class Grade:
     def __init__(self, data):
         self.id = data.pop('id')
-        self.value = float(data.pop('grade'))
+        value = data.pop('grade')
+        if '' == value:
+            self.value = None
+        else:
+            self.value = float(value)
         self.grader_id = data.pop('grader')
         self.user_id = data.pop('userid')
         self.attempt_number = data.pop('attemptnumber')
