@@ -8,7 +8,7 @@ $serviceshortname  = required_param('service',  PARAM_ALPHANUMEXT);
 import json
 import configargparse
 
-from moodle.exceptions import AccessDenied
+from moodle.exceptions import AccessDenied, InvalidResponse
 from moodle.communication import MoodleSession
 from moodle.fieldnames import JsonFieldNames as Jn
 from moodle.models import Course
@@ -211,6 +211,9 @@ def sync(args):
             except AccessDenied as denied:
                 message = '{:d} denied access to users: {}'.format(cid, denied)
                 print(message, end=' ', flush=True)
+            except InvalidResponse as e:
+                message = 'Moodle encountered an error: msg:{} \n debug:{}'.format(e.message,e.debug_message)
+                print(message)
 
         worktree.write_local_user_meta(users)
         print('finished.')
