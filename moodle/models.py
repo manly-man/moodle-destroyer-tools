@@ -169,6 +169,7 @@ class Assignment:
             if sub.has_content:
                 self.submissions[sub.id] = sub
 
+    @property
     def merged_html(self):
         # TODO deduplicate for group submissions? seems unnecessary
         # TODO use mathjax local, not remote cdn. maybe on init or auth?
@@ -177,15 +178,19 @@ class Assignment:
         assembled_tmp = []
         for s in self.valid_submissions:
             tmp = ''
-            if s.has_editor_field_content():
+            if s.has_editor_field_content:
                 if self.team_submission:
                     group = self.course.groups[s.group_id]
                     tmp += '\n\n\n<h1>{}</h1>\n\n\n'.format(group.name)
                 else:
                     user = self.course.users[s.user_id]
-                    html += '\n\n\n<h1>{}</h1>\n\n\n'.format(user.name)
-                tmp += s.editor_field_content()
+                    tmp += '\n\n\n<h1>{}</h1>\n\n\n'.format(user.name)
+                tmp += s.editor_field_content
             assembled_tmp.append(tmp)
+
+        if len(assembled_tmp) == 0:
+            return None
+
         for i in sorted(assembled_tmp):
             html += i
         return html + '</body>'
@@ -205,13 +210,14 @@ class Assignment:
         assignment_directory = _safe_file_name('{}--{:d}'.format(self.name, self.id))
         os.makedirs(work_tree + assignment_directory, exist_ok=True)
         os.chdir(work_tree + assignment_directory)
-        for file in self.file_urls():
+        for file in self.file_urls:
             reply = requests.post(file[Jn.file_url], args)
             print(file[Jn.file_url])
             with open(os.getcwd() + file[Jn.file_path], 'wb') as out_file:
                 out_file.write(reply.content)
-        with open(os.getcwd() + '/00_merged_submissions.html', 'w') as merged_html:
-            merged_html.write(self.merged_html())
+        if self.merged_html is not None:
+            with open(os.getcwd() + '/00_merged_submissions.html', 'w') as merged_html:
+                merged_html.write(self.merged_html)
         self.write_grading_file()
         os.chdir(work_tree)
 
@@ -371,7 +377,7 @@ class Submission:
     def file_urls(self):
         urls = []
         for p in self.plugins:
-            urls += p.file_urls()
+            urls += p.file_urls
 
         if len(urls) > 1:
             return self.add_folder_prefix(urls)
@@ -387,7 +393,7 @@ class Submission:
         content = ''
         for p in self.plugins:
             if p.has_editor_field:
-                content += p.editor_field_content()
+                content += p.editor_field_content
         return content
 
     @property
