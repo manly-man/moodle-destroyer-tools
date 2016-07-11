@@ -1,6 +1,7 @@
 import glob
 import json
 import os
+import re
 import configparser
 from datetime import datetime
 from moodle.fieldnames import JsonFieldNames as Jn
@@ -28,6 +29,8 @@ class WorkTree:
         self.assignment_meta = self.meta_root + 'assignments/'
         self.submission_meta = self.meta_root + 'submissions/'
         self.grade_meta = self.meta_root + 'grades/'
+        self.pulling = False
+        self.pull_dir = ''
 
         if not init:
             self._course_data = self._load_json_file(self.course_meta)
@@ -238,6 +241,67 @@ class WorkTree:
             'last_sync': math.floor(datetime.now().timestamp())
         }
         self._write_meta(self.sync_meta, sync_meta)
+
+    @staticmethod
+    def _safe_file_name(name):
+        return re.sub(r'\W', '_', name)
+
+    def start_pull(self, assignment):
+        if self.pulling:
+            raise Exception('already pulling')
+        self.pulling = True
+        dir_name = self.root + self._safe_file_name('{}--{:d}'.format(assignment.name, assignment.id))
+        os.makedirs(dir_name, exist_ok=True)
+        os.chdir(dir_name)
+        self.pull_dir = dir_name
+        return dir_name
+
+    def write_pulled_file(self, content, file_path):
+        if not self.pulling:
+            raise Exception('not pulling: illegal state')
+        with open(self.pull_dir + file_path, 'wb') as pulled_file:
+            pulled_file.write(content)
+
+    def write_pulled_html(self, html):
+        with open(self.pull_dir + '/00_merged_submissions.html', 'w') as merged_html:
+            merged_html.write(html)
+
+    def finish_pull(self):
+        if not self.pulling:
+            raise Exception('not pulling')
+        self.pulling = False
+        self.pull_dir = ''
+        os.chdir(self.root)
+
+    def write_grading_file(self, assignment):
+        grade_file_head = '{{"assignment_id": {:d}, "grades": [\n'
+        grade_file_end = '\n]}'
+        grade_line_format = '{{"name": "{}", "id": {:d}, "grade": 0.0, "feedback":"" }}'
+        grade_file_content = []
+        filename = 'gradingfile.json'
+        if assignment.team_submission:
+            for s in assignment.valid_submissions:
+                group = assignment.course.groups[s.group_id]
+                grade_file_content.append(grade_line_format.format(group.name, s.id))
+        else:
+            for s in assignment.valid_submissions:
+                user = assignment.course.users[s.user_id]
+                grade_file_content.append(grade_line_format.format(user.name, s.id))
+        # checks for existing file and chooses new name, maybe merge data?
+        if os.path.isfile(filename):
+            new_name = 'gradingfile_{:02d}.json'
+            i = 0
+            filename = new_name.format(i)
+            while os.path.isfile(filename):
+                i += 1
+            print('grading file exists, writing to: {}'.format(filename))
+
+        with open(filename, 'w') as grading_file:
+            grading_file.write(
+                grade_file_head.format(assignment.id) +
+                ',\n'.join(sorted(grade_file_content)) +
+                grade_file_end
+            )
 
 
 class NotInWorkTree(Exception):

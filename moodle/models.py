@@ -1,11 +1,7 @@
 import os
-import requests  # TODO remove all requests, move to communication
 
 from datetime import datetime
-import re
 from moodle.fieldnames import JsonFieldNames as Jn
-from util.worktree import WorkTree
-import warnings
 
 
 class Course:
@@ -194,62 +190,6 @@ class Assignment:
         for i in sorted(assembled_tmp):
             html += i
         return html + '</body>'
-
-    def download_files_and_write_html(self, token):
-        warnings.warn(
-            "DEPRECATED",
-            DeprecationWarning, stacklevel=2
-        )
-
-        def _safe_file_name(name):
-            return re.sub(r'\W', '_', name)
-
-        wt = WorkTree(skip_init=True)
-        work_tree = wt.get_work_tree_root()
-        args = {Jn.token: token}
-        assignment_directory = _safe_file_name('{}--{:d}'.format(self.name, self.id))
-        os.makedirs(work_tree + assignment_directory, exist_ok=True)
-        os.chdir(work_tree + assignment_directory)
-        for file in self.file_urls:
-            reply = requests.post(file[Jn.file_url], args)
-            print(file[Jn.file_url])
-            with open(os.getcwd() + file[Jn.file_path], 'wb') as out_file:
-                out_file.write(reply.content)
-        if self.merged_html is not None:
-            with open(os.getcwd() + '/00_merged_submissions.html', 'w') as merged_html:
-                merged_html.write(self.merged_html)
-        self.write_grading_file()
-        os.chdir(work_tree)
-
-    def write_grading_file(self):
-        grade_file_head = '{{"assignment_id": {:d}, "grades": [\n'
-        grade_file_end = '\n]}'
-        grade_line_format = '{{"name": "{}", "id": {:d}, "grade": 0.0, "feedback":"" }}'
-        grade_file_content = []
-        filename = 'gradingfile.json'
-        if self.team_submission:
-            for s in self.valid_submissions:
-                group = self.course.groups[s.group_id]
-                grade_file_content.append(grade_line_format.format(group.name, s.id))
-        else:
-            for s in self.valid_submissions:
-                user = self.course.users[s.user_id]
-                grade_file_content.append(grade_line_format.format(user.name, s.id))
-        # checks for existing file and chooses new name, maybe merge data?
-        if os.path.isfile(filename):
-            new_name = 'gradingfile_{:02d}.json'
-            i = 0
-            while os.path.isfile(new_name.format(i)):
-                i += 1
-            filename = new_name.format(i)
-            print('grading file exists, writing to: {}'.format(filename))
-
-        with open(filename, 'w') as grading_file:
-            grading_file.write(
-                grade_file_head.format(self.id) +
-                ',\n'.join(sorted(grade_file_content)) +
-                grade_file_end
-            )
 
     def prepare_grade_upload_data(self, data):
         upload_data = {
@@ -518,13 +458,13 @@ class EditorField:
     def __init__(self, data):
         self.data = data
         self.name = data.pop(Jn.name)
-        self.descr = data.pop(Jn.description)
+        self.description = data.pop(Jn.description)
         self.text = data.pop(Jn.text)
         self.fmt = data.pop(Jn.format)
         self.unparsed = data
 
     def __str__(self):
-        out = '{} {}'.format(self.name, self.descr)
+        out = '{} {}'.format(self.name, self.description)
         if self.has_content:
             out += ' has text format {:1d}'.format(self.fmt)
         return out

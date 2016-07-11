@@ -278,6 +278,10 @@ class MoodleSession(requests.Session):
         }
         return self.post(self.url+Paths.upload, data, files=upload_info)
 
+    def download_file(self, file_url):
+        args = {Jn.token: self.token}
+        return self.post(file_url, args)
+
 
 class MoodleAdapter(HTTPAdapter):
     def __init__(self, **kwargs):

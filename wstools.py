@@ -295,6 +295,8 @@ def _make_config_parser_pull(subparsers, url_token_parser):
 
 
 def pull(args):
+    ms = MoodleSession(moodle_url=args.url, token=args.token)
+
     wt = WorkTree()
     course_ids = _unpack(args.courseids)
     assignment_ids = args.assignmentids
@@ -305,7 +307,16 @@ def pull(args):
     for c in courses:
         assignments += c.get_assignments(assignment_ids)
     for a in assignments:
-        a.download_files_and_write_html(token=args.token)
+        wt.start_pull(a)
+        for file in a.file_urls:
+            print(file[Jn.file_url])
+            response = ms.download_file(file[Jn.file_url])
+            wt.write_pulled_file(response.content, file[Jn.file_path])
+        html = a.merged_html
+        if html is not None:
+            wt.write_pulled_html(html)
+        wt.write_grading_file(a)
+        wt.finish_pull()
 
 
 def _make_config_parser_grade(subparsers, url_token_parser):
