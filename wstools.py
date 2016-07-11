@@ -60,6 +60,7 @@ def auth(args):
     wt = WorkTree(skip_init=True)
     _url = 'url'
     _user = 'user'
+    _service = 'service'
 
     settings = {}
 
@@ -78,12 +79,12 @@ def auth(args):
         else:
             settings[_user] = args.user
 
-    settings['service'] = args.service
+    settings[_service] = args.service
 
     password = interaction.input_password()
 
     ms = MoodleSession(moodle_url=settings[_url])
-    reply = ms.get_token(user_name=settings[_user], password=password, service=settings['service'])
+    reply = ms.get_token(user_name=settings[_user], password=password, service=settings[_service])
     del password
 
     try:
@@ -262,7 +263,7 @@ def status(args):
         for c in sorted(courses):
             print(c)
             assignments = c.get_assignments(args.assignmentids)
-            a_status = [a.detailed_status_string() for a in assignments]
+            a_status = [a.detailed_status_string(indent=1) for a in assignments]
             for s in sorted(a_status):
                 print(s)
     elif args.submissionids is not None:

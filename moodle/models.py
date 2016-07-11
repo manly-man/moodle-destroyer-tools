@@ -10,23 +10,23 @@ import warnings
 
 class Course:
     def __init__(self, data):
-        self.id = data.pop('id')
-        self.name = data.pop('fullname')
-        self.shortname = data.pop('shortname')
+        self.id = data.pop(Jn.id)
+        self.name = data.pop(Jn.full_name)
+        self.short_name = data.pop(Jn.short_name)
 
         self.users = {}  # accessed via user.id
         self.groups = {}  # accessed via group.id
-        if 'users' in data:
-            self.update_users(data.pop('users'))
+        if Jn.users in data:
+            self.update_users(data.pop(Jn.users))
 
         self.assignments = {}  # accessed via assignment.id
-        if 'assignments' in data:
-            self.update_assignments(data.pop('assignments'))
+        if Jn.assignments in data:
+            self.update_assignments(data.pop(Jn.assignments))
 
         self.unparsed = data
 
     def __str__(self):
-        return '{:40} id:{:5d} short: {}'.format(self.name[0:39], self.id, self.shortname)
+        return '{:40} id:{:5d} short: {}'.format(self.name[0:39], self.id, self.short_name)
 
     def print_status(self):
         print(self)
@@ -36,7 +36,7 @@ class Course:
 
     def print_short_status(self):
         print(self)
-        a_status = [a.short_status_string() for a in self.assignments.values() if a.needs_grading()]
+        a_status = [a.short_status_string(indent=1) for a in self.assignments.values() if a.needs_grading]
         for a in sorted(a_status):
             print(a)
 
@@ -44,7 +44,7 @@ class Course:
         return [self.assignments[aid] for aid in id_list if aid in self.assignments]
 
     def update_users(self, data):
-        if 'errorcode' in data:
+        if Jn.error_code in data:
             return
         users = [User(u) for u in data]
         for user in users:
@@ -66,12 +66,12 @@ class Course:
 
 class User:
     def __init__(self, data):
-        self.name = data.pop('fullname')
-        self.id = data.pop('id')
-        self.roles = data.pop('roles')
+        self.name = data.pop(Jn.full_name)
+        self.id = data.pop(Jn.id)
+        self.roles = data.pop(Jn.roles)
 
         self.groups = {}
-        for g in data.pop('groups'):
+        for g in data.pop(Jn.groups):
             group = Group(g)
             self.groups[group.id] = group
 
@@ -83,10 +83,10 @@ class User:
 
 class Group:
     def __init__(self, data):
-        self.name = data.pop('name')
-        self.id = data.pop('id')
-        self.description = data.pop('description')
-        self.descriptionformat = data.pop('descriptionformat')
+        self.name = data.pop(Jn.name)
+        self.id = data.pop(Jn.id)
+        self.description = data.pop(Jn.description)
+        self.description_format = data.pop(Jn.description_format)
         self.members = []
 
     def __str__(self):
@@ -95,17 +95,17 @@ class Group:
 
 class Assignment:
     def __init__(self, data, course=None):
-        self.id = data.pop('id')
-        self.team_submission = 1 == data.pop('teamsubmission')
-        self.due_date = datetime.fromtimestamp(data.pop('duedate'))
-        self.name = data.pop('name')
+        self.id = data.pop(Jn.id)
+        self.team_submission = 1 == data.pop(Jn.team_submission)
+        self.due_date = datetime.fromtimestamp(data.pop(Jn.due_date))
+        self.name = data.pop(Jn.name)
         self.submissions = {}  # accesed via submission.id
-        self.max_points = data.pop('grade')  # documentation states, this would be the grade 'type'. Go figure?
-        if 'submissions' in data:
-            self.update_submissions(data.pop('submissions'))
+        self.max_points = data.pop(Jn.grade)  # documentation states, this would be the grade 'type'. Go figure?
+        if Jn.submissions in data:
+            self.update_submissions(data.pop(Jn.submissions))
         self.grades = {}  # are accessed via user_id
-        if 'grades' in data:
-            self.update_grades(data.pop('grades'))
+        if Jn.grades in data:
+            self.update_grades(data.pop(Jn.grades))
         self.course = course
         # if len(data) > 1:
         #     print('warning, unparsed assignment data = {}'.format(data.keys()))
@@ -115,61 +115,67 @@ class Assignment:
     def __str__(self):
         return '{:40} id:{:5d}'.format(self.name[0:39], self.id)
 
+    @property
     def valid_submission_count(self):
-        return len(self.get_valid_submissions())
+        return len(self.valid_submissions)
 
+    @property
     def is_due(self):
         now = datetime.now()
         diff = now - self.due_date
         ignore_older_than = 25 * 7
         return now > self.due_date and diff.days < ignore_older_than
 
+    @property
     def grade_count(self):
         return len(self.grades)
 
+    @property
     def needs_grading(self):
-        all_graded = False not in [s.is_graded() for s in self.get_valid_submissions()]
-        return self.is_due() and not all_graded
+        all_graded = False not in [s.is_graded for s in self.valid_submissions]
+        return self.is_due and not all_graded
 
     def short_status_string(self, indent=0):
         fmt_string = ' ' * indent + str(self) + ' submissions:{:3d} due:{:1} graded:{:1}'
-        return fmt_string.format(self.valid_submission_count(), self.is_due(), not self.needs_grading())
+        return fmt_string.format(self.valid_submission_count, self.is_due, not self.needs_grading)
 
     def detailed_status_string(self, indent=0):
         string = ' ' * indent + str(self)
-        s_status = [s.status_string(indent=indent + 1) for s in self.get_valid_submissions()]
+        s_status = [s.status_string(indent=indent + 1) for s in self.valid_submissions]
         for s in sorted(s_status):
             string += '\n' + s
         return string
 
-    def get_valid_submissions(self):
-        return [s for s in self.submissions.values() if s.has_content()]
+    @property
+    def valid_submissions(self):
+        return [s for s in self.submissions.values() if s.has_content]
 
     def update_grades(self, data):
         grades = [Grade(g) for g in data]
         for g in grades:
             self.grades[g.user_id] = g
 
-    def get_file_urls(self):
+    @property
+    def file_urls(self):
         urls = []
-        for s in self.get_valid_submissions():
-            urls += s.get_file_urls()
+        for s in self.valid_submissions:
+            urls += s.file_urls
         return urls
 
     def update_submissions(self, data):
         # TODO find out what breaks after this change.
         for submission in data:
             sub = Submission(submission, assignment=self)
-            if sub.has_content():
+            if sub.has_content:
                 self.submissions[sub.id] = sub
 
-    def merge_html(self):
-        # TODO deduplicate for group submissions
-        # TODO use mathjax local, not remote cdn.
+    def merged_html(self):
+        # TODO deduplicate for group submissions? seems unnecessary
+        # TODO use mathjax local, not remote cdn. maybe on init or auth?
         html = '<head><meta charset="UTF-8"></head><body>' \
                '<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>'
         assembled_tmp = []
-        for s in self.get_valid_submissions():
+        for s in self.valid_submissions:
             tmp = ''
             if s.has_editor_field_content():
                 if self.team_submission:
@@ -178,7 +184,7 @@ class Assignment:
                 else:
                     user = self.course.users[s.user_id]
                     html += '\n\n\n<h1>{}</h1>\n\n\n'.format(user.name)
-                tmp += s.get_editor_field_content()
+                tmp += s.editor_field_content()
             assembled_tmp.append(tmp)
         for i in sorted(assembled_tmp):
             html += i
@@ -195,17 +201,17 @@ class Assignment:
 
         wt = WorkTree(skip_init=True)
         work_tree = wt.get_work_tree_root()
-        args = {'token': token}
+        args = {Jn.token: token}
         assignment_directory = _safe_file_name('{}--{:d}'.format(self.name, self.id))
         os.makedirs(work_tree + assignment_directory, exist_ok=True)
         os.chdir(work_tree + assignment_directory)
-        for file in self.get_file_urls():
-            reply = requests.post(file['fileurl'], args)
-            print(file['fileurl'])
-            with open(os.getcwd() + file['filepath'], 'wb') as out_file:
+        for file in self.file_urls():
+            reply = requests.post(file[Jn.file_url], args)
+            print(file[Jn.file_url])
+            with open(os.getcwd() + file[Jn.file_path], 'wb') as out_file:
                 out_file.write(reply.content)
         with open(os.getcwd() + '/00_merged_submissions.html', 'w') as merged_html:
-            merged_html.write(self.merge_html())
+            merged_html.write(self.merged_html())
         self.write_grading_file()
         os.chdir(work_tree)
 
@@ -216,11 +222,11 @@ class Assignment:
         grade_file_content = []
         filename = 'gradingfile.json'
         if self.team_submission:
-            for s in self.get_valid_submissions():
+            for s in self.valid_submissions:
                 group = self.course.groups[s.group_id]
                 grade_file_content.append(grade_line_format.format(group.name, s.id))
         else:
-            for s in self.get_valid_submissions():
+            for s in self.valid_submissions:
                 user = self.course.users[s.user_id]
                 grade_file_content.append(grade_line_format.format(user.name, s.id))
         # checks for existing file and chooses new name, maybe merge data?
@@ -258,15 +264,15 @@ class Assignment:
 
 class Submission:
     def __init__(self, data, assignment=None):
-        self.id = data.pop('id')
-        self.user_id = data.pop('userid')
-        self.group_id = data.pop('groupid')
-        self.plugs = [Plugin(p) for p in data.pop('plugins')]
+        self.id = data.pop(Jn.id)
+        self.user_id = data.pop(Jn.user_id)
+        self.group_id = data.pop(Jn.group_id)
+        self.plugins = [Plugin(p) for p in data.pop(Jn.plugins)]
         self.assignment = assignment
-        self.timemodified = data.pop('timemodified')
-        self.timecreated = data.pop('timecreated')
-        self.status = data.pop('status')
-        self.attemptnumber = data.pop('attemptnumber')
+        self.time_modified = data.pop(Jn.time_modified)
+        self.time_created = data.pop(Jn.time_created)
+        self.status = data.pop(Jn.status)
+        self.attempt_number = data.pop(Jn.attempt_number)
         if len(data) > 1:
             print('warning, unparsed submission data = ' + str(data.keys()))
         self.unparsed = data
@@ -274,8 +280,9 @@ class Submission:
     def __str__(self):
         return 'id:{:7d} {:5d}:{:5d}'.format(self.id, self.user_id, self.group_id)
 
+    @property
     def has_content(self):
-        return True in [p.has_content() for p in self.plugs]
+        return True in [p.has_content for p in self.plugins]
 
     def status_string(self, indent=0):
         if self.assignment is None:
@@ -299,12 +306,14 @@ class Submission:
 
         return graded_users, ungraded_users
 
+    @property
     def is_graded(self):
         if self.assignment.team_submission:
-            return self.is_team_graded()
+            return self.is_team_graded
         else:
-            return self.is_single_submission_graded()
+            return self.is_single_submission_graded
 
+    @property
     def is_team_graded(self):
         grade, warnings = self.get_grade_or_reason_if_team_ungraded()
         if grade is not None:
@@ -339,44 +348,50 @@ class Submission:
         else:
             return ' ' * indent + '{:20} id:{:7d} WARNING:{}'.format(group.name, self.id, warnings)
 
+    @property
     def is_single_submission_graded(self):
         return self.user_id in self.assignment.grades
 
     def status_single_submission_string(self, indent=0):
         user = self.assignment.course.users[self.user_id]
-        if self.is_graded():
+        if self.is_graded:
             grade = self.assignment.grades[self.user_id]
             return indent * ' ' + '{:20} grade:{:4}'.format(user.name[0:19], grade.value)
         else:
             return indent * ' ' + '{:20} ungraded'.format(user.name[0:19])
 
+    @property
     def has_files(self):
-        for p in self.plugs:
-            if p.has_files():
+        for p in self.plugins:
+            if p.has_files:
                 return True
         return False
 
-    def get_file_urls(self):
+    @property
+    def file_urls(self):
         urls = []
-        for p in self.plugs:
-            urls += p.get_file_urls()
+        for p in self.plugins:
+            urls += p.file_urls()
 
         if len(urls) > 1:
             return self.add_folder_prefix(urls)
         else:
             return self.add_file_prefix(urls)
 
+    @property
     def has_editor_field_content(self):
-        return True in [p.has_efield() for p in self.plugs]
+        return True in [p.has_editor_field for p in self.plugins]
 
-    def get_editor_field_content(self):
+    @property
+    def editor_field_content(self):
         content = ''
-        for p in self.plugs:
-            if p.has_efield():
-                content += p.get_editor_field_content()
+        for p in self.plugins:
+            if p.has_editor_field:
+                content += p.editor_field_content()
         return content
 
-    def get_prefix(self):
+    @property
+    def prefix(self):
         if self.assignment.team_submission:
             group = self.assignment.course.groups[self.group_id]
             return group.name
@@ -385,124 +400,133 @@ class Submission:
             return user.name
 
     def add_file_prefix(self, urls):
-        prefix = self.get_prefix()
+        prefix = self.prefix
         for u in urls:
-            u['filepath'] = '/' + prefix + '--' + u['filepath'][1:]
+            u[Jn.file_path] = '/' + prefix + '--' + u[Jn.file_path][1:]
         return urls
 
     def add_folder_prefix(self, urls):
-        prefix = self.get_prefix()
+        prefix = self.prefix
         os.makedirs(prefix, exist_ok=True)
         for u in urls:
-            u['filepath'] = '/' + prefix + u['filepath']
+            u[Jn.file_path] = '/' + prefix + u[Jn.file_path]
         return urls
 
 
 class Grade:
     def __init__(self, data):
-        self.id = data.pop('id')
-        value = data.pop('grade')
+        self.id = data.pop(Jn.id)
+        value = data.pop(Jn.grade)
         if '' == value:
             self.value = None
         else:
             self.value = float(value)
-        self.grader_id = data.pop('grader')
-        self.user_id = data.pop('userid')
-        self.attempt_number = data.pop('attemptnumber')
-        self.date_created = datetime.fromtimestamp(data.pop('timecreated'))
-        self.date_modified = datetime.fromtimestamp(data.pop('timemodified'))
+        self.grader_id = data.pop(Jn.grader)
+        self.user_id = data.pop(Jn.user_id)
+        self.attempt_number = data.pop(Jn.attempt_number)
+        self.date_created = datetime.fromtimestamp(data.pop(Jn.time_created))
+        self.date_modified = datetime.fromtimestamp(data.pop(Jn.time_modified))
         self.unparsed = data  # should be empty, completely parsed
 
 
 class Plugin:
     def __init__(self, data):
-        self.type = data.pop('type')
-        self.name = data.pop('name')
-        self.efields = []
-        self.fareas = []
-        if 'editorfields' in data:
-            self.efields = [EditorField(e) for e in data.pop('editorfields')]
-        if 'fileareas' in data:
-            self.fareas = [FileArea(f) for f in data.pop('fileareas')]
+        self.type = data.pop(Jn.type)
+        self.name = data.pop(Jn.name)
+        self.editor_fields = []
+        self.file_areas = []
+        if Jn.editor_fields in data:
+            self.editor_fields = [EditorField(e) for e in data.pop(Jn.editor_fields)]
+        if Jn.file_areas in data:
+            self.file_areas = [FileArea(f) for f in data.pop(Jn.file_areas)]
         self.unparsed = data
 
     def __str__(self):
-        if self.has_content():
+        if self.has_content:
             out = ''
             plug = 'plugin:[{}] '
-            if self.has_efield():
+            if self.has_editor_field:
                 out += plug.format('efield')
-            if self.has_files():
+            if self.has_files:
                 out += plug.format('files')
             return out
         else:
             return ''
 
-    def has_efield(self):
-        return True in [e.has_content() for e in self.efields]
+    @property
+    def has_editor_field(self):
+        return True in [e.has_content for e in self.editor_fields]
 
+    @property
     def has_files(self):
-        return True in [f.has_content() for f in self.fareas]
+        return True in [f.has_content for f in self.file_areas]
 
+    @property
     def has_content(self):
-        if self.has_efield() or self.has_files():
+        if self.has_editor_field or self.has_files:
             return True
         else:
             return False
 
-    def get_file_urls(self):
+    @property
+    def file_urls(self):
         urls = []
-        for farea in self.fareas:
-            urls += farea.get_file_urls()
+        for farea in self.file_areas:
+            urls += farea.file_urls
         return urls
 
-    def get_editor_field_content(self):
+    @property
+    def editor_field_content(self):
         content = ''
-        if self.has_efield():
-            for e in self.efields:
-                if e.has_content():
-                    content += e.get_content()
+        if self.has_editor_field:
+            for e in self.editor_fields:
+                if e.has_content:
+                    content += e.content
         return content
 
 
 class FileArea:
     def __init__(self, data):
-        self.area = data.pop('area')
+        self.area = data.pop(Jn.area)
         self.files = []
-        if 'files' in data:
-            self.files = data.pop('files')
+        if Jn.files in data:
+            self.files = data.pop(Jn.files)
         self.unparsed = data
 
     def __str__(self):
         out = self.area
-        if self.has_content():
+        if self.has_content:
             out += ' has {:2d} files'.format(len(self.files))
         return out
 
+    @property
     def has_content(self):
         return len(self.files) > 0
 
-    def get_file_urls(self):
+    @property
+    def file_urls(self):
         return self.files
 
 
 class EditorField:
     def __init__(self, data):
         self.data = data
-        self.name = data.pop('name')
-        self.descr = data.pop('description')
-        self.text = data.pop('text')
-        self.fmt = data.pop('format')
+        self.name = data.pop(Jn.name)
+        self.descr = data.pop(Jn.description)
+        self.text = data.pop(Jn.text)
+        self.fmt = data.pop(Jn.format)
         self.unparsed = data
 
     def __str__(self):
         out = '{} {}'.format(self.name, self.descr)
-        if self.has_content():
+        if self.has_content:
             out += ' has text format {:1d}'.format(self.fmt)
         return out
 
+    @property
     def has_content(self):
         return self.text.strip() != ''
 
-    def get_content(self):
+    @property
+    def content(self):
         return self.text

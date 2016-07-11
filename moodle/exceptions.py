@@ -43,3 +43,6 @@ class InvalidResponse(MoodleError):
 
     def __str__(self):
         return self.message + self.debug_message
+
+# webservice_access_exception accessexception Access Control Exception Invalid token - token expired - check validuntil time for the token
+
