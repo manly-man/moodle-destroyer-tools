@@ -16,6 +16,10 @@ from moodle.parsers import strip_mlang
 
 from util.worktree import WorkTree
 from util import interaction
+import shutil
+import logging
+
+log = logging.getLogger('wstools')
 
 # TODO on sync: request submissions via last_changed.
 
@@ -156,6 +160,11 @@ def _make_config_parser_sync(subparsers, url_token_parser):
         parents=[url_token_parser]
     )
     sync_parser.add_argument('-c', '--courseids', nargs='+', help='moodle course id', type=int, action='append')
+    sync_parser.add_argument('-u', '--users', help='sync users', action='store_true')
+    sync_parser.add_argument('-a', '--assignments', help='sync assignments', action='store_true')
+    sync_parser.add_argument('-s', '--submissions', help='sync submissions', action='store_true')
+    sync_parser.add_argument('-g', '--grades', help='sync grades', action='store_true')
+
     sync_parser.set_defaults(func=sync)
 
 
@@ -207,7 +216,8 @@ def sync(args):
             try:
                 reply = session.get_enrolled_users(course_id=cid)
                 data = json.loads(strip_mlang(reply.text))
-                users += data
+                course_data = {'courseid': cid, 'users': data}
+                users.append(course_data)
                 print('{:5d}:got {:4d}'.format(cid, len(data)), end=' ', flush=True)
             except AccessDenied as denied:
                 message = '{:d} denied access to users: {}'.format(cid, denied)
@@ -226,20 +236,29 @@ def sync(args):
     last_sync = sync_meta_data['last_sync']
     moodle = MoodleSession(moodle_url=args.url, token=args.token)
 
-    print('syncing assignments… ', end='', flush=True)
-    assignment_ids = _write_assignments(moodle.get_assignments(course_ids), wt)
+    sync_all = True
+    if args.users or args.submissions or args.assignments or args.grades:
+        sync_all = False
 
-    print('syncing submissions… ', end='', flush=True)
-    # _write_submissions(moodle.get_submissions_for_assignments(assignment_ids, since=last_sync), wt)
-    _write_submissions(moodle.get_submissions_for_assignments(assignment_ids), wt)
+    if args.assignments or sync_all:
+        print('syncing assignments… ', end='', flush=True)
+        assignment_ids = _write_assignments(moodle.get_assignments(course_ids), wt)
 
-    print('syncing grades… ', end='', flush=True)
-    # _write_grades(moodle.get_grades(assignment_ids, since=last_sync))
-    _write_grades(moodle.get_grades(assignment_ids), wt)
+    if args.submissions or sync_all:
+        print('syncing submissions… ', end='', flush=True)
+        # _write_submissions(moodle.get_submissions_for_assignments(assignment_ids, since=last_sync), wt)
+        _write_submissions(moodle.get_submissions_for_assignments(assignment_ids), wt)
 
-    _write_users(moodle, course_ids, wt)
+    if args.grades or sync_all:
+        print('syncing grades… ', end='', flush=True)
+        # _write_grades(moodle.get_grades(assignment_ids, since=last_sync))
+        _write_grades(moodle.get_grades(assignment_ids), wt)
 
-    wt.update_sync_meta()
+    if args.users or sync_all:
+        _write_users(moodle, course_ids, wt)
+
+    if sync_all:
+        wt.update_sync_meta()
 
 
 def _make_config_parser_status(subparsers, url_token_parser):
@@ -256,6 +275,7 @@ def _make_config_parser_status(subparsers, url_token_parser):
 def status(args):
     wt = WorkTree()
     args.courseids = _unpack(args.courseids)
+    term_columns = shutil.get_terminal_size().columns
 
     course_data = wt.data
     courses = [Course(c) for c in course_data]
@@ -306,12 +326,18 @@ def pull(args):
     assignments = []
     for c in courses:
         assignments += c.get_assignments(assignment_ids)
+
     for a in assignments:
         wt.start_pull(a)
+        counter = 0
+        complete = len(a.file_urls)
+        interaction.print_progress(counter, complete)
         for file in a.file_urls:
-            print(file[Jn.file_url])
+            log.debug(file[Jn.file_url])
             response = ms.download_file(file[Jn.file_url])
             wt.write_pulled_file(response.content, file[Jn.file_path])
+            counter += 1
+            interaction.print_progress(counter, complete, suffix=file[Jn.file_path])
         html = a.merged_html
         if html is not None:
             wt.write_pulled_html(html)
