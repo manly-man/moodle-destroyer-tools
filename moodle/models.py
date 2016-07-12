@@ -269,7 +269,8 @@ class Submission:
 
     def get_grade_or_reason_if_team_ungraded(self):
         graded_users, ungraded_users = self.get_team_members_and_grades()
-        grade_set = set([grade.value for grade in graded_users.values()])
+        grades = [grade for grade in graded_users.values()]
+        grade_set = set([grade.value for grade in grades])
         set_size = len(grade_set)
         warnings = ''
         if len(graded_users) == 0:
@@ -279,7 +280,7 @@ class Submission:
         if set_size > 1:
             warnings += ' grades not equal: ' + str(grade_set)
         if warnings == '':
-            return grade_set.pop(), None
+            return grades.pop(), None
         else:
             return None, warnings
 
@@ -289,8 +290,11 @@ class Submission:
         group = self.assignment.course.groups[self.group_id]
 
         grade, warnings = self.get_grade_or_reason_if_team_ungraded()
+        grader = 'NAME UNKNOWN?'
         if grade is not None:
-            return ' ' * indent + '{:20} id:{:7d} grade:{:4}'.format(group.name, self.id, grade)
+            if grade.grader_id in self.assignment.course.users:
+                grader = self.assignment.course.users[grade.grader_id].name
+            return ' ' * indent + '{:20} id:{:7d} grade:{:4} graded_by:{:10}'.format(group.name, self.id, grade.value, grader)
         else:
             return ' ' * indent + '{:20} id:{:7d} WARNING:{}'.format(group.name, self.id, warnings)
 
@@ -302,7 +306,10 @@ class Submission:
         user = self.assignment.course.users[self.user_id]
         if self.is_graded:
             grade = self.assignment.grades[self.user_id]
-            return indent * ' ' + '{:20} grade:{:4}'.format(user.name[0:19], grade.value)
+            grader = 'NAME UNKNOWN?'
+            if grade.grader_id in self.assignment.course.users:
+                grader = self.assignment.course.users[grade.grader_id].name
+            return indent * ' ' + '{:20} grade:{:4} graded_by:{:10}'.format(user.name[0:19], grade.value, grader)
         else:
             return indent * ' ' + '{:20} ungraded'.format(user.name[0:19])
 
