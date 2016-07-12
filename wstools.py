@@ -53,7 +53,7 @@ def _make_config_parser_auth(subparsers, url_token_parser):
         help='retrieve access token from server',
         parents=[url_token_parser]
     )
-    auth_parser.add_argument('-u', '--user', help='username', required=False)
+    auth_parser.add_argument('-u', '--username', help='username', required=False)
     auth_parser.add_argument('-s', '--service', help='the webservice, has to be set explicitly',
                              default='moodle_mobile_app')
     auth_parser.add_argument('-a', '--ask', help='will ask for all credentials, again', action='store_true')
@@ -63,14 +63,14 @@ def _make_config_parser_auth(subparsers, url_token_parser):
 def auth(args):
     wt = WorkTree(skip_init=True)
     _url = 'url'
-    _user = 'user'
+    _user = 'username'
     _service = 'service'
 
     settings = {}
 
     if args.ask:
         settings[_url] = interaction.input_moodle_url(args.url)
-        settings[_user] = interaction.input_user_name(args.user)
+        settings[_user] = interaction.input_user_name(args.username)
         del args.ask
     else:
         if args.url is None or args.url == '':
@@ -78,10 +78,10 @@ def auth(args):
         else:
             settings[_url] = args.url
 
-        if args.user is None or args.user == '':
+        if args.username is None or args.username == '':
             settings[_user] = interaction.input_user_name()
         else:
-            settings[_user] = args.user
+            settings[_user] = args.username
 
     settings[_service] = args.service
 
@@ -160,10 +160,10 @@ def _make_config_parser_sync(subparsers, url_token_parser):
         parents=[url_token_parser]
     )
     sync_parser.add_argument('-c', '--courseids', nargs='+', help='moodle course id', type=int, action='append')
-    sync_parser.add_argument('-u', '--users', help='sync users', action='store_true')
     sync_parser.add_argument('-a', '--assignments', help='sync assignments', action='store_true')
     sync_parser.add_argument('-s', '--submissions', help='sync submissions', action='store_true')
     sync_parser.add_argument('-g', '--grades', help='sync grades', action='store_true')
+    sync_parser.add_argument('-u', '--users', help='sync users', action='store_true', default=False)
 
     sync_parser.set_defaults(func=sync)
 
@@ -208,16 +208,15 @@ def sync(args):
             worktree.write_local_grade_meta(assignment)
         print('finished. total: {:d}'.format(len(data[Jn.assignments])))
 
-    def _write_users(session, course_ids, worktree):
+    def _write_users(moodle, course_ids, worktree):
         print('syncing users…', end=' ', flush=True)
 
-        users = []
+        users = {}
         for cid in course_ids:
             try:
-                reply = session.get_enrolled_users(course_id=cid)
+                reply = moodle.get_enrolled_users(course_id=cid)
                 data = json.loads(strip_mlang(reply.text))
-                course_data = {'courseid': cid, 'users': data}
-                users.append(course_data)
+                users[int(cid)] = data
                 print('{:5d}:got {:4d}'.format(cid, len(data)), end=' ', flush=True)
             except AccessDenied as denied:
                 message = '{:d} denied access to users: {}'.format(cid, denied)
@@ -280,7 +279,7 @@ def status(args):
     course_data = wt.data
     courses = [Course(c) for c in course_data]
     if args.assignmentids is not None and args.submissionids is None:
-        for c in sorted(courses):
+        for c in sorted(courses, key=lambda c: c.name):
             print(c)
             assignments = c.get_assignments(args.assignmentids)
             a_status = [a.detailed_status_string(indent=1) for a in assignments]
@@ -288,17 +287,17 @@ def status(args):
                 print(s)
     elif args.submissionids is not None:
         # TODO this.
-        for c in sorted(courses):
+        for c in sorted(courses, key=lambda c: c.name):
             print(c)
             assignments = c.get_assignments(args.assignmentids)
             a_status = [a.detailed_status_string() for a in assignments]
             for s in sorted(a_status):
                 print(s)
     elif args.full:
-        for i in sorted(courses):
+        for i in sorted(courses, key=lambda c: c.name):
             i.print_status()
     else:
-        for course in sorted(courses):
+        for course in sorted(courses, key=lambda c: c.name):
             course.print_short_status()
 
 

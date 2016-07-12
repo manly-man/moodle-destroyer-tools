@@ -24,6 +24,9 @@ class Course:
     def __str__(self):
         return '{:40} id:{:5d} short: {}'.format(self.name[0:39], self.id, self.short_name)
 
+    def __repr__(self):
+        return repr((self.name, self.id, self.short_name))
+
     def print_status(self):
         print(self)
         assignments = [a.short_status_string(indent=1) for a in self.assignments.values()]

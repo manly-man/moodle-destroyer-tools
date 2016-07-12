@@ -12,6 +12,9 @@ from moodle.fieldnames import JsonFieldNames as Jn
 from moodle.fieldnames import UrlPaths as Paths
 from moodle.parsers import strip_mlang
 
+import logging
+
+log = logging.getLogger('moodle.communication')
 
 # TODO handle ws exceptions in sensible manner, collate warnings: MoodleAdapter?
 # TODO check if server supports wsfunction
@@ -89,6 +92,8 @@ class MoodleSession(requests.Session):
         :param assignment_ids: list of assignment ids to get grades for.
         :param since: timestamp, only return records where timemodified >= since, default=0
         :return: list of grades, contained in assignments.
+
+
         """
         data = {
             Jn.ws_function: 'mod_assign_get_grades',
@@ -261,14 +266,23 @@ class MoodleSession(requests.Session):
 
         return self.post_web_service(data)
 
+    def send_submission(self, assignment, text, format, itemid):
+        """
+
+        :return:
+        """
+
     def upload_files(self, fd_list, file_path='/', file_area='draft', item_id=0):
         mimetypes.init()
 
         upload_info = []
         for num, fd in enumerate(fd_list, 0):
-            upload_info.append(('file_{:d}'.format(num),
-                                (os.path.basename(fd.name), fd, mimetypes.guess_type(fd.name)[0])))
-        print(str(upload_info))
+            file_number = 'file_{:d}'.format(num)
+            file_name = os.path.basename(fd.name)
+            file_type = mimetypes.guess_type(fd.name)[0]
+            upload_info.append((file_number, (file_name, fd, file_type)))
+
+        log.debug(str(upload_info))
 
         data = {
             Jn.file_path: file_path,
@@ -296,7 +310,7 @@ class MoodleAdapter(HTTPAdapter):
             params = parse_qs(req.body)
             if Jn.ws_function in params:
                 called_function = params[Jn.ws_function]
-                print('called function: {}'.format(called_function))
+                log.debug('called function: {}'.format(called_function))
 
         if called_function != '':
             if 'mod_assign_save_grade' and response.json() is None:

@@ -122,8 +122,7 @@ class WorkTree:
         courses = self.courses
         merged = []
         for course in courses:
-            course[Jn.users] = self.users
-
+            course[Jn.users] = self.users[str(course[Jn.id])]
             course_assignments = [a for a in self.assignments if a[Jn.course] == course[Jn.id]]
 
             for assignment in course_assignments:
