@@ -13,6 +13,7 @@ class WorkTree:
     def __init__(self, init=False, force=False, skip_init=False):
         if skip_init:
             return
+
         self.root = self.get_work_tree_root()
         if self.root is None and not init:
             raise NotInWorkTree()
@@ -294,6 +295,7 @@ class WorkTree:
             filename = new_name.format(i)
             while os.path.isfile(filename):
                 i += 1
+                filename = new_name.format(i)
             print('grading file exists, writing to: {}'.format(filename))
 
         with open(filename, 'w') as grading_file:
