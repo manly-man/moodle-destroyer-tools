@@ -256,10 +256,24 @@ class WorkTree:
         self.pull_dir = dir_name
         return dir_name
 
-    def write_pulled_file(self, content, file_path):
+    def write_pulled_file(self, content, file):
         if not self.pulling:
             raise Exception('not pulling: illegal state')
-        with open(self.pull_dir + file_path, 'wb') as pulled_file:
+        filename = self.pull_dir + '/' + file['prefix']
+        filepath = file[Jn.file_path][1:]
+        prefix = file['prefix']
+        if '--' in prefix and '/' in filepath:
+            # single file in folder
+            filename += filepath.replace('/', '_')
+        else:
+            filename += filepath
+
+        if '/' in prefix and '/' in filepath:
+            # file in folder, folder might not exist.
+            dirs = re.sub(r'(.*)/([^/]*)', r'\1', filepath)
+            os.makedirs(self.pull_dir + '/' + prefix + dirs, exist_ok=True)
+
+        with open(filename, 'wb') as pulled_file:
             pulled_file.write(content)
 
     def write_pulled_html(self, html):

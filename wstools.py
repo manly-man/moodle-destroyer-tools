@@ -334,7 +334,7 @@ def pull(args):
         for file in a.file_urls:
             log.debug(file[Jn.file_url])
             response = ms.download_file(file[Jn.file_url])
-            wt.write_pulled_file(response.content, file[Jn.file_path])
+            wt.write_pulled_file(response.content, file)
             counter += 1
             interaction.print_progress(counter, complete, suffix=file[Jn.file_path])
         html = a.merged_html

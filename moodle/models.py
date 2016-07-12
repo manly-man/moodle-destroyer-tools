@@ -358,14 +358,14 @@ class Submission:
     def add_file_prefix(self, urls):
         prefix = self.prefix
         for u in urls:
-            u[Jn.file_path] = '/' + prefix + '--' + u[Jn.file_path][1:]
+            u['prefix'] = prefix + '--'
         return urls
 
     def add_folder_prefix(self, urls):
         prefix = self.prefix
         os.makedirs(prefix, exist_ok=True)
         for u in urls:
-            u[Jn.file_path] = '/' + prefix + u[Jn.file_path]
+            u['prefix'] = prefix + '/'
         return urls
 
 
