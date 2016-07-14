@@ -40,7 +40,7 @@ class Course:
             print(a)
 
     def get_assignments(self, id_list):
-        return [self.assignments[aid] for aid in id_list if aid in self.assignments]
+        return [a for aid, a in self.assignments.items() if aid in id_list]
 
     def update_users(self, data):
         if Jn.error_code in data:
@@ -176,13 +176,12 @@ class Assignment:
             else:
                 self.configs[acfg.sub_type][acfg.plugin][acfg.name] = acfg.value
 
-
     @property
-    def file_urls(self):
-        urls = []
+    def files(self):
+        files = []
         for s in self.valid_submissions:
-            urls += s.file_urls
-        return urls
+            files += s.files
+        return [s.files for s in self.submissions.values()]
 
     def update_submissions(self, data):
         # TODO find out what breaks after this change.
@@ -361,15 +360,11 @@ class Submission:
         return False
 
     @property
-    def file_urls(self):
-        urls = []
+    def files(self):
+        files = []
         for p in self.plugins:
-            urls += p.file_urls
-
-        if len(urls) > 1:
-            return self.add_folder_prefix(urls)
-        else:
-            return self.add_file_prefix(urls)
+            files += p.files
+        return files
 
     @property
     def has_editor_field_content(self):
@@ -391,19 +386,6 @@ class Submission:
         else:
             user = self.assignment.course.users[self.user_id]
             return user.name
-
-    def add_file_prefix(self, urls):
-        prefix = self.prefix
-        for u in urls:
-            u['prefix'] = prefix + '--'
-        return urls
-
-    def add_folder_prefix(self, urls):
-        prefix = self.prefix
-        os.makedirs(prefix, exist_ok=True)
-        for u in urls:
-            u['prefix'] = prefix + '/'
-        return urls
 
 
 class Grade:
@@ -462,11 +444,11 @@ class Plugin:
             return False
 
     @property
-    def file_urls(self):
-        urls = []
-        for farea in self.file_areas:
-            urls += farea.file_urls
-        return urls
+    def files(self):
+        file_list = []
+        for area in self.file_areas:
+            file_list += area.files
+        return file_list
 
     @property
     def editor_field_content(self):
@@ -481,9 +463,9 @@ class Plugin:
 class FileArea:
     def __init__(self, data):
         self.area = data.pop(Jn.area)
-        self.files = []
+        self._files = []
         if Jn.files in data:
-            self.files = data.pop(Jn.files)
+            self.set_file_data(data.pop(Jn.files))
         self.unparsed = data
 
     def __str__(self):
@@ -497,13 +479,26 @@ class FileArea:
         return len(self.files) > 0
 
     @property
-    def file_urls(self):
-        return self.files
+    def files(self):
+        return self._files
+
+    def set_file_data(self, data):
+        self._files = [File(file) for file in data]
+
+
+class File:
+    def __init__(self, data):
+        self.path = data.pop(Jn.file_path)
+        self.url = data.pop(Jn.file_url)
+        self.prefix = ''
+        # TODO metadata attributes
+
+    def add_metadata(self, data):
+        pass
 
 
 class EditorField:
     def __init__(self, data):
-        self.data = data
         self.name = data.pop(Jn.name)
         self.description = data.pop(Jn.description)
         self.text = data.pop(Jn.text)

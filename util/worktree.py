@@ -224,6 +224,22 @@ class WorkTree:
         g_config_file = self.grade_meta + str(assignment[Jn.assignment_id])
         self._write_meta(g_config_file, assignment)
 
+    def write_submission_files(self, content, prefix):
+        if len(content) == 1:
+            prefix += '--'
+            file, data = content[0]
+            filename = prefix + file.path[1:].replace('/', '_')
+            with open(filename, 'wb') as pulled_file:
+                pulled_file.write(data)
+            return
+
+        for file, data in content:
+            filename = prefix + file.path
+            file_dir = os.path.dirname(filename)
+            os.makedirs(file_dir, exist_ok=True)
+            with open(filename, 'wb') as pulled_file:
+                pulled_file.write(data)
+
     def read_sync_meta(self):
         try:
             return self._read_meta(self.sync_meta)

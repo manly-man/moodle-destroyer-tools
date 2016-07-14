@@ -7,8 +7,6 @@ import sys
 import wstools
 from util.worktree import NotInWorkTree
 
-# TODO
-
 
 def exec_path_to_dict(paths):
     mdt_pattern = re.compile('mdt-\S+')
@@ -65,7 +63,6 @@ def main():
         args, unknown = parser.parse_known_args()
         if 'func' in args:
             kwargs = vars(args)
-            print(kwargs)
             func = kwargs.pop('func')
             func(**kwargs)
         else:

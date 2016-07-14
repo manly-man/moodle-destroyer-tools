@@ -13,6 +13,7 @@ from moodle.communication import MoodleSession
 from moodle.fieldnames import JsonFieldNames as Jn
 from moodle.models import Course
 from moodle.parsers import strip_mlang
+import concurrent.futures as concurrent
 
 from util.worktree import WorkTree
 from util import interaction
@@ -316,11 +317,10 @@ def _make_config_parser_pull(subparsers, url_token_parser):
 
 
 def pull(url, token, course_ids, assignment_ids, all=False):
-    ms = MoodleSession(moodle_url=url, token=token)
+    moodle = MoodleSession(moodle_url=url, token=token)
 
     wt = WorkTree()
     course_ids = _unpack(course_ids)
-    print('called pull {}'.format(str(assignment_ids)))
 
     course_data = wt.data
     courses = [Course(c) for c in course_data]
@@ -331,14 +331,18 @@ def pull(url, token, course_ids, assignment_ids, all=False):
     for a in assignments:
         wt.start_pull(a)
         counter = 0
-        complete = len(a.file_urls)
-        interaction.print_progress(counter, complete)
-        for file in a.file_urls:
-            log.debug(file[Jn.file_url])
-            response = ms.download_file(file[Jn.file_url])
-            wt.write_pulled_file(response.content, file)
-            counter += 1
-            interaction.print_progress(counter, complete, suffix=file[Jn.file_path])
+        file_count = 0  # TODO
+        # interaction.print_progress(counter, file_count)
+
+        for s in a.submissions.values():
+            # log.debug(file_[Jn.file_url])
+            content = []
+            for file in s.files:
+                response = moodle.download_file(file.url)
+                content.append((file, response.content))
+                counter += 1
+                # interaction.print_progress(counter, file_count, suffix=file.path)
+            wt.write_submission_files(content, s.prefix)
         html = a.merged_html
         if html is not None:
             wt.write_pulled_html(html)
