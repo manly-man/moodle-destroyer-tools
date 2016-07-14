@@ -271,6 +271,46 @@ class MoodleSession(requests.Session):
 
         :return:
         """
+        pass
+
+    def get_course_enrolment_methods(self, course_id):
+
+        data = {
+            Jn.ws_function: 'core_enrol_get_course_enrolment_methods',
+            Jn.course_id: course_id,
+        }
+        return self.post_web_service(data)
+
+    def enrol_in_course(self, course_id, password='', instance_id=0):
+        """
+        enrol self in course
+        :param course_id: course id to enrol in
+        :param password: password for enrollment
+        :param instance_id: instance id of self enrolment plugin
+        :return:
+        """
+        data = {
+            Jn.ws_function: 'enrol_self_enrol_user',
+            Jn.course_id: course_id,
+            Jn.password: password,
+            Jn.instance_id: instance_id,
+        }
+        return self.post_web_service(data)
+
+    def get_grade_report_table(self, course_id, user_id=0):
+        """
+        Retrieves the grade report table.
+
+        :param course_id: the course you want the table from
+        :param user_id: if not set, all users tables will be retreived (SLOW)
+        :return: the grade table
+        """
+        data = {
+            Jn.ws_function: 'gradereport_user_get_grades_table',
+            Jn.course_id: course_id,
+            Jn.user_id: user_id
+        }
+        return self.post_web_service(data)
 
     def upload_files(self, fd_list, file_path='/', file_area='draft', item_id=0):
         mimetypes.init()
