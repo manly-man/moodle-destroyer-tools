@@ -60,7 +60,7 @@ def _make_config_parser_auth(subparsers, url_token_parser):
     auth_parser.set_defaults(func=auth)
 
 
-def auth(args):
+def auth(url=None, token=None, ask=False, username=None, service='moodle_mobile_app'):
     wt = WorkTree(skip_init=True)
     _url = 'url'
     _user = 'username'
@@ -68,22 +68,22 @@ def auth(args):
 
     settings = {}
 
-    if args.ask:
-        settings[_url] = interaction.input_moodle_url(args.url)
-        settings[_user] = interaction.input_user_name(args.username)
-        del args.ask
+    if ask:
+        settings[_url] = interaction.input_moodle_url(url)
+        settings[_user] = interaction.input_user_name(username)
+        del ask
     else:
-        if args.url is None or args.url == '':
+        if url is None or url == '':
             settings[_url] = interaction.input_moodle_url()
         else:
-            settings[_url] = args.url
+            settings[_url] = url
 
-        if args.username is None or args.username == '':
+        if username is None or username == '':
             settings[_user] = interaction.input_user_name()
         else:
-            settings[_user] = args.username
+            settings[_user] = username
 
-    settings[_service] = args.service
+    settings[_service] = service
 
     password = interaction.input_password()
 
@@ -114,28 +114,28 @@ def _make_config_parser_init(subparsers, url_token_parser):
         help='initialize work tree',
         parents=[url_token_parser]
     )
-    init_parser.add_argument('--uid')
+    init_parser.add_argument('--uid', dest='user_id')
     init_parser.add_argument('--force', help='overwrite the config', action='store_true')
     init_parser.add_argument('-c', '--courseids', nargs='+', help='moodle course id', type=int, action='append')
     init_parser.set_defaults(func=init)
 
 
-def init(args):
+def init(url, token, user_id, force=False, course_ids=None):
     """initializes working tree: creates local .mdt/config, with chosen courses"""
 
     try:
-        wt = WorkTree(init=True, force=args.force)
+        wt = WorkTree(init=True, force=force)
     except FileExistsError:
         print('already initialized')
         raise SystemExit(1)
 
-    ms = MoodleSession(moodle_url=args.url, token=args.token)
+    ms = MoodleSession(moodle_url=url, token=token)
 
-    reply = ms.get_users_course_list(args.uid)
+    reply = ms.get_users_course_list(user_id)
     courses = [Course(c) for c in reply.json()]
     courses.sort(key=lambda course: course.name)
 
-    if args.courseids is None or args.force:
+    if course_ids is None or force:
         choices = interaction.input_choices_from_list(courses, '\n  choose courses, seperate with space: ')
         if len(choices) == 0:
             print('nothing chosen.')
@@ -143,14 +143,14 @@ def init(args):
         chosen_courses = [courses[c] for c in choices]
         for c in chosen_courses:
             print('using: ' + str(c))
-        args.courseids = [c.id for c in chosen_courses]
-        saved_data = [c for c in reply.json() if c['id'] in args.courseids]
+        course_ids = [c.id for c in chosen_courses]
+        saved_data = [c for c in reply.json() if c['id'] in course_ids]
 
         wt.write_local_course_meta(saved_data)
 
-    wt.write_local_config('courseids = ' + str(args.courseids))
-    args.courseids = [[i] for i in args.courseids]  # pack hotfix, do not liek.
-    sync(args)
+    wt.write_local_config('courseids = ' + str(course_ids))
+    course_ids = [[i] for i in course_ids]  # pack hotfix, do not liek.
+    sync(url=url, token=token, course_ids=course_ids)
 
 
 def _make_config_parser_sync(subparsers, url_token_parser):
@@ -159,7 +159,7 @@ def _make_config_parser_sync(subparsers, url_token_parser):
         help='download metadata from server',
         parents=[url_token_parser]
     )
-    sync_parser.add_argument('-c', '--courseids', nargs='+', help='moodle course id', type=int, action='append')
+    sync_parser.add_argument('-c', '--courseids', dest='course_ids', nargs='+', help='moodle course id', type=int, action='append')
     sync_parser.add_argument('-a', '--assignments', help='sync assignments', action='store_true')
     sync_parser.add_argument('-s', '--submissions', help='sync submissions', action='store_true')
     sync_parser.add_argument('-g', '--grades', help='sync grades', action='store_true')
@@ -168,7 +168,7 @@ def _make_config_parser_sync(subparsers, url_token_parser):
     sync_parser.set_defaults(func=sync)
 
 
-def sync(args):
+def sync(url, token, course_ids, assignments=False, submissions=False, grades=False, users=False):
     def _write_assignments(reply, worktree):
         changes = {
             'new': 0,
@@ -230,30 +230,31 @@ def sync(args):
 
     wt = WorkTree()
 
-    course_ids = _unpack(args.courseids)
+    course_ids = _unpack(course_ids)
     sync_meta_data = wt.read_sync_meta()
     last_sync = sync_meta_data['last_sync']
-    moodle = MoodleSession(moodle_url=args.url, token=args.token)
+    moodle = MoodleSession(moodle_url=url, token=token)
 
     sync_all = True
-    if args.users or args.submissions or args.assignments or args.grades:
+    if users or submissions or assignments or grades:
         sync_all = False
 
-    if args.assignments or sync_all:
+    assignment_ids = []
+    if assignments or submissions or sync_all:  # TODO remove quick fix, see sub sync below
         print('syncing assignments… ', end='', flush=True)
         assignment_ids = _write_assignments(moodle.get_assignments(course_ids), wt)
 
-    if args.submissions or sync_all:
+    if submissions or sync_all:  # TODO read assignment ids from local meta.
         print('syncing submissions… ', end='', flush=True)
         # _write_submissions(moodle.get_submissions_for_assignments(assignment_ids, since=last_sync), wt)
         _write_submissions(moodle.get_submissions_for_assignments(assignment_ids), wt)
 
-    if args.grades or sync_all:
+    if grades or sync_all:
         print('syncing grades… ', end='', flush=True)
         # _write_grades(moodle.get_grades(assignment_ids, since=last_sync))
         _write_grades(moodle.get_grades(assignment_ids), wt)
 
-    if args.users or sync_all:
+    if users or sync_all:
         _write_users(moodle, course_ids, wt)
 
     if sync_all:
@@ -262,40 +263,41 @@ def sync(args):
 
 def _make_config_parser_status(subparsers, url_token_parser):
     status_parser = subparsers.add_parser('status', help='display various information about work tree')
-    status_parser.add_argument('-c', '--courseids', nargs='+', help='moodle course ids', type=int, action='append')
-    status_parser.add_argument('-a', '--assignmentids', nargs='+', help='show detailed status for assignment id',
+    status_parser.add_argument('-c', '--courseids', dest='course_ids', nargs='+', help='moodle course ids', type=int, action='append')
+    status_parser.add_argument('-a', '--assignmentids', dest='assignment_ids', nargs='+', help='show detailed status for assignment id',
                                type=int)
-    status_parser.add_argument('-s', '--submissionids', nargs='+', help='show detailed status for submission id',
+    status_parser.add_argument('-s', '--submissionids', dest='submission_ids', nargs='+', help='show detailed status for submission id',
                                type=int)
     status_parser.add_argument('--full', help='display all assignments', action='store_true')
     status_parser.set_defaults(func=status)
 
 
-def status(args):
+def status(course_ids, assignment_ids, submission_ids, full=False):
+    print('{} {} {} {}'.format(str(course_ids), str(assignment_ids), str(submission_ids), str(full)))
     wt = WorkTree()
-    args.courseids = _unpack(args.courseids)
+    course_ids = _unpack(course_ids)
     term_columns = shutil.get_terminal_size().columns
 
     course_data = wt.data
     courses = [Course(c) for c in course_data]
-    if args.assignmentids is not None and args.submissionids is None:
-        for c in sorted(courses, key=lambda c: c.name):
-            print(c)
-            assignments = c.get_assignments(args.assignmentids)
+    if assignment_ids is not None and submission_ids is None:
+        for course in sorted(courses, key=lambda c: c.name):
+            print(course)
+            assignments = course.get_assignments(assignment_ids)
             a_status = [a.detailed_status_string(indent=1) for a in assignments]
             for s in sorted(a_status):
                 print(s)
-    elif args.submissionids is not None:
+    elif submission_ids is not None:
         # TODO this.
-        for c in sorted(courses, key=lambda c: c.name):
-            print(c)
-            assignments = c.get_assignments(args.assignmentids)
+        for course in sorted(courses, key=lambda c: c.name):
+            print(course)
+            assignments = course.get_assignments(assignment_ids)
             a_status = [a.detailed_status_string() for a in assignments]
             for s in sorted(a_status):
                 print(s)
-    elif args.full:
-        for i in sorted(courses, key=lambda c: c.name):
-            i.print_status()
+    elif full:
+        for course in sorted(courses, key=lambda c: c.name):
+            course.print_status()
     else:
         for course in sorted(courses, key=lambda c: c.name):
             course.print_short_status()
@@ -307,18 +309,18 @@ def _make_config_parser_pull(subparsers, url_token_parser):
         help='retrieve files for grading',
         parents=[url_token_parser]
     )
-    pull_parser.add_argument('-c', '--courseids', nargs='+', help='moodle course ids', type=int, action='append')
-    pull_parser.add_argument('-a', '--assignmentids', nargs='+', type=int, required=True)
+    pull_parser.add_argument('-c', '--courseids', dest='course_ids', nargs='+', help='moodle course ids', type=int, action='append')
+    pull_parser.add_argument('-a', '--assignmentids', dest='assignment_ids', nargs='+', type=int, required=True)
     pull_parser.add_argument('--all', help='pull all due submissions, even old ones', action='store_true')
     pull_parser.set_defaults(func=pull)
 
 
-def pull(args):
-    ms = MoodleSession(moodle_url=args.url, token=args.token)
+def pull(url, token, course_ids, assignment_ids, all=False):
+    ms = MoodleSession(moodle_url=url, token=token)
 
     wt = WorkTree()
-    course_ids = _unpack(args.courseids)
-    assignment_ids = args.assignmentids
+    course_ids = _unpack(course_ids)
+    print('called pull {}'.format(str(assignment_ids)))
 
     course_data = wt.data
     courses = [Course(c) for c in course_data]
@@ -354,13 +356,13 @@ def _make_config_parser_grade(subparsers, url_token_parser):
     grade_parser.set_defaults(func=grade)
 
 
-def grade(args):
+def grade(url, token, files):
     wt = WorkTree()
 
     course_data = wt.data
     courses = [Course(c) for c in course_data]
     grading_data = {}
-    for file in args.files:
+    for file in files:
         # file_content = file.read()
         parsed = json.load(file)
         assignment_id = parsed['assignment_id']
@@ -383,7 +385,7 @@ def grade(args):
         print('do it right, then')
         return
 
-    ms = MoodleSession(moodle_url=args.url, token=args.token)
+    ms = MoodleSession(moodle_url=url, token=token)
     for graded_assignment in upload_data:
         as_id = graded_assignment['assignment_id']
         team = graded_assignment['team_submission']
@@ -405,10 +407,10 @@ def _make_config_parser_upload(subparsers, url_token_parser):
     upload_parser.set_defaults(func=upload)
 
 
-def upload(args):
+def upload(url, token, files):
     # wt = WorkTree()
-    files = args.files
-    ms = MoodleSession(args.url, args.token)
+    files = files
+    ms = MoodleSession(url, token)
     reply = ms.upload_files(files)
     j = json.loads(reply.text)
     print(json.dumps(j, indent=2, ensure_ascii=False))
@@ -422,7 +424,7 @@ def _make_config_parser_config(subparsers, url_token_parser):
     config_parser.set_defaults(func=config)
 
 
-def config(args):
+def config():
     wt = WorkTree()
     parser = make_config_parser(wt)
     parser.parse_known_args()

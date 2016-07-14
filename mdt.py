@@ -64,7 +64,10 @@ def main():
         parser = wstools.make_config_parser()
         args, unknown = parser.parse_known_args()
         if 'func' in args:
-            args.func(args)
+            kwargs = vars(args)
+            print(kwargs)
+            func = kwargs.pop('func')
+            func(**kwargs)
         else:
             call = getattr(wstools, sub_command)
             call()
