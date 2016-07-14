@@ -106,6 +106,9 @@ class Assignment:
         if Jn.grades in data:
             self.update_grades(data.pop(Jn.grades))
         self.course = course
+        self.configs = {}
+        self.update_config(data.pop(Jn.configs))
+        self.course_module_id = data.pop(Jn.course_module_id)
         # if len(data) > 1:
         #     print('warning, unparsed assignment data = {}'.format(data.keys()))
 
@@ -139,10 +142,19 @@ class Assignment:
         return fmt_string.format(self.valid_submission_count, self.is_due, not self.needs_grading)
 
     def detailed_status_string(self, indent=0):
-        string = ' ' * indent + str(self)
+        string = ' ' * indent + str(self) + '\n'
+        string += self.config_status_string(indent=indent+1)
         s_status = [s.status_string(indent=indent + 1) for s in self.valid_submissions]
-        for s in sorted(s_status):
-            string += '\n' + s
+        string += '\n'.join(sorted(s_status))
+        return string
+
+    def config_status_string(self, indent=0):
+        string = ''
+        for sub_type, config_list in self.configs.items():
+            string += ' ' * indent + 'cfg-' + sub_type + ': '
+            s_config = [plugin+'='+str(config) for plugin, config in config_list.items()]
+            string += ', '.join(sorted(s_config))
+            string += '\n'
         return string
 
     @property
@@ -153,6 +165,17 @@ class Assignment:
         grades = [Grade(g) for g in data]
         for g in grades:
             self.grades[g.user_id] = g
+
+    def update_config(self, configs):
+        for config in configs:
+            acfg = AssignmentConfig(config, assignment=self)
+            if acfg.sub_type not in self.configs:
+                self.configs[acfg.sub_type] = {acfg.plugin: {acfg.name: acfg.value}}
+            elif acfg.plugin not in self.configs[acfg.sub_type]:
+                self.configs[acfg.sub_type][acfg.plugin] = {acfg.name: acfg.value}
+            else:
+                self.configs[acfg.sub_type][acfg.plugin][acfg.name] = acfg.value
+
 
     @property
     def file_urls(self):
@@ -174,16 +197,17 @@ class Assignment:
         # TODO use mathjax local, not remote cdn. maybe on init or auth?
         html = '<head><meta charset="UTF-8"></head><body>' \
                '<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>'
+        seperator = '\n\n\n<h1>{}</h1>\n\n\n'
         assembled_tmp = []
         for s in self.valid_submissions:
             tmp = ''
             if s.has_editor_field_content:
                 if self.team_submission:
                     group = self.course.groups[s.group_id]
-                    tmp += '\n\n\n<h1>{}</h1>\n\n\n'.format(group.name)
+                    tmp += seperator.format(group.name)
                 else:
                     user = self.course.users[s.user_id]
-                    tmp += '\n\n\n<h1>{}</h1>\n\n\n'.format(user.name)
+                    tmp += seperator.format(user.name)
                 tmp += s.editor_field_content
             assembled_tmp.append(tmp)
 
@@ -209,6 +233,19 @@ class Assignment:
                 grade_data['user_id'] = submission.user_id
         upload_data['grade_data'] = data
         return upload_data
+
+
+class AssignmentConfig:
+    def __init__(self, data, assignment):
+        self.assignment = assignment
+        self.id = data.pop(Jn.id)
+        self.name = data.pop(Jn.name)
+        self.plugin = data.pop(Jn.plugin)
+        self.sub_type = data.pop(Jn.sub_type)
+        self.value = data.pop(Jn.value)
+
+    def __str__(self):
+        return '{}[{}]={}'.format(self.plugin, self.name, self.value)
 
 
 class Submission:
