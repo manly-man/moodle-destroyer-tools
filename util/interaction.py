@@ -53,18 +53,18 @@ def input_user_name(user_name=''):
     return get_user_pref(user_text, user_name)
 
 
-def print_progress(iteration, total, prefix='', suffix='', decimals=2, bar_length=100):
+def print_progress(iteration, total, prefix='', suffix='', bar_length=100):
     col_width = shutil.get_terminal_size().columns
     filled_length = int(round(bar_length * iteration / float(total)))
-    percents = round(100.00 * (iteration / float(total)), decimals)
+    percents = (iteration / float(total))
     bar = '█' * filled_length + '-' * (bar_length - filled_length)
-    output_line = '\r{} |{}| {}% {}'.format(prefix, bar, percents, suffix)
+    output_line = '\r{} |{}| {:>7.2%} {}'.format(prefix, bar, percents, suffix)
     if len(output_line) > col_width :
         diff = len(output_line) - col_width
         suffix = suffix[diff:]
-        output_line = '\r{} |{}| {}% {}'.format(prefix, bar, percents, suffix)
+        output_line = '\r{} |{}| {:>7.2%} {}'.format(prefix, bar, percents, suffix)
     else:
-        diff = col_width - len(output_line)
+        diff = 1 + col_width - len(output_line)
         output_line += ' '*diff
 
     sys.stdout.write(output_line),
