@@ -21,8 +21,7 @@ import shutil
 import logging
 
 log = logging.getLogger('wstools')
-
-# TODO on sync: request submissions via last_changed.
+MAX_WORKERS = 10
 
 __all__ = ['auth', 'config', 'grade', 'init', 'pull', 'status', 'sync', 'upload']
 
@@ -117,7 +116,7 @@ def _make_config_parser_init(subparsers, url_token_parser):
     )
     init_parser.add_argument('--uid', dest='user_id')
     init_parser.add_argument('--force', help='overwrite the config', action='store_true')
-    init_parser.add_argument('-c', '--courseids',dest='course_ids', nargs='+', help='moodle course id', type=int, action='append')
+    init_parser.add_argument('-c', '--courseids', dest='course_ids', nargs='+', help='moodle course id', type=int, action='append')
     init_parser.set_defaults(func=init)
 
 
@@ -337,7 +336,7 @@ def pull(url, token, course_ids, assignment_ids=None, all=False):
     counter = 0
     if file_count > 0:
         interaction.print_progress(counter, file_count)
-        with cf.ThreadPoolExecutor(max_workers=5) as tpe:
+        with cf.ThreadPoolExecutor(max_workers=MAX_WORKERS) as tpe:
             future_to_file = {tpe.submit(moodle.download_file, file.url): file for file in files}
             for future in cf.as_completed(future_to_file):
                 file = future_to_file[future]
@@ -360,18 +359,20 @@ def _make_config_parser_grade(subparsers, url_token_parser):
 
 
 def grade(url, token, files):
-    def upload_grades(upload_data):
-        ms = MoodleSession(moodle_url=url, token=token)
-        for graded_assignment in upload_data:
-            as_id = graded_assignment['assignment_id']
-            team = graded_assignment['team_submission']
-            for gdata in graded_assignment['grade_data']:
-                args = []
-                ms.save_grade(assignment_id=as_id,
-                              user_id=gdata['user_id'],
-                              grade=gdata['grade'],
-                              feedback_text=gdata['feedback'],
-                              team_submission=team)
+    def argument_list(upload_data):
+        for grades_assignment in upload_data:
+            as_id = grades_assignment['assignment_id']
+            team = grades_assignment['team_submission']
+            args = []
+            for gdata in grades_assignment['grade_data']:
+                args.append({
+                    'assignment_id': as_id,
+                    'user_id': gdata['user_id'],
+                    'grade': gdata['grade'],
+                    'feedback_text': gdata['feedback'],
+                    'team_submission': team
+                })
+            return args
 
     wt = WorkTree()
 
@@ -404,7 +405,21 @@ def grade(url, token, files):
     elif not ('y' == answer or '' == answer):
         print('wat')
         return
-    upload_grades(upload_data)
+
+    moodle = MoodleSession(url, token)
+    args_list = argument_list(upload_data)
+    grade_count = len(args_list)
+    counter = 0
+
+    if grade_count > 0:
+        interaction.print_progress(counter, grade_count)
+        with cf.ThreadPoolExecutor(max_workers=MAX_WORKERS) as tpe:
+            future_to_grade = {tpe.submit(moodle.save_grade, **args): args for args in args_list}
+            for future in cf.as_completed(future_to_grade):
+                args = future_to_grade[future]
+                response = future.result()
+                counter += 1
+                interaction.print_progress(counter, grade_count)
 
 
 def _make_config_parser_upload(subparsers, url_token_parser):
