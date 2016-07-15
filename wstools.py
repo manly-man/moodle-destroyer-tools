@@ -117,7 +117,7 @@ def _make_config_parser_init(subparsers, url_token_parser):
     )
     init_parser.add_argument('--uid', dest='user_id')
     init_parser.add_argument('--force', help='overwrite the config', action='store_true')
-    init_parser.add_argument('-c', '--courseids', nargs='+', help='moodle course id', type=int, action='append')
+    init_parser.add_argument('-c', '--courseids',dest='course_ids', nargs='+', help='moodle course id', type=int, action='append')
     init_parser.set_defaults(func=init)
 
 
@@ -336,7 +336,7 @@ def pull(url, token, course_ids, assignment_ids=None, all=False):
     file_count = len(files)
     counter = 0
     interaction.print_progress(counter, file_count)
-    with cf.ThreadPoolExecutor(max_workers=10) as tpe:
+    with cf.ThreadPoolExecutor(max_workers=5) as tpe:
         future_to_file = {tpe.submit(moodle.download_file, file.url): file for file in files}
         for future in cf.as_completed(future_to_file):
             file = future_to_file[future]
@@ -359,6 +359,18 @@ def _make_config_parser_grade(subparsers, url_token_parser):
 
 
 def grade(url, token, files):
+    def upload_grades(upload_data):
+        ms = MoodleSession(moodle_url=url, token=token)
+        for graded_assignment in upload_data:
+            as_id = graded_assignment['assignment_id']
+            team = graded_assignment['team_submission']
+            for gdata in graded_assignment['grade_data']:
+                ms.save_grade(assignment_id=as_id,
+                              user_id=gdata['user_id'],
+                              grade=gdata['grade'],
+                              feedback_text=gdata['feedback'],
+                              team_submission=team)
+
     wt = WorkTree()
 
     course_data = wt.data
@@ -383,20 +395,14 @@ def grade(url, token, files):
         print(' assignment {:5d}, teamsubmission: {}'.format(graded_assignment['assignment_id'], graded_assignment['team_submission']))
         for gdata in graded_assignment['grade_data']:
             print(grade_format.format(gdata['name'], gdata['user_id'], gdata['grade'], gdata['feedback'][:40]))
-    if 'n' == input('does this look good? [Y/n]: '):
+    answer = input('does this look good? [Y/n]: ')
+    if 'n' == answer:
         print('do it right, then')
         return
-
-    ms = MoodleSession(moodle_url=url, token=token)
-    for graded_assignment in upload_data:
-        as_id = graded_assignment['assignment_id']
-        team = graded_assignment['team_submission']
-        for gdata in graded_assignment['grade_data']:
-            ms.save_grade(assignment_id=as_id,
-                          user_id=gdata['user_id'],
-                          grade=gdata['grade'],
-                          feedback_text=gdata['feedback'],
-                          team_submission=team)
+    elif not ('y' == answer or '' == answer):
+        print('wat')
+        return
+    upload_grades(upload_data)
 
 
 def _make_config_parser_upload(subparsers, url_token_parser):

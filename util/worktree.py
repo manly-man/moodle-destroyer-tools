@@ -30,8 +30,6 @@ class WorkTree:
         self.assignment_meta = self.meta_root + 'assignments/'
         self.submission_meta = self.meta_root + 'submissions/'
         self.grade_meta = self.meta_root + 'grades/'
-        self.pulling = False
-        self.pull_dir = ''
 
         if not init:
             self._course_data = self._load_json_file(self.course_meta)
@@ -262,16 +260,13 @@ class WorkTree:
     def safe_file_name(name):
         return re.sub(r'\W', '_', name)
 
-    def write_pulled_html(self, html):
-        with open(self.pull_dir + '/00_merged_submissions.html', 'w') as merged_html:
-            merged_html.write(html)
-
     def write_grading_and_html_file(self, assignment):
         grade_file_head = '{{"assignment_id": {:d}, "grades": [\n'
         grade_file_end = '\n]}'
         grade_line_format = '{{"name": "{}", "id": {:d}, "grade": 0.0, "feedback":"" }}'
         grade_file_content = []
         filename = 'gradingfile.json'
+        #todo add known grades to grading file.
         if assignment.team_submission:
             for s in assignment.valid_submissions:
                 group = assignment.course.groups[s.group_id]
@@ -290,6 +285,7 @@ class WorkTree:
                 filename = new_name.format(i)
             print('grading file exists, writing to: {}'.format(filename))
         a_folder = self.safe_file_name('{}--{:d}'.format(assignment.name, assignment.id)) + '/'
+        os.makedirs(a_folder, exist_ok=True)
         with open(a_folder + filename, 'w') as grading_file:
             grading_file.write(
                 grade_file_head.format(assignment.id) +
