@@ -335,15 +335,16 @@ def pull(url, token, course_ids, assignment_ids=None, all=False):
     moodle = MoodleSession(moodle_url=url, token=token)
     file_count = len(files)
     counter = 0
-    interaction.print_progress(counter, file_count)
-    with cf.ThreadPoolExecutor(max_workers=5) as tpe:
-        future_to_file = {tpe.submit(moodle.download_file, file.url): file for file in files}
-        for future in cf.as_completed(future_to_file):
-            file = future_to_file[future]
-            response = future.result()
-            counter += 1
-            interaction.print_progress(counter, file_count, suffix=file.path)
-            wt.write_submission_file(file, response.content)
+    if file_count > 0:
+        interaction.print_progress(counter, file_count)
+        with cf.ThreadPoolExecutor(max_workers=5) as tpe:
+            future_to_file = {tpe.submit(moodle.download_file, file.url): file for file in files}
+            for future in cf.as_completed(future_to_file):
+                file = future_to_file[future]
+                response = future.result()
+                counter += 1
+                interaction.print_progress(counter, file_count, suffix=file.path)
+                wt.write_submission_file(file, response.content)
     for a in assignments:
         wt.write_grading_and_html_file(a)
 
@@ -365,6 +366,7 @@ def grade(url, token, files):
             as_id = graded_assignment['assignment_id']
             team = graded_assignment['team_submission']
             for gdata in graded_assignment['grade_data']:
+                args = []
                 ms.save_grade(assignment_id=as_id,
                               user_id=gdata['user_id'],
                               grade=gdata['grade'],
