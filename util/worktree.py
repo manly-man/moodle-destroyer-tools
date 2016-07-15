@@ -262,48 +262,11 @@ class WorkTree:
     def safe_file_name(name):
         return re.sub(r'\W', '_', name)
 
-    def start_pull(self, assignment):
-        if self.pulling:
-            raise Exception('already pulling')
-        self.pulling = True
-        dir_name = self.root + self.safe_file_name('{}--{:d}'.format(assignment.name, assignment.id))
-        os.makedirs(dir_name, exist_ok=True)
-        os.chdir(dir_name)
-        self.pull_dir = dir_name
-        return dir_name
-
-    def write_pulled_file(self, content, file):
-        if not self.pulling:
-            raise Exception('not pulling: illegal state')
-        filename = self.pull_dir + '/' + file['prefix']
-        filepath = file[Jn.file_path][1:]
-        prefix = file['prefix']
-        if '--' in prefix and '/' in filepath:
-            # single file in folder
-            filename += filepath.replace('/', '_')
-        else:
-            filename += filepath
-
-        if '/' in prefix and '/' in filepath:
-            # file in folder, folder might not exist.
-            dirs = re.sub(r'(.*)/([^/]*)', r'\1', filepath)
-            os.makedirs(self.pull_dir + '/' + prefix + dirs, exist_ok=True)
-
-        with open(filename, 'wb') as pulled_file:
-            pulled_file.write(content)
-
     def write_pulled_html(self, html):
         with open(self.pull_dir + '/00_merged_submissions.html', 'w') as merged_html:
             merged_html.write(html)
 
-    def finish_pull(self):
-        if not self.pulling:
-            raise Exception('not pulling')
-        self.pulling = False
-        self.pull_dir = ''
-        os.chdir(self.root)
-
-    def write_grading_file(self, assignment):
+    def write_grading_and_html_file(self, assignment):
         grade_file_head = '{{"assignment_id": {:d}, "grades": [\n'
         grade_file_end = '\n]}'
         grade_line_format = '{{"name": "{}", "id": {:d}, "grade": 0.0, "feedback":"" }}'
@@ -326,13 +289,17 @@ class WorkTree:
                 i += 1
                 filename = new_name.format(i)
             print('grading file exists, writing to: {}'.format(filename))
-
-        with open(filename, 'w') as grading_file:
+        a_folder = self.safe_file_name('{}--{:d}'.format(assignment.name, assignment.id)) + '/'
+        with open(a_folder + filename, 'w') as grading_file:
             grading_file.write(
                 grade_file_head.format(assignment.id) +
                 ',\n'.join(sorted(grade_file_content)) +
                 grade_file_end
             )
+        html = assignment.merged_html
+        if html is not None:
+            with open(a_folder + '00_merged_submissions.html', 'w') as merged_html:
+                merged_html.write(html)
 
     def create_folders(self, files):
         folders = set([os.path.dirname(f.path) for f in files])
@@ -342,6 +309,27 @@ class WorkTree:
     def write_submission_file(self, file, content):
         with open(file.path, 'wb') as fd:
             fd.write(content)
+
+    def prepare_download(self, assignments):
+        files = []
+        for a in assignments:
+            for s in a.submissions.values():
+                a_folder = self.safe_file_name('{}--{:d}'.format(a.name, a.id))
+                s_files = s.files
+                if len(s_files) > 1:
+                    s_folder = a_folder + '/' + self.safe_file_name(s.prefix)
+                    for file in s_files:
+                        file.path = s_folder + file.path
+                        files.append(file)
+                        # print(folder + file.path)
+                elif len(s_files) == 1:
+                    file = s_files[0]
+                    path = a_folder + '/' + self.safe_file_name(s.prefix) + '--'
+                    path += file.path[1:].replace('/', '_')
+                    file.path = path
+                    files.append(file)
+        self.create_folders(files)
+        return files
 
 
 class NotInWorkTree(Exception):

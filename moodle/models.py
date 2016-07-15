@@ -1,5 +1,3 @@
-import os
-
 from datetime import datetime
 from moodle.fieldnames import JsonFieldNames as Jn
 
@@ -490,7 +488,6 @@ class File:
     def __init__(self, data):
         self.path = data.pop(Jn.file_path)
         self.url = data.pop(Jn.file_url)
-        self.prefix = ''
         # TODO metadata attributes
 
     def add_metadata(self, data):

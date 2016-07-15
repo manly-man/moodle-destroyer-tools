@@ -13,7 +13,7 @@ from moodle.communication import MoodleSession
 from moodle.fieldnames import JsonFieldNames as Jn
 from moodle.models import Course
 from moodle.parsers import strip_mlang
-import concurrent.futures as concurrent
+import concurrent.futures as cf
 
 from util.worktree import WorkTree
 from util import interaction
@@ -198,6 +198,7 @@ def sync(url, token, course_ids, assignments=False, submissions=False, grades=Fa
                 else:
                     new += 1
         print('finished: wrote {:d} new, {:d} updates submission files'.format(new, updated))
+        return data
 
     def _sync_file_meta(reply):
         # TODO, this
@@ -274,7 +275,6 @@ def _make_config_parser_status(subparsers, url_token_parser):
 
 
 def status(course_ids, assignment_ids, submission_ids, full=False):
-    print('{} {} {} {}'.format(str(course_ids), str(assignment_ids), str(submission_ids), str(full)))
     wt = WorkTree()
     course_ids = _unpack(course_ids)
     term_columns = shutil.get_terminal_size().columns
@@ -311,59 +311,41 @@ def _make_config_parser_pull(subparsers, url_token_parser):
         parents=[url_token_parser]
     )
     pull_parser.add_argument('-c', '--courseids', dest='course_ids', nargs='+', help='moodle course ids', type=int, action='append')
-    pull_parser.add_argument('-a', '--assignmentids', dest='assignment_ids', nargs='+', type=int, required=True)
+    pull_parser.add_argument('-a', '--assignmentids', dest='assignment_ids', nargs='+', type=int)
     pull_parser.add_argument('--all', help='pull all due submissions, even old ones', action='store_true')
     pull_parser.set_defaults(func=pull)
 
 
-def pull(url, token, course_ids, assignment_ids, all=False):
-    def file_path(assignments):
-        files = []
-        for a in assignments:
-            for s in a.submissions.values():
-                a_folder = wt.safe_file_name('{}--{:d}'.format(a.name, a.id))
-                s_files = s.files
-                if len(s_files) > 1:
-                    s_folder = a_folder + '/' + wt.safe_file_name(s.prefix)
-                    for file in s_files:
-                        file.path = s_folder + file.path
-                        files.append(file)
-                        # print(folder + file.path)
-                elif len(s_files) == 1:
-                    file = s_files[0]
-                    path = a_folder + '/' + wt.safe_file_name(s.prefix) + '--'
-                    path += file.path[1:].replace('/', '_')
-                    file.path = path
-                    files.append(file)
-        return files
-
+def pull(url, token, course_ids, assignment_ids=None, all=False):
     wt = WorkTree()
     course_ids = _unpack(course_ids)
 
     course_data = wt.data
     courses = [Course(c) for c in course_data]
     assignments = []
-    for c in courses:
-        assignments += c.get_assignments(assignment_ids)
+    if assignment_ids is None:
+        for c in courses:
+            assignments += c.assignments.values()
+    else:
+        for c in courses:
+            assignments += c.get_assignments(assignment_ids)
 
-    # todo remove File.prefix
-    files = file_path(assignments)
-    wt.create_folders(files)
+    files = wt.prepare_download(assignments)
 
     moodle = MoodleSession(moodle_url=url, token=token)
     file_count = len(files)
     counter = 0
     interaction.print_progress(counter, file_count)
-    with concurrent.ThreadPoolExecutor(max_workers=10) as tpe:
+    with cf.ThreadPoolExecutor(max_workers=10) as tpe:
         future_to_file = {tpe.submit(moodle.download_file, file.url): file for file in files}
-        for future in concurrent.as_completed(future_to_file):
+        for future in cf.as_completed(future_to_file):
             file = future_to_file[future]
             response = future.result()
             counter += 1
             interaction.print_progress(counter, file_count, suffix=file.path)
             wt.write_submission_file(file, response.content)
     for a in assignments:
-        wt.write_grading_file(a)
+        wt.write_grading_and_html_file(a)
 
 
 def _make_config_parser_grade(subparsers, url_token_parser):
