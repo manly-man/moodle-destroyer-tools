@@ -317,7 +317,25 @@ def _make_config_parser_pull(subparsers, url_token_parser):
 
 
 def pull(url, token, course_ids, assignment_ids, all=False):
-    moodle = MoodleSession(moodle_url=url, token=token)
+    def file_path(assignments):
+        files = []
+        for a in assignments:
+            for s in a.submissions.values():
+                a_folder = wt.safe_file_name('{}--{:d}'.format(a.name, a.id))
+                s_files = s.files
+                if len(s_files) > 1:
+                    s_folder = a_folder + '/' + wt.safe_file_name(s.prefix)
+                    for file in s_files:
+                        file.path = s_folder + file.path
+                        files.append(file)
+                        # print(folder + file.path)
+                elif len(s_files) == 1:
+                    file = s_files[0]
+                    path = a_folder + '/' + wt.safe_file_name(s.prefix) + '--'
+                    path += file.path[1:].replace('/', '_')
+                    file.path = path
+                    files.append(file)
+        return files
 
     wt = WorkTree()
     course_ids = _unpack(course_ids)
@@ -328,26 +346,24 @@ def pull(url, token, course_ids, assignment_ids, all=False):
     for c in courses:
         assignments += c.get_assignments(assignment_ids)
 
-    for a in assignments:
-        wt.start_pull(a)
-        counter = 0
-        file_count = 0  # TODO
-        # interaction.print_progress(counter, file_count)
+    # todo remove File.prefix
+    files = file_path(assignments)
+    wt.create_folders(files)
 
-        for s in a.submissions.values():
-            # log.debug(file_[Jn.file_url])
-            content = []
-            for file in s.files:
-                response = moodle.download_file(file.url)
-                content.append((file, response.content))
-                counter += 1
-                # interaction.print_progress(counter, file_count, suffix=file.path)
-            wt.write_submission_files(content, s.prefix)
-        html = a.merged_html
-        if html is not None:
-            wt.write_pulled_html(html)
+    moodle = MoodleSession(moodle_url=url, token=token)
+    file_count = len(files)
+    counter = 0
+    interaction.print_progress(counter, file_count)
+    with concurrent.ThreadPoolExecutor(max_workers=10) as tpe:
+        future_to_file = {tpe.submit(moodle.download_file, file.url): file for file in files}
+        for future in concurrent.as_completed(future_to_file):
+            file = future_to_file[future]
+            response = future.result()
+            counter += 1
+            interaction.print_progress(counter, file_count, suffix=file.path)
+            wt.write_submission_file(file, response.content)
+    for a in assignments:
         wt.write_grading_file(a)
-        wt.finish_pull()
 
 
 def _make_config_parser_grade(subparsers, url_token_parser):

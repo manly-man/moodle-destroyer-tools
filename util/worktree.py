@@ -259,14 +259,14 @@ class WorkTree:
         self._write_meta(self.sync_meta, sync_meta)
 
     @staticmethod
-    def _safe_file_name(name):
+    def safe_file_name(name):
         return re.sub(r'\W', '_', name)
 
     def start_pull(self, assignment):
         if self.pulling:
             raise Exception('already pulling')
         self.pulling = True
-        dir_name = self.root + self._safe_file_name('{}--{:d}'.format(assignment.name, assignment.id))
+        dir_name = self.root + self.safe_file_name('{}--{:d}'.format(assignment.name, assignment.id))
         os.makedirs(dir_name, exist_ok=True)
         os.chdir(dir_name)
         self.pull_dir = dir_name
@@ -333,6 +333,15 @@ class WorkTree:
                 ',\n'.join(sorted(grade_file_content)) +
                 grade_file_end
             )
+
+    def create_folders(self, files):
+        folders = set([os.path.dirname(f.path) for f in files])
+        for folder in folders:
+            os.makedirs(folder, exist_ok=True)
+
+    def write_submission_file(self, file, content):
+        with open(file.path, 'wb') as fd:
+            fd.write(content)
 
 
 class NotInWorkTree(Exception):
