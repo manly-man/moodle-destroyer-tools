@@ -334,3 +334,89 @@ class NotInWorkTree(Exception):
 
     def __str__(self):
         return self.message
+
+
+class MetaDataFolder(dict):
+
+    def __format__(self, *args, **kwargs):
+        # https://www.python.org/dev/peps/pep-3101/
+        return super().__format__(*args, **kwargs)
+
+    def update(self, other=None, **kwargs):
+        super().update(other, **kwargs)
+
+    def clear(self):
+        return super().clear()
+
+    def popitem(self):
+        return super().popitem()
+
+    # todo does not reflect changes on side effects, always returns a copy
+    def __init__(self, folder, **kwargs):
+        super().__init__(**kwargs)
+        self.folder = folder + '/'
+        os.makedirs(folder, exist_ok=True)
+
+    def get(self, key, default=None):
+        try:
+            return self.__getitem__(key)
+        except KeyError as ke:
+            if default is not None:
+                return default
+            else:
+                raise ke
+
+    def copy(self):
+        return {key: self.__getitem__(key) for key in self.keys()}
+
+    def keys(self):
+        return [int(filename) for filename in os.listdir(self.folder)]
+
+    def items(self):
+        return [(key, self.__getitem__(key)) for key in self.keys()]
+
+    def pop(self, key, default=None):
+        data = self.__getitem__(key)
+        self.__delitem__(key)
+        return data
+
+    def setdefault(self, key, default=None):
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            self.__setitem__(key, default)
+            return default
+
+    # noinspection PyMethodOverriding
+    def values(self):
+        return [self.__getitem__(key) for key in self.keys()]
+
+    def __len__(self):
+        return len(self.keys())
+
+    def __delitem__(self, key):
+        try:
+            os.remove(self.folder + key)
+        except FileNotFoundError:
+            raise KeyError(key)
+
+    def __repr__(self, *args, **kwargs):
+        return '<MetaDataFolder: {}>'.format(self.folder)
+
+    def __getitem__(self, key):
+        filename = self.folder + str(key)
+        try:
+            with open(filename, 'r') as file:
+                return json.load(file)
+        except IOError:
+            raise KeyError(key)
+
+    def __setitem__(self, key, value):
+        with open(self.folder + key, 'w') as file:
+            file.write(value)
+
+    def __contains__(self, *args, **kwargs):
+        return os.path.isfile(self.folder + args[0])
+
+    def __str__(self, *args, **kwargs):
+        return self.folder
