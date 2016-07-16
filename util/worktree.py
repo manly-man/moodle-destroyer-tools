@@ -1,12 +1,11 @@
 import glob
 import json
+import math
 import os
 import re
 import configparser
 from datetime import datetime
 from moodle.fieldnames import JsonFieldNames as Jn
-
-import math
 
 
 class WorkTree:
@@ -34,9 +33,9 @@ class WorkTree:
         if not init:
             self._course_data = self._load_json_file(self.course_meta)
             self._user_data = self._load_json_file(self.user_meta)
-            self._assignment_data = self._merge_json_data_in_folder(self.assignment_meta)
-            self._submission_data = self._merge_json_data_in_folder(self.submission_meta)
-            self._grade_data = self._merge_json_data_in_folder(self.grade_meta)
+            self._assignment_data = AssignmentMetaDataFolder(self.assignment_meta)
+            self._submission_data = SubmissionMetaDataFolder(self.submission_meta)
+            self._grade_data = GradeMetaDataFolder(self.grade_meta)
 
     @staticmethod
     def _initialize(force):
@@ -54,8 +53,8 @@ class WorkTree:
         except FileExistsError:
             raise
 
-    @property
-    def global_config(self):
+    @staticmethod
+    def global_config():
         if 'XDG_CONFIG_HOME' in os.environ:
             if os.path.isfile(os.environ['XDG_CONFIG_HOME'] + '/mdtconfig'):
                 return os.environ['XDG_CONFIG_HOME'] + '/mdtconfig'
@@ -64,7 +63,7 @@ class WorkTree:
         elif os.path.isfile(os.path.expanduser('~/.mdtconfig')):
             return os.path.expanduser('~/.mdtconfig')
         else:
-            return self.create_global_config_file()
+            return WorkTree.create_global_config_file()
 
     @staticmethod
     def create_global_config_file():
@@ -81,10 +80,11 @@ class WorkTree:
         open(file, 'w').close()
         return file
 
-    def get_config_file_list(self):
-        global_config = self.global_config
+    @staticmethod
+    def get_config_file_list():
+        global_config = WorkTree.global_config()
         cfg_files = [global_config]
-        work_tree = self.get_work_tree_root()
+        work_tree = WorkTree.get_work_tree_root()
         if work_tree is not None:
             # default_config_files order is crucial: work_tree cfg overrides global
             cfg_files.append(work_tree + '/.mdt/config')
@@ -121,15 +121,11 @@ class WorkTree:
         merged = []
         for course in courses:
             course[Jn.users] = self.users[str(course[Jn.id])]
-            course_assignments = [a for a in self.assignments if a[Jn.course] == course[Jn.id]]
+            course_assignments = [a for a in self.assignments.values() if a[Jn.course] == course[Jn.id]]
 
             for assignment in course_assignments:
-                for submission in self.submissions:
-                    if assignment[Jn.id] == submission[Jn.assignment_id]:
-                        assignment[Jn.submissions] = submission[Jn.submissions]
-                for grade in self.grades:
-                    if assignment[Jn.id] == grade[Jn.assignment_id]:
-                        assignment[Jn.grades] = grade[Jn.grades]
+                assignment[Jn.submissions] = self.submissions.get(assignment['id'], None)
+                assignment[Jn.grades] = self.grades.get(assignment['id'], None)
             course[Jn.assignments] = course_assignments
 
             merged.append(course)
@@ -148,6 +144,11 @@ class WorkTree:
     def courses(self):
         return self._course_data
 
+    @courses.setter
+    def courses(self, value):
+        self._write_data(self.course_meta, value)
+        self._course_data = value
+
     @property
     def grades(self):
         return self._grade_data
@@ -155,6 +156,11 @@ class WorkTree:
     @property
     def users(self):
         return self._user_data
+
+    @users.setter
+    def users(self, value):
+        self._write_data(self.user_meta, value)
+        self._user_data = value
 
     @staticmethod
     def _load_json_file(filename):
@@ -171,7 +177,7 @@ class WorkTree:
             file.write(data)
 
     @staticmethod
-    def _write_meta(path, data):
+    def _write_data(path, data):
         with open(path, 'w') as file:
             json.dump(data, file, indent=2, ensure_ascii=False, sort_keys=True)
 
@@ -180,81 +186,15 @@ class WorkTree:
         data_list = [self._load_json_file(file) for file in files]
         return data_list
 
-    def write_global_config(self, config_dict):
-        with open(self.global_config, 'w') as file:
+    @staticmethod
+    def write_global_config(config_dict):
+        with open(WorkTree.global_config(), 'w') as file:
             cfg_parser = configparser.ConfigParser()
             cfg_parser['global moodle settings'] = config_dict
             cfg_parser.write(file)
 
     def write_local_config(self, config_data):
         self._write_config(self.config, config_data)
-
-    def update_local_assignment_meta(self, assignment):
-        as_config_file = self.assignment_meta + str(assignment['id'])
-        if os.path.isfile(as_config_file):
-            with open(as_config_file, 'r') as local_file:
-                local_as_config = json.load(local_file)
-            if local_as_config[Jn.time_modified] < assignment[Jn.time_modified]:
-                self._write_meta(as_config_file, assignment)
-                return 'updated'
-            else:
-                return 'unchanged'
-        else:
-            self._write_meta(as_config_file, assignment)
-            return 'new'
-
-    def write_local_user_meta(self, users):
-        self._write_meta(self.user_meta, users)
-
-    def write_local_course_meta(self, course_data):
-        self._write_meta(self.course_meta, course_data)
-
-    def write_local_submission_meta(self, assignment):
-        meta_file = self.submission_meta + str(assignment[Jn.assignment_id])
-        if os.path.isfile(meta_file):
-            self._write_meta(meta_file, assignment)
-            return 'updated'
-        else:
-            self._write_meta(meta_file, assignment)
-            return 'new'
-
-    def write_local_grade_meta(self, assignment):
-        g_config_file = self.grade_meta + str(assignment[Jn.assignment_id])
-        self._write_meta(g_config_file, assignment)
-
-    def write_submission_files(self, content, prefix):
-        if len(content) == 1:
-            prefix += '--'
-            file, data = content[0]
-            filename = prefix + file.path[1:].replace('/', '_')
-            with open(filename, 'wb') as pulled_file:
-                pulled_file.write(data)
-            return
-
-        for file, data in content:
-            filename = prefix + file.path
-            file_dir = os.path.dirname(filename)
-            os.makedirs(file_dir, exist_ok=True)
-            with open(filename, 'wb') as pulled_file:
-                pulled_file.write(data)
-
-    def read_sync_meta(self):
-        try:
-            return self._read_meta(self.sync_meta)
-        except Exception as e:
-            print(e)
-            return {'last_sync': 0}
-
-    @staticmethod
-    def _read_meta(file):
-        with open(file) as meta_file:
-            return json.load(meta_file)
-
-    def update_sync_meta(self):
-        sync_meta = {
-            'last_sync': math.floor(datetime.now().timestamp())
-        }
-        self._write_meta(self.sync_meta, sync_meta)
 
     @staticmethod
     def safe_file_name(name):
@@ -334,3 +274,269 @@ class NotInWorkTree(Exception):
 
     def __str__(self):
         return self.message
+
+
+class MetaDataFolder(dict):
+    def __init__(self, folder, **kwargs):
+        super().__init__(**kwargs)
+        self._folder = folder + '/'
+        self._meta_name = 'meta'
+        self._meta_filename = self._folder + self._meta_name
+        self._cache = {}
+        self._read_meta()
+
+    def _read_meta(self):
+        filename = self._meta_filename
+        try:
+            with open(filename, 'r') as file:
+                meta = json.load(file)
+                for k, v in meta.items():
+                    setattr(self, k, v)
+        except IOError:
+            pass
+
+    def _write_meta(self):
+        filename = self._meta_filename
+        meta = {k: v for k, v in vars(self).items() if not k.startswith('_')}
+        with open(filename, 'w') as file:
+            json.dump(meta, file)
+
+    def get(self, key, default=None):
+        try:
+            return self.__getitem__(key)
+        except KeyError as ke:
+            if default is not None:
+                return default
+            else:
+                raise ke
+
+    def copy(self):
+        return {key: self.__getitem__(key) for key in self.keys()}
+
+    def keys(self):
+        return [int(filename) for filename in os.listdir(self._folder) if filename != self._meta_name]
+
+    def items(self):
+        return [(key, self.__getitem__(key)) for key in self.keys()]
+
+    def pop(self, key, default=None):
+        data = self.__getitem__(key)
+        self.__delitem__(key)
+        return data
+
+    def setdefault(self, key, default=None):
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            self.__setitem__(key, default)
+            return default
+
+    # noinspection PyMethodOverriding
+    def values(self):
+        return [self.__getitem__(key) for key in self.keys()]
+
+    def update(self, other=None, **kwargs):
+        raise NotImplementedError('update')
+
+    def clear(self):
+        for key in self.keys():
+            os.remove(self._folder + str(key))
+
+    def popitem(self):
+        key = self.keys()[0]
+        return self.pop(key)
+
+    def __len__(self):
+        return len(self.keys())
+
+    def __delitem__(self, key):
+        try:
+            os.remove(self._folder + key)
+        except FileNotFoundError:
+            raise KeyError(key)
+
+    def __repr__(self, *args, **kwargs):
+        return self.__str__(*args, **kwargs)
+
+    def __getitem__(self, key):
+        if key in self._cache:
+            return self._cache[key]
+
+        filename = self._folder + str(key)
+        try:
+            with open(filename, 'r') as file:
+                self._cache[key] = json.load(file)
+                return self._cache[key]
+        except IOError:
+            raise KeyError(key)
+
+    def __setitem__(self, key, value):
+        self._cache[key] = value
+        with open(self._folder + str(key), 'w') as file:
+            json.dump(value, file, indent=2, ensure_ascii=False, sort_keys=True)
+
+    def __contains__(self, *args, **kwargs):
+        return os.path.isfile(self._folder + args[0])
+
+    def __str__(self, *args, **kwargs):
+        return '<MetaDataFolder: {}>'.format(self._folder)
+
+#    def __setattr__(self, key, value):
+#        super().__setattr__(key, value)
+#        print('setattr')
+#        if not key.startswith('_'):
+#            self._write_meta()
+
+
+class AssignmentMetaDataFolder(MetaDataFolder):
+    def update(self, other=None, **kwargs):
+        result = dict.fromkeys(['new', 'updated', 'unchanged'], 0)
+        for course in other[Jn.courses]:
+            for assignment in course[Jn.assignments]:
+                key = int(assignment['id'])
+                value = assignment
+                try:
+                    local_data = self.__getitem__(key)
+                    if local_data[Jn.time_modified] < assignment[Jn.time_modified]:
+                        self.__setitem__(key, value)
+                        result['updated'] += 1
+                    else:
+                        result['unchanged'] += 1
+                except KeyError:
+                    self.__setitem__(key, value)
+                    result['new'] += 1
+        return result
+
+
+class SubmissionMetaDataFolder(MetaDataFolder):
+
+    def __init__(self, folder, **kwargs):
+        self.last_sync = 0
+        super().__init__(folder, **kwargs)
+
+    def update(self, other=None, **kwargs):
+        result = dict.fromkeys(['new', 'updated', 'unchanged'], 0)
+        for assignment in other[Jn.assignments]:
+            key = int(assignment[Jn.assignment_id])
+            value = assignment[Jn.submissions]
+            if key in self.keys():
+                result['updated'] += 1
+            else:
+                result['new'] += 1
+            if len(value) > 0:
+                self.__setitem__(key, value)
+            else:
+                result['unchanged'] += 1
+        self.last_sync = math.floor(datetime.now().timestamp())
+        self._write_meta()
+        return result
+
+
+class GradeMetaDataFolder(MetaDataFolder):
+
+    def __init__(self, folder, **kwargs):
+        self.last_sync = 0
+        super().__init__(folder, **kwargs)
+
+    def update(self, other=None, **kwargs):
+        # g_config_file = self.grade_meta + str(assignment[Jn.assignment_id])
+        # self._write_meta(g_config_file, assignment)
+        result = dict.fromkeys(['new', 'updated', 'unchanged'], 0)
+        for assignment in other[Jn.assignments]:
+            key = int(assignment[Jn.assignment_id])
+            value = assignment[Jn.grades]
+            if key in self.keys():
+                result['updated'] += 1
+            else:
+                result['new'] += 1
+            if len(value) > 0:
+                self.__setitem__(key, value)
+            else:
+                result['unchanged'] += 1
+        self.last_sync = math.floor(datetime.now().timestamp())
+        self._write_meta()
+        return result
+
+
+class MetaData(dict):
+    def __init__(self, file, **kwargs):
+        super().__init__(**kwargs)
+        self._file = file
+        self._meta_filename = file + '_meta'
+        self._data = {}
+        self._read_meta()
+
+    @property
+    def _cache(self):
+        if len(self._data) < 1:
+            with open(self._file) as file:
+                self._data = json.load(file)
+        return self._data
+
+    def _read_meta(self):
+        filename = self._meta_filename
+        try:
+            with open(filename, 'r') as file:
+                meta = json.load(file)
+                for k, v in meta.items():
+                    setattr(self, k, v)
+        except IOError:
+            pass
+
+    def _write_meta(self):
+        filename = self._meta_filename
+        meta = {k: v for k, v in vars(self).items() if not k.startswith('_')}
+        with open(filename, 'w') as file:
+            json.dump(meta, file)
+
+    def get(self, key, default=None):
+        return self._cache.get(key, default)
+
+    def copy(self):
+        return self._cache.copy()
+
+    def keys(self):
+        return self._cache.keys()
+
+    def items(self):
+        return self._cache.items()
+
+    def pop(self, key, default=None):
+        return self._cache.pop(key, default)
+
+    def setdefault(self, key, default=None):
+        return self._cache.setdefault(key, default)
+
+    # noinspection PyMethodOverriding
+    def values(self):
+        return self._cache.values()
+
+    def update(self, other=None, **kwargs):
+        raise NotImplementedError('update')
+
+    def clear(self):
+        self._cache.clear()
+
+    def popitem(self):
+        return self._cache.popitem()
+
+    def __len__(self):
+        return len(self._cache)
+
+    def __delitem__(self, key):
+        del self._cache[key]
+
+    def __repr__(self, *args, **kwargs):
+        return str(self)
+
+    def __getitem__(self, key):
+        return self._cache[key]
+
+    def __setitem__(self, key, value):
+        self._cache[key] = value
+
+    def __contains__(self, *args, **kwargs):
+        return self._cache.__contains__(*args, **kwargs)
+
+    def __str__(self, *args, **kwargs):
+        return '<MetaData: {}>'.format(self._file)
