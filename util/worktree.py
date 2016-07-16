@@ -1,12 +1,11 @@
 import glob
 import json
+import math
 import os
 import re
 import configparser
 from datetime import datetime
 from moodle.fieldnames import JsonFieldNames as Jn
-
-import math
 
 
 class WorkTree:
@@ -54,8 +53,8 @@ class WorkTree:
         except FileExistsError:
             raise
 
-    @property
-    def global_config(self):
+    @staticmethod
+    def global_config():
         if 'XDG_CONFIG_HOME' in os.environ:
             if os.path.isfile(os.environ['XDG_CONFIG_HOME'] + '/mdtconfig'):
                 return os.environ['XDG_CONFIG_HOME'] + '/mdtconfig'
@@ -64,7 +63,7 @@ class WorkTree:
         elif os.path.isfile(os.path.expanduser('~/.mdtconfig')):
             return os.path.expanduser('~/.mdtconfig')
         else:
-            return self.create_global_config_file()
+            return WorkTree.create_global_config_file()
 
     @staticmethod
     def create_global_config_file():
@@ -81,10 +80,11 @@ class WorkTree:
         open(file, 'w').close()
         return file
 
-    def get_config_file_list(self):
-        global_config = self.global_config
+    @staticmethod
+    def get_config_file_list():
+        global_config = WorkTree.global_config()
         cfg_files = [global_config]
-        work_tree = self.get_work_tree_root()
+        work_tree = WorkTree.get_work_tree_root()
         if work_tree is not None:
             # default_config_files order is crucial: work_tree cfg overrides global
             cfg_files.append(work_tree + '/.mdt/config')
@@ -144,6 +144,11 @@ class WorkTree:
     def courses(self):
         return self._course_data
 
+    @courses.setter
+    def courses(self, value):
+        self._write_data(self.course_meta, value)
+        self._course_data = value
+
     @property
     def grades(self):
         return self._grade_data
@@ -151,6 +156,11 @@ class WorkTree:
     @property
     def users(self):
         return self._user_data
+
+    @users.setter
+    def users(self, value):
+        self._write_data(self.user_meta, value)
+        self._user_data = value
 
     @staticmethod
     def _load_json_file(filename):
@@ -167,7 +177,7 @@ class WorkTree:
             file.write(data)
 
     @staticmethod
-    def _write_meta(path, data):
+    def _write_data(path, data):
         with open(path, 'w') as file:
             json.dump(data, file, indent=2, ensure_ascii=False, sort_keys=True)
 
@@ -176,24 +186,15 @@ class WorkTree:
         data_list = [self._load_json_file(file) for file in files]
         return data_list
 
-    def write_global_config(self, config_dict):
-        with open(self.global_config, 'w') as file:
+    @staticmethod
+    def write_global_config(config_dict):
+        with open(WorkTree.global_config(), 'w') as file:
             cfg_parser = configparser.ConfigParser()
             cfg_parser['global moodle settings'] = config_dict
             cfg_parser.write(file)
 
     def write_local_config(self, config_data):
         self._write_config(self.config, config_data)
-
-    def write_local_user_meta(self, users):
-        self._write_meta(self.user_meta, users)
-
-    def write_local_course_meta(self, course_data):
-        self._write_meta(self.course_meta, course_data)
-
-    def write_local_grade_meta(self, assignment):
-        g_config_file = self.grade_meta + str(assignment[Jn.assignment_id])
-        self._write_meta(g_config_file, assignment)
 
     @staticmethod
     def safe_file_name(name):
@@ -279,11 +280,13 @@ class MetaDataFolder(dict):
     def __init__(self, folder, **kwargs):
         super().__init__(**kwargs)
         self._folder = folder + '/'
+        self._meta_name = 'meta'
+        self._meta_filename = self._folder + self._meta_name
         self._cache = {}
         self._read_meta()
 
     def _read_meta(self):
-        filename = self._folder + 'meta'
+        filename = self._meta_filename
         try:
             with open(filename, 'r') as file:
                 meta = json.load(file)
@@ -293,7 +296,7 @@ class MetaDataFolder(dict):
             pass
 
     def _write_meta(self):
-        filename = self._folder + 'meta'
+        filename = self._meta_filename
         meta = {k: v for k, v in vars(self).items() if not k.startswith('_')}
         with open(filename, 'w') as file:
             json.dump(meta, file)
@@ -311,7 +314,7 @@ class MetaDataFolder(dict):
         return {key: self.__getitem__(key) for key in self.keys()}
 
     def keys(self):
-        return [int(filename) for filename in os.listdir(self._folder)]
+        return [int(filename) for filename in os.listdir(self._folder) if filename != self._meta_name]
 
     def items(self):
         return [(key, self.__getitem__(key)) for key in self.keys()]
@@ -337,7 +340,7 @@ class MetaDataFolder(dict):
 
     def clear(self):
         for key in self.keys():
-            os.remove(key)
+            os.remove(self._folder + str(key))
 
     def popitem(self):
         key = self.keys()[0]
@@ -370,7 +373,7 @@ class MetaDataFolder(dict):
     def __setitem__(self, key, value):
         self._cache[key] = value
         with open(self._folder + str(key), 'w') as file:
-            json.dump(value, file)
+            json.dump(value, file, indent=2, ensure_ascii=False, sort_keys=True)
 
     def __contains__(self, *args, **kwargs):
         return os.path.isfile(self._folder + args[0])
@@ -453,3 +456,87 @@ class GradeMetaDataFolder(MetaDataFolder):
         self.last_sync = math.floor(datetime.now().timestamp())
         self._write_meta()
         return result
+
+
+class MetaData(dict):
+    def __init__(self, file, **kwargs):
+        super().__init__(**kwargs)
+        self._file = file
+        self._meta_filename = file + '_meta'
+        self._data = {}
+        self._read_meta()
+
+    @property
+    def _cache(self):
+        if len(self._data) < 1:
+            with open(self._file) as file:
+                self._data = json.load(file)
+        return self._data
+
+    def _read_meta(self):
+        filename = self._meta_filename
+        try:
+            with open(filename, 'r') as file:
+                meta = json.load(file)
+                for k, v in meta.items():
+                    setattr(self, k, v)
+        except IOError:
+            pass
+
+    def _write_meta(self):
+        filename = self._meta_filename
+        meta = {k: v for k, v in vars(self).items() if not k.startswith('_')}
+        with open(filename, 'w') as file:
+            json.dump(meta, file)
+
+    def get(self, key, default=None):
+        return self._cache.get(key, default)
+
+    def copy(self):
+        return self._cache.copy()
+
+    def keys(self):
+        return self._cache.keys()
+
+    def items(self):
+        return self._cache.items()
+
+    def pop(self, key, default=None):
+        return self._cache.pop(key, default)
+
+    def setdefault(self, key, default=None):
+        return self._cache.setdefault(key, default)
+
+    # noinspection PyMethodOverriding
+    def values(self):
+        return self._cache.values()
+
+    def update(self, other=None, **kwargs):
+        raise NotImplementedError('update')
+
+    def clear(self):
+        self._cache.clear()
+
+    def popitem(self):
+        return self._cache.popitem()
+
+    def __len__(self):
+        return len(self._cache)
+
+    def __delitem__(self, key):
+        del self._cache[key]
+
+    def __repr__(self, *args, **kwargs):
+        return str(self)
+
+    def __getitem__(self, key):
+        return self._cache[key]
+
+    def __setitem__(self, key, value):
+        self._cache[key] = value
+
+    def __contains__(self, *args, **kwargs):
+        return self._cache.__contains__(*args, **kwargs)
+
+    def __str__(self, *args, **kwargs):
+        return '<MetaData: {}>'.format(self._file)

@@ -26,12 +26,12 @@ MAX_WORKERS = 10
 __all__ = ['auth', 'config', 'grade', 'init', 'pull', 'status', 'sync', 'upload']
 
 
-def make_config_parser(work_tree=WorkTree(skip_init=True)):
-    parser = configargparse.ArgumentParser(default_config_files=work_tree.get_config_file_list())
+def make_config_parser():
+    parser = configargparse.ArgumentParser(default_config_files=WorkTree.get_config_file_list())
     subparsers = parser.add_subparsers(help="internal sub command help")
 
     url_token_parser = configargparse.ArgumentParser(add_help=False,
-                                                     default_config_files=work_tree.get_config_file_list())
+                                                     default_config_files=WorkTree.get_config_file_list())
     url_token_parser.add_argument('--url')
     url_token_parser.add_argument('--token')
 
@@ -61,7 +61,6 @@ def _make_config_parser_auth(subparsers, url_token_parser):
 
 
 def auth(url=None, token=None, ask=False, username=None, service='moodle_mobile_app'):
-    wt = WorkTree(skip_init=True)
     _url = 'url'
     _user = 'username'
     _service = 'service'
@@ -105,7 +104,7 @@ def auth(url=None, token=None, ask=False, username=None, service='moodle_mobile_
     # functions = [func_dict['name'] for func_dict in functions_json]
     # print(functions)
 
-    wt.write_global_config(settings)
+    WorkTree.write_global_config(settings)
 
 
 def _make_config_parser_init(subparsers, url_token_parser):
@@ -141,12 +140,11 @@ def init(url, token, user_id, force=False, course_ids=None):
             print('nothing chosen.')
             raise SystemExit(1)
         chosen_courses = [courses[c] for c in choices]
-        for c in chosen_courses:
-            print('using: ' + str(c))
+        print('using:\n' + ' '.join([str(c) for c in chosen_courses]))
         course_ids = [c.id for c in chosen_courses]
         saved_data = [c for c in reply.json() if c['id'] in course_ids]
 
-        wt.write_local_course_meta(saved_data)
+        wt.courses = saved_data
 
     wt.write_local_config('courseids = ' + str(course_ids))
     course_ids = [[i] for i in course_ids]  # pack hotfix, do not liek.
@@ -220,7 +218,7 @@ def sync(url, token, course_ids, assignments=False, submissions=False, grades=Fa
                 message = 'Moodle encountered an error: msg:{} \n debug:{}'.format(e.message,e.debug_message)
                 print(message)
 
-        wt.write_local_user_meta(users)
+        wt.users = users
         print('finished.')
 
 
@@ -235,13 +233,12 @@ def _make_config_parser_status(subparsers, url_token_parser):
     status_parser.set_defaults(func=status)
 
 
-def status(course_ids, assignment_ids, submission_ids, full=False):
+def status(course_ids, assignment_ids=None, submission_ids=None, full=False):
     wt = WorkTree()
     course_ids = _unpack(course_ids)
     term_columns = shutil.get_terminal_size().columns
 
-    course_data = wt.data
-    courses = [Course(c) for c in course_data]
+    courses = [Course(c) for c in wt.data]
     if assignment_ids is not None and submission_ids is None:
         for course in sorted(courses, key=lambda c: c.name):
             print(course)
@@ -412,8 +409,7 @@ def _make_config_parser_config(subparsers, url_token_parser):
 
 
 def config():
-    wt = WorkTree()
-    parser = make_config_parser(wt)
+    parser = make_config_parser()
     parser.parse_known_args()
     parser.print_values()
 
