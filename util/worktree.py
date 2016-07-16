@@ -34,9 +34,9 @@ class WorkTree:
         if not init:
             self._course_data = self._load_json_file(self.course_meta)
             self._user_data = self._load_json_file(self.user_meta)
-            self._assignment_data = self._merge_json_data_in_folder(self.assignment_meta)
-            self._submission_data = self._merge_json_data_in_folder(self.submission_meta)
-            self._grade_data = self._merge_json_data_in_folder(self.grade_meta)
+            self._assignment_data = AssignmentMetaDataFolder(self.assignment_meta)
+            self._submission_data = SubmissionMetaDataFolder(self.submission_meta)
+            self._grade_data = GradeMetaDataFolder(self.grade_meta)
 
     @staticmethod
     def _initialize(force):
@@ -121,15 +121,11 @@ class WorkTree:
         merged = []
         for course in courses:
             course[Jn.users] = self.users[str(course[Jn.id])]
-            course_assignments = [a for a in self.assignments if a[Jn.course] == course[Jn.id]]
+            course_assignments = [a for a in self.assignments.values() if a[Jn.course] == course[Jn.id]]
 
             for assignment in course_assignments:
-                for submission in self.submissions:
-                    if assignment[Jn.id] == submission[Jn.assignment_id]:
-                        assignment[Jn.submissions] = submission[Jn.submissions]
-                for grade in self.grades:
-                    if assignment[Jn.id] == grade[Jn.assignment_id]:
-                        assignment[Jn.grades] = grade[Jn.grades]
+                assignment[Jn.submissions] = self.submissions.get(assignment['id'], None)
+                assignment[Jn.grades] = self.grades.get(assignment['id'], None)
             course[Jn.assignments] = course_assignments
 
             merged.append(course)
@@ -189,72 +185,15 @@ class WorkTree:
     def write_local_config(self, config_data):
         self._write_config(self.config, config_data)
 
-    def update_local_assignment_meta(self, assignment):
-        as_config_file = self.assignment_meta + str(assignment['id'])
-        if os.path.isfile(as_config_file):
-            with open(as_config_file, 'r') as local_file:
-                local_as_config = json.load(local_file)
-            if local_as_config[Jn.time_modified] < assignment[Jn.time_modified]:
-                self._write_meta(as_config_file, assignment)
-                return 'updated'
-            else:
-                return 'unchanged'
-        else:
-            self._write_meta(as_config_file, assignment)
-            return 'new'
-
     def write_local_user_meta(self, users):
         self._write_meta(self.user_meta, users)
 
     def write_local_course_meta(self, course_data):
         self._write_meta(self.course_meta, course_data)
 
-    def write_local_submission_meta(self, assignment):
-        meta_file = self.submission_meta + str(assignment[Jn.assignment_id])
-        if os.path.isfile(meta_file):
-            self._write_meta(meta_file, assignment)
-            return 'updated'
-        else:
-            self._write_meta(meta_file, assignment)
-            return 'new'
-
     def write_local_grade_meta(self, assignment):
         g_config_file = self.grade_meta + str(assignment[Jn.assignment_id])
         self._write_meta(g_config_file, assignment)
-
-    def write_submission_files(self, content, prefix):
-        if len(content) == 1:
-            prefix += '--'
-            file, data = content[0]
-            filename = prefix + file.path[1:].replace('/', '_')
-            with open(filename, 'wb') as pulled_file:
-                pulled_file.write(data)
-            return
-
-        for file, data in content:
-            filename = prefix + file.path
-            file_dir = os.path.dirname(filename)
-            os.makedirs(file_dir, exist_ok=True)
-            with open(filename, 'wb') as pulled_file:
-                pulled_file.write(data)
-
-    def read_sync_meta(self):
-        try:
-            return self._read_meta(self.sync_meta)
-        except Exception as e:
-            print(e)
-            return {'last_sync': 0}
-
-    @staticmethod
-    def _read_meta(file):
-        with open(file) as meta_file:
-            return json.load(meta_file)
-
-    def update_sync_meta(self):
-        sync_meta = {
-            'last_sync': math.floor(datetime.now().timestamp())
-        }
-        self._write_meta(self.sync_meta, sync_meta)
 
     @staticmethod
     def safe_file_name(name):
@@ -337,25 +276,27 @@ class NotInWorkTree(Exception):
 
 
 class MetaDataFolder(dict):
-
-    def __format__(self, *args, **kwargs):
-        # https://www.python.org/dev/peps/pep-3101/
-        return super().__format__(*args, **kwargs)
-
-    def update(self, other=None, **kwargs):
-        super().update(other, **kwargs)
-
-    def clear(self):
-        return super().clear()
-
-    def popitem(self):
-        return super().popitem()
-
-    # todo does not reflect changes on side effects, always returns a copy
     def __init__(self, folder, **kwargs):
         super().__init__(**kwargs)
-        self.folder = folder + '/'
-        os.makedirs(folder, exist_ok=True)
+        self._folder = folder + '/'
+        self._cache = {}
+        self._read_meta()
+
+    def _read_meta(self):
+        filename = self._folder + 'meta'
+        try:
+            with open(filename, 'r') as file:
+                meta = json.load(file)
+                for k, v in meta.items():
+                    setattr(self, k, v)
+        except IOError:
+            pass
+
+    def _write_meta(self):
+        filename = self._folder + 'meta'
+        meta = {k: v for k, v in vars(self).items() if not k.startswith('_')}
+        with open(filename, 'w') as file:
+            json.dump(meta, file)
 
     def get(self, key, default=None):
         try:
@@ -370,7 +311,7 @@ class MetaDataFolder(dict):
         return {key: self.__getitem__(key) for key in self.keys()}
 
     def keys(self):
-        return [int(filename) for filename in os.listdir(self.folder)]
+        return [int(filename) for filename in os.listdir(self._folder)]
 
     def items(self):
         return [(key, self.__getitem__(key)) for key in self.keys()]
@@ -391,32 +332,124 @@ class MetaDataFolder(dict):
     def values(self):
         return [self.__getitem__(key) for key in self.keys()]
 
+    def update(self, other=None, **kwargs):
+        raise NotImplementedError('update')
+
+    def clear(self):
+        for key in self.keys():
+            os.remove(key)
+
+    def popitem(self):
+        key = self.keys()[0]
+        return self.pop(key)
+
     def __len__(self):
         return len(self.keys())
 
     def __delitem__(self, key):
         try:
-            os.remove(self.folder + key)
+            os.remove(self._folder + key)
         except FileNotFoundError:
             raise KeyError(key)
 
     def __repr__(self, *args, **kwargs):
-        return '<MetaDataFolder: {}>'.format(self.folder)
+        return self.__str__(*args, **kwargs)
 
     def __getitem__(self, key):
-        filename = self.folder + str(key)
+        if key in self._cache:
+            return self._cache[key]
+
+        filename = self._folder + str(key)
         try:
             with open(filename, 'r') as file:
-                return json.load(file)
+                self._cache[key] = json.load(file)
+                return self._cache[key]
         except IOError:
             raise KeyError(key)
 
     def __setitem__(self, key, value):
-        with open(self.folder + key, 'w') as file:
-            file.write(value)
+        self._cache[key] = value
+        with open(self._folder + str(key), 'w') as file:
+            json.dump(value, file)
 
     def __contains__(self, *args, **kwargs):
-        return os.path.isfile(self.folder + args[0])
+        return os.path.isfile(self._folder + args[0])
 
     def __str__(self, *args, **kwargs):
-        return self.folder
+        return '<MetaDataFolder: {}>'.format(self._folder)
+
+#    def __setattr__(self, key, value):
+#        super().__setattr__(key, value)
+#        print('setattr')
+#        if not key.startswith('_'):
+#            self._write_meta()
+
+
+class AssignmentMetaDataFolder(MetaDataFolder):
+    def update(self, other=None, **kwargs):
+        result = dict.fromkeys(['new', 'updated', 'unchanged'], 0)
+        for course in other[Jn.courses]:
+            for assignment in course[Jn.assignments]:
+                key = int(assignment['id'])
+                value = assignment
+                try:
+                    local_data = self.__getitem__(key)
+                    if local_data[Jn.time_modified] < assignment[Jn.time_modified]:
+                        self.__setitem__(key, value)
+                        result['updated'] += 1
+                    else:
+                        result['unchanged'] += 1
+                except KeyError:
+                    self.__setitem__(key, value)
+                    result['new'] += 1
+        return result
+
+
+class SubmissionMetaDataFolder(MetaDataFolder):
+
+    def __init__(self, folder, **kwargs):
+        self.last_sync = 0
+        super().__init__(folder, **kwargs)
+
+    def update(self, other=None, **kwargs):
+        result = dict.fromkeys(['new', 'updated', 'unchanged'], 0)
+        for assignment in other[Jn.assignments]:
+            key = int(assignment[Jn.assignment_id])
+            value = assignment[Jn.submissions]
+            if key in self.keys():
+                result['updated'] += 1
+            else:
+                result['new'] += 1
+            if len(value) > 0:
+                self.__setitem__(key, value)
+            else:
+                result['unchanged'] += 1
+        self.last_sync = math.floor(datetime.now().timestamp())
+        self._write_meta()
+        return result
+
+
+class GradeMetaDataFolder(MetaDataFolder):
+
+    def __init__(self, folder, **kwargs):
+        self.last_sync = 0
+        super().__init__(folder, **kwargs)
+
+    def update(self, other=None, **kwargs):
+        # g_config_file = self.grade_meta + str(assignment[Jn.assignment_id])
+        # self._write_meta(g_config_file, assignment)
+        result = dict.fromkeys(['new', 'updated', 'unchanged'], 0)
+        for assignment in other[Jn.assignments]:
+            key = int(assignment[Jn.assignment_id])
+            value = assignment[Jn.grades]
+            if key in self.keys():
+                result['updated'] += 1
+            else:
+                result['new'] += 1
+            if len(value) > 0:
+                self.__setitem__(key, value)
+            else:
+                result['unchanged'] += 1
+        self.last_sync = math.floor(datetime.now().timestamp())
+        self._write_meta()
+        return result

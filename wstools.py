@@ -169,49 +169,43 @@ def _make_config_parser_sync(subparsers, url_token_parser):
 
 
 def sync(url, token, course_ids, assignments=False, submissions=False, grades=False, users=False):
-    def _write_assignments(reply, worktree):
-        changes = {
-            'new': 0,
-            'updated': 0,
-            'unchanged': 0
-        }
-        assignment_ids = []
-        data = json.loads(strip_mlang(reply.text))
-        for course in data[Jn.courses]:
-            for assignment in course[Jn.assignments]:
-                assignment_ids.append(assignment[Jn.id])
-                as_status = worktree.update_local_assignment_meta(assignment)
-                changes[as_status] += 1
-        print('finished. new: {:d}, updated: {:d}, unchanged: {:d}'.format(
-            changes['new'], changes['updated'], changes['unchanged']))
-        return assignment_ids
+    wt = WorkTree()
+    course_ids = _unpack(course_ids)
+    moodle = MoodleSession(moodle_url=url, token=token)
 
-    def _write_submissions(reply, worktree):
-        new = 0
-        updated = 0
-        data = json.loads(strip_mlang(reply.text))
-        for assignment in data[Jn.assignments]:
-            if len(assignment[Jn.submissions]) > 0:
-                if worktree.write_local_submission_meta(assignment):
-                    updated += 1
-                else:
-                    new += 1
-        print('finished: wrote {:d} new, {:d} updates submission files'.format(new, updated))
-        return data
+    sync_all = True
+    if users or submissions or assignments or grades:
+        sync_all = False
 
-    def _sync_file_meta(reply):
-        # TODO, this
-        pass
+    if assignments or sync_all:
+        print('syncing assignments… ', end='', flush=True)
+        response = moodle.get_assignments(course_ids)
+        data = json.loads(strip_mlang(response.text))
+        result = wt.assignments.update(data)
+        output = ['{}: {:d}'.format(k, v) for k, v in result.items()]
+        print('finished. ' + ' '.join(output))
 
-    def _write_grades(reply, worktree):
+    if submissions or sync_all:
+        print('syncing submissions… ', end='', flush=True)
+        reply = moodle.get_submissions_for_assignments(wt.assignments.keys())
         data = json.loads(strip_mlang(reply.text))
-        for assignment in data[Jn.assignments]:
-            worktree.write_local_grade_meta(assignment)
+        result = wt.submissions.update(data)
+        output = ['{}: {:d}'.format(k, v) for k, v in result.items()]
+        print('finished. ' + ' '.join(output))
+        # todo sync via:
+        # moodle.get_submissions_for_assignments(assignment_ids, since=last_sync)
+        # todo sync file metadata
+
+    if grades or sync_all:
+        print('syncing grades… ', end='', flush=True)
+        response = moodle.get_grades(wt.assignments.keys())
+        data = json.loads(strip_mlang(response.text))
+        wt.grades.update(data)
         print('finished. total: {:d}'.format(len(data[Jn.assignments])))
+        # todo, sync via moodle.get_grades(assignment_ids, since=last_sync)
 
-    def _write_users(moodle, course_ids, worktree):
+    if users or sync_all:
         print('syncing users…', end=' ', flush=True)
-
         users = {}
         for cid in course_ids:
             try:
@@ -226,40 +220,8 @@ def sync(url, token, course_ids, assignments=False, submissions=False, grades=Fa
                 message = 'Moodle encountered an error: msg:{} \n debug:{}'.format(e.message,e.debug_message)
                 print(message)
 
-        worktree.write_local_user_meta(users)
+        wt.write_local_user_meta(users)
         print('finished.')
-
-    wt = WorkTree()
-
-    course_ids = _unpack(course_ids)
-    sync_meta_data = wt.read_sync_meta()
-    last_sync = sync_meta_data['last_sync']
-    moodle = MoodleSession(moodle_url=url, token=token)
-
-    sync_all = True
-    if users or submissions or assignments or grades:
-        sync_all = False
-
-    assignment_ids = []
-    if assignments or submissions or sync_all:  # TODO remove quick fix, see sub sync below
-        print('syncing assignments… ', end='', flush=True)
-        assignment_ids = _write_assignments(moodle.get_assignments(course_ids), wt)
-
-    if submissions or sync_all:  # TODO read assignment ids from local meta.
-        print('syncing submissions… ', end='', flush=True)
-        # _write_submissions(moodle.get_submissions_for_assignments(assignment_ids, since=last_sync), wt)
-        _write_submissions(moodle.get_submissions_for_assignments(assignment_ids), wt)
-
-    if grades or sync_all:
-        print('syncing grades… ', end='', flush=True)
-        # _write_grades(moodle.get_grades(assignment_ids, since=last_sync))
-        _write_grades(moodle.get_grades(assignment_ids), wt)
-
-    if users or sync_all:
-        _write_users(moodle, course_ids, wt)
-
-    if sync_all:
-        wt.update_sync_meta()
 
 
 def _make_config_parser_status(subparsers, url_token_parser):
@@ -458,7 +420,7 @@ def config():
 
 def _unpack(elements):
     if elements is None:
-        return None
+        return []
     return [elem[0] for elem in elements if type(elem) is list]
 
 
