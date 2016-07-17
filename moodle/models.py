@@ -2,22 +2,70 @@ from datetime import datetime
 from moodle.fieldnames import JsonFieldNames as Jn
 
 
-class Course:
+class JsonDataWrapper:
+    def __init__(self, json_data):
+        self._data = json_data
+
+    def get(self, name):
+        return self._data[name]
+
+
+class Course(JsonDataWrapper):
     def __init__(self, data):
-        self.id = data.pop(Jn.id)
-        self.name = data.pop(Jn.full_name)
-        self.short_name = data.pop(Jn.short_name)
+        super().__init__(data)
+        self._users = {}  # accessed via user.id
+        self._groups = {}  # accessed via group.id
+        self._assignments = {}
+        #self.users = self._data[Jn.users]
+        #self.assignments = self._data[Jn.assignments]
 
-        self.users = {}  # accessed via user.id
-        self.groups = {}  # accessed via group.id
-        if Jn.users in data:
-            self.update_users(data.pop(Jn.users))
+    @property
+    def id(self): return self.get(Jn.id)
 
-        self.assignments = {}  # accessed via assignment.id
-        if Jn.assignments in data:
-            self.update_assignments(data.pop(Jn.assignments))
+    @property
+    def name(self): return self.get(Jn.full_name)
 
-        self.unparsed = data
+    @property
+    def short_name(self): return self.get(Jn.short_name)
+
+    @property
+    def users(self):
+        return self._users
+
+    @users.setter
+    def users(self, data):
+        if data is None:
+            self.users = {}
+            return
+        if Jn.error_code in data:
+            return
+        users = [User(u) for u in data]
+        for user in users:
+            self.users[user.id] = user
+            self.groups = user
+
+    @property
+    def assignments(self): return self._assignments
+
+    @assignments.setter
+    def assignments(self, data):
+        if data is None:
+            self._assignments = {}
+            return
+        assignments = [Assignment(a, course=self) for a in data]
+        for a in assignments:
+            self._assignments[a.id] = a
+
+    @property
+    def groups(self): return self._groups
+
+    @groups.setter
+    def groups(self, user):
+        for group_id, group in user.groups.items():
+            if group_id not in self._groups:
+                self._groups[group_id] = group
+            group = self._groups[group_id]
+            group.members.append(user)
 
     def __str__(self):
         return '{:40} id:{:5d} short: {}'.format(self.name[0:39], self.id, self.short_name)
@@ -40,77 +88,109 @@ class Course:
     def get_assignments(self, id_list):
         return [a for aid, a in self.assignments.items() if aid in id_list]
 
-    def update_users(self, data):
-        if Jn.error_code in data:
-            return
-        users = [User(u) for u in data]
-        for user in users:
-            self.users[user.id] = user
-            self.update_groups(user)
 
-    def update_groups(self, user):
-        for group_id, group in user.groups.items():
-            if group_id not in self.groups:
-                self.groups[group_id] = group
-            group = self.groups[group_id]
-            group.members.append(user)
-
-    def update_assignments(self, data):
-        assignments = [Assignment(a, course=self) for a in data]
-        for a in assignments:
-            self.assignments[a.id] = a
-
-
-class User:
+class User(JsonDataWrapper):
     def __init__(self, data):
-        self.name = data.pop(Jn.full_name)
-        self.id = data.pop(Jn.id)
-        self.roles = data.pop(Jn.roles)
+        super().__init__(data)
+        self._groups = {}
+        self.groups = self.get(Jn.groups)
 
-        self.groups = {}
-        for g in data.pop(Jn.groups):
+    @property
+    def name(self): return self.get(Jn.full_name)
+
+    @property
+    def id(self): return self.get(Jn.id)
+
+    @property
+    def roles(self): return self.get(Jn.roles)
+
+    @property
+    def groups(self): return self._groups
+
+    @groups.setter
+    def groups(self, data):
+        for g in data:
             group = Group(g)
             self.groups[group.id] = group
-
-        self.unparsed = data
 
     def __str__(self):
         return '{:20} id:{:5d} groups:{}'.format(self.name, self.id, str(self.groups))
 
 
-class Group:
+class Group(JsonDataWrapper):
     def __init__(self, data):
-        self.name = data.pop(Jn.name)
-        self.id = data.pop(Jn.id)
-        self.description = data.pop(Jn.description)
-        self.description_format = data.pop(Jn.description_format)
+        super().__init__(data)
         self.members = []
 
+    @property
+    def name(self): return self._data[Jn.name]
+
+    @property
+    def id(self): return self._data[Jn.id]
+
+    @property
+    def description(self): return self._data[Jn.description]
+
+    @property
+    def description_format(self): return self._data[Jn.description_format]
+
     def __str__(self):
-        return '{:10} id:{:5d}'.format(self.name, self.id)
+        return '{:10} id:{:5d} '.format(self.name, self.id)
 
 
-class Assignment:
+class Assignment(JsonDataWrapper):
     def __init__(self, data, course=None):
-        self.id = data.pop(Jn.id)
-        self.team_submission = 1 == data.pop(Jn.team_submission)
-        self.due_date = datetime.fromtimestamp(data.pop(Jn.due_date))
-        self.name = data.pop(Jn.name)
-        self.submissions = {}  # accesed via submission.id
-        self.max_points = data.pop(Jn.grade)  # documentation states, this would be the grade 'type'. Go figure?
-        if Jn.submissions in data:
-            self.update_submissions(data.pop(Jn.submissions))
-        self.grades = {}  # are accessed via user_id
-        if Jn.grades in data:
-            self.update_grades(data.pop(Jn.grades))
+        super().__init__(data)
         self.course = course
-        self.configs = {}
-        self.update_config(data.pop(Jn.configs))
-        self.course_module_id = data.pop(Jn.course_module_id)
-        # if len(data) > 1:
-        #     print('warning, unparsed assignment data = {}'.format(data.keys()))
+        self._submissions = {}  # accesed via submission.id
+        self._grades = {}  # are accessed via user_id
+        self._configs = {}
+        self.update_config(self.get(Jn.configs))
 
-        self.unparsed = data
+    @property
+    def id(self): return self.get(Jn.id)
+
+    @property
+    def team_submission(self):
+        return 1 == self.get(Jn.team_submission)
+
+    @property
+    def name(self): return self.get(Jn.name)
+
+    @property
+    def max_points(self): return self.get(Jn.grade)  # documentation states, this would be the grade 'type'. Go figure?
+
+    @property
+    def due_date(self): return datetime.fromtimestamp(self.get(Jn.due_date))
+
+    @property
+    def submissions(self): return self._submissions
+
+    @property
+    def course_module_id(self): return self.get(Jn.course_module_id)
+
+    @submissions.setter
+    def submissions(self, data):
+        if data is None:
+            self.submissions = {}
+            return
+        for submission in data:
+            sub = Submission(submission, assignment=self)
+            if sub.has_content:
+                self.submissions[sub.id] = sub
+
+    @property
+    def grades(self):
+        return self._grades
+
+    @grades.setter
+    def grades(self, data):
+        if data is None:
+            self.grades = {}
+            return
+        grades = [Grade(g) for g in data]
+        for g in grades:
+            self.grades[g.user_id] = g
 
     def __str__(self):
         return '{:40} id:{:5d}'.format(self.name[0:39], self.id)
@@ -148,7 +228,7 @@ class Assignment:
 
     def config_status_string(self, indent=0):
         string = ''
-        for sub_type, config_list in self.configs.items():
+        for sub_type, config_list in self._configs.items():
             string += ' ' * indent + 'cfg-' + sub_type + ': '
             s_config = [plugin+'='+str(config) for plugin, config in config_list.items()]
             string += ', '.join(sorted(s_config))
@@ -159,20 +239,16 @@ class Assignment:
     def valid_submissions(self):
         return [s for s in self.submissions.values() if s.has_content]
 
-    def update_grades(self, data):
-        grades = [Grade(g) for g in data]
-        for g in grades:
-            self.grades[g.user_id] = g
-
     def update_config(self, configs):
+        #todo meh
         for config in configs:
-            acfg = AssignmentConfig(config, assignment=self)
-            if acfg.sub_type not in self.configs:
-                self.configs[acfg.sub_type] = {acfg.plugin: {acfg.name: acfg.value}}
-            elif acfg.plugin not in self.configs[acfg.sub_type]:
-                self.configs[acfg.sub_type][acfg.plugin] = {acfg.name: acfg.value}
+            acfg = AssignmentConfig(config)
+            if acfg.sub_type not in self._configs:
+                self._configs[acfg.sub_type] = {acfg.plugin: {acfg.name: acfg.value}}
+            elif acfg.plugin not in self._configs[acfg.sub_type]:
+                self._configs[acfg.sub_type][acfg.plugin] = {acfg.name: acfg.value}
             else:
-                self.configs[acfg.sub_type][acfg.plugin][acfg.name] = acfg.value
+                self._configs[acfg.sub_type][acfg.plugin][acfg.name] = acfg.value
 
     @property
     def files(self):
@@ -180,13 +256,6 @@ class Assignment:
         for s in self.valid_submissions:
             files += s.files
         return [s.files for s in self.submissions.values()]
-
-    def update_submissions(self, data):
-        # TODO find out what breaks after this change.
-        for submission in data:
-            sub = Submission(submission, assignment=self)
-            if sub.has_content:
-                self.submissions[sub.id] = sub
 
     @property
     def merged_html(self):
@@ -200,10 +269,10 @@ class Assignment:
             tmp = ''
             if s.has_editor_field_content:
                 if self.team_submission:
-                    group = self.course.groups[s.group_id]
+                    group = self._course.groups[s.group_id]
                     tmp += seperator.format(group.name)
                 else:
-                    user = self.course.users[s.user_id]
+                    user = self._course.users[s.user_id]
                     tmp += seperator.format(user.name)
                 tmp += s.editor_field_content
             assembled_tmp.append(tmp)
@@ -223,7 +292,7 @@ class Assignment:
         for grade_data in data:
             submission = self.submissions[grade_data['id']]
             if self.team_submission:
-                group = self.course.groups[submission.group_id]
+                group = self._course.groups[submission.group_id]
                 user = group.members[0]
                 grade_data['user_id'] = user.id
             else:
@@ -232,52 +301,72 @@ class Assignment:
         return upload_data
 
 
-class AssignmentConfig:
-    def __init__(self, data, assignment):
-        self.assignment = assignment
-        self.id = data.pop(Jn.id)
-        self.name = data.pop(Jn.name)
-        self.plugin = data.pop(Jn.plugin)
-        self.sub_type = data.pop(Jn.sub_type)
-        self.value = data.pop(Jn.value)
+class AssignmentConfig(JsonDataWrapper):
+
+    @property
+    def id(self): return self.get(Jn.id)
+
+    @property
+    def name(self): return self.get(Jn.name)
+
+    @property
+    def plugin(self): return self.get(Jn.plugin)
+
+    @property
+    def sub_type(self): return self.get(Jn.sub_type)
+
+    @property
+    def value(self): return self.get(Jn.value)
 
     def __str__(self):
         return '{}[{}]={}'.format(self.plugin, self.name, self.value)
 
 
-class Submission:
+class Submission(JsonDataWrapper):
     def __init__(self, data, assignment=None):
-        self.id = data.pop(Jn.id)
-        self.user_id = data.pop(Jn.user_id)
-        self.group_id = data.pop(Jn.group_id)
-        self.plugins = [Plugin(p) for p in data.pop(Jn.plugins)]
-        self.assignment = assignment
-        self.time_modified = data.pop(Jn.time_modified)
-        self.time_created = data.pop(Jn.time_created)
-        self.status = data.pop(Jn.status)
-        self.attempt_number = data.pop(Jn.attempt_number)
-        if len(data) > 1:
-            print('warning, unparsed submission data = ' + str(data.keys()))
-        self.unparsed = data
+        super().__init__(data)
+        self._plugins = [Plugin(p) for p in self.get(Jn.plugins)]
+        self._assignment = assignment
+
+    @property
+    def id(self): return self.get(Jn.id)
+
+    @property
+    def user_id(self): return self.get(Jn.user_id)
+
+    @property
+    def group_id(self): return self.get(Jn.group_id)
+
+    @property
+    def time_modified(self): return self.get(Jn.time_modified)
+
+    @property
+    def time_created(self): return self.get(Jn.time_created)
+
+    @property
+    def status(self): return self.get(Jn.status)
+
+    @property
+    def attempt_number(self): return self.get(Jn.attempt_number)
 
     def __str__(self):
         return 'id:{:7d} {:5d}:{:5d}'.format(self.id, self.user_id, self.group_id)
 
     @property
     def has_content(self):
-        return True in [p.has_content for p in self.plugins]
+        return True in [p.has_content for p in self._plugins]
 
     def status_string(self, indent=0):
-        if self.assignment is None:
+        if self._assignment is None:
             return ' ' * indent + str(self)
-        elif self.assignment.team_submission and self.assignment.course is not None:
+        elif self._assignment.team_submission and self._assignment.course is not None:
             return self.status_team_submission_string(indent=indent)
         else:
             return self.status_single_submission_string(indent=indent)
 
     def get_team_members_and_grades(self):
-        group = self.assignment.course.groups[self.group_id]
-        grades = self.assignment.grades
+        group = self._assignment.course.groups[self.group_id]
+        grades = self._assignment.grades
         members = group.members
         graded_users = {}
         ungraded_users = {}
@@ -291,7 +380,7 @@ class Submission:
 
     @property
     def is_graded(self):
-        if self.assignment.team_submission:
+        if self._assignment.team_submission:
             return self.is_team_graded
         else:
             return self.is_single_submission_graded
@@ -322,37 +411,37 @@ class Submission:
             return None, warnings
 
     def status_team_submission_string(self, indent=0):
-        if self.group_id not in self.assignment.course.groups:
+        if self.group_id not in self._assignment.course.groups:
             return ' ' * indent + str(self) + ' could not find group?'
-        group = self.assignment.course.groups[self.group_id]
+        group = self._assignment.course.groups[self.group_id]
 
         grade, warnings = self.get_grade_or_reason_if_team_ungraded()
         grader = 'NAME UNKNOWN?'
         if grade is not None:
-            if grade.grader_id in self.assignment.course.users:
-                grader = self.assignment.course.users[grade.grader_id].name
+            if grade.grader_id in self._assignment.course.users:
+                grader = self._assignment.course.users[grade.grader_id].name
             return ' ' * indent + '{:20} id:{:7d} grade:{:4} graded_by:{:10}'.format(group.name, self.id, grade.value, grader)
         else:
             return ' ' * indent + '{:20} id:{:7d} WARNING:{}'.format(group.name, self.id, warnings)
 
     @property
     def is_single_submission_graded(self):
-        return self.user_id in self.assignment.grades
+        return self.user_id in self._assignment.grades
 
     def status_single_submission_string(self, indent=0):
-        user = self.assignment.course.users[self.user_id]
+        user = self._assignment.course.users[self.user_id]
         if self.is_graded:
-            grade = self.assignment.grades[self.user_id]
+            grade = self._assignment.grades[self.user_id]
             grader = 'NAME UNKNOWN?'
-            if grade.grader_id in self.assignment.course.users:
-                grader = self.assignment.course.users[grade.grader_id].name
+            if grade.grader_id in self._assignment.course.users:
+                grader = self._assignment.course.users[grade.grader_id].name
             return indent * ' ' + '{:20} grade:{:4} graded_by:{:10}'.format(user.name[0:19], grade.value, grader)
         else:
             return indent * ' ' + '{:20} ungraded'.format(user.name[0:19])
 
     @property
     def has_files(self):
-        for p in self.plugins:
+        for p in self._plugins:
             if p.has_files:
                 return True
         return False
@@ -360,59 +449,75 @@ class Submission:
     @property
     def files(self):
         files = []
-        for p in self.plugins:
+        for p in self._plugins:
             files += p.files
         return files
 
     @property
     def has_editor_field_content(self):
-        return True in [p.has_editor_field for p in self.plugins]
+        return True in [p.has_editor_field for p in self._plugins]
 
     @property
     def editor_field_content(self):
         content = ''
-        for p in self.plugins:
+        for p in self._plugins:
             if p.has_editor_field:
                 content += p.editor_field_content
         return content
 
     @property
     def prefix(self):
-        if self.assignment.team_submission:
-            group = self.assignment.course.groups[self.group_id]
+        if self._assignment.team_submission:
+            group = self._assignment.course.groups[self.group_id]
             return group.name
         else:
-            user = self.assignment.course.users[self.user_id]
+            user = self._assignment.course.users[self.user_id]
             return user.name
 
 
-class Grade:
-    def __init__(self, data):
-        self.id = data.pop(Jn.id)
-        value = data.pop(Jn.grade)
+class Grade(JsonDataWrapper):
+    @property
+    def id(self): return self._data[Jn.id]
+
+    @property
+    def grader_id(self): return self._data[Jn.grader]
+
+    @property
+    def user_id(self): return self._data[Jn.user_id]
+
+    @property
+    def attempt_number(self): return self._data[Jn.attempt_number]
+
+    @property
+    def date_created(self): return datetime.fromtimestamp(self._data[Jn.time_created])
+
+    @property
+    def date_modified(self): return datetime.fromtimestamp(self._data[Jn.time_modified])
+
+    @property
+    def value(self):
+        value = self._data[Jn.grade]
         if '' == value:
-            self.value = None
+            return None
         else:
-            self.value = float(value)
-        self.grader_id = data.pop(Jn.grader)
-        self.user_id = data.pop(Jn.user_id)
-        self.attempt_number = data.pop(Jn.attempt_number)
-        self.date_created = datetime.fromtimestamp(data.pop(Jn.time_created))
-        self.date_modified = datetime.fromtimestamp(data.pop(Jn.time_modified))
-        self.unparsed = data  # should be empty, completely parsed
+            return float(value)
 
 
-class Plugin:
+class Plugin(JsonDataWrapper):
     def __init__(self, data):
-        self.type = data.pop(Jn.type)
-        self.name = data.pop(Jn.name)
-        self.editor_fields = []
-        self.file_areas = []
-        if Jn.editor_fields in data:
-            self.editor_fields = [EditorField(e) for e in data.pop(Jn.editor_fields)]
-        if Jn.file_areas in data:
-            self.file_areas = [FileArea(f) for f in data.pop(Jn.file_areas)]
-        self.unparsed = data
+        super().__init__(data)
+        self._editor_fields = []
+        self._file_areas = []
+        if Jn.editor_fields in self._data:
+            self._editor_fields = [EditorField(e) for e in self.get(Jn.editor_fields)]
+        if Jn.file_areas in self._data:
+            self._file_areas = [FileArea(f) for f in self.get(Jn.file_areas)]
+
+    @property
+    def type(self): return self.get(Jn.type)
+
+    @property
+    def name(self): return self.get(Jn.name)
 
     def __str__(self):
         if self.has_content:
@@ -428,11 +533,11 @@ class Plugin:
 
     @property
     def has_editor_field(self):
-        return True in [e.has_content for e in self.editor_fields]
+        return True in [e.has_content for e in self._editor_fields]
 
     @property
     def has_files(self):
-        return True in [f.has_content for f in self.file_areas]
+        return True in [f.has_content for f in self._file_areas]
 
     @property
     def has_content(self):
@@ -444,7 +549,7 @@ class Plugin:
     @property
     def files(self):
         file_list = []
-        for area in self.file_areas:
+        for area in self._file_areas:
             file_list += area.files
         return file_list
 
@@ -452,19 +557,22 @@ class Plugin:
     def editor_field_content(self):
         content = ''
         if self.has_editor_field:
-            for e in self.editor_fields:
+            for e in self._editor_fields:
                 if e.has_content:
                     content += e.content
         return content
 
 
-class FileArea:
+class FileArea(JsonDataWrapper):
     def __init__(self, data):
-        self.area = data.pop(Jn.area)
+        super().__init__(data)
         self._files = []
-        if Jn.files in data:
-            self.set_file_data(data.pop(Jn.files))
+        if Jn.files in self._data:
+            self.set_file_data(self.get(Jn.files))
         self.unparsed = data
+
+    @property
+    def area(self): return self.get(Jn.area)
 
     def __str__(self):
         out = self.area
@@ -484,23 +592,30 @@ class FileArea:
         self._files = [File(file) for file in data]
 
 
-class File:
-    def __init__(self, data):
-        self.path = data.pop(Jn.file_path)
-        self.url = data.pop(Jn.file_url)
-        # TODO metadata attributes
+class File(JsonDataWrapper):
+    # TODO metadata attributes
+    @property
+    def path(self): return self.get(Jn.file_path)
+
+    @property
+    def url(self): return self.get(Jn.file_url)
 
     def add_metadata(self, data):
         pass
 
 
-class EditorField:
-    def __init__(self, data):
-        self.name = data.pop(Jn.name)
-        self.description = data.pop(Jn.description)
-        self.text = data.pop(Jn.text)
-        self.fmt = data.pop(Jn.format)
-        self.unparsed = data
+class EditorField(JsonDataWrapper):
+    @property
+    def name(self): return self.get(Jn.name)
+
+    @property
+    def description(self): return self.get(Jn.description)
+
+    @property
+    def text(self): return self.get(Jn.text)
+
+    @property
+    def fmt(self): return self.get(Jn.format)
 
     def __str__(self):
         out = '{} {}'.format(self.name, self.description)

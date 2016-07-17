@@ -215,7 +215,7 @@ def sync(url, token, course_ids, assignments=False, submissions=False, grades=Fa
                 message = '{:d} denied access to users: {}'.format(cid, denied)
                 print(message, end=' ', flush=True)
             except InvalidResponse as e:
-                message = 'Moodle encountered an error: msg:{} \n debug:{}'.format(e.message,e.debug_message)
+                message = 'Moodle encountered an error: msg:{} \n debug:{}'.format(e.message, e.debug_message)
                 print(message)
 
         wt.users = users
@@ -238,7 +238,8 @@ def status(course_ids, assignment_ids=None, submission_ids=None, full=False):
     course_ids = _unpack(course_ids)
     term_columns = shutil.get_terminal_size().columns
 
-    courses = [Course(c) for c in wt.data]
+    # courses = [Course(c) for c in wt.data]
+    courses = wt.data
     if assignment_ids is not None and submission_ids is None:
         for course in sorted(courses, key=lambda c: c.name):
             print(course)
@@ -278,8 +279,7 @@ def pull(url, token, course_ids, assignment_ids=None, all=False):
     wt = WorkTree()
     course_ids = _unpack(course_ids)
 
-    course_data = wt.data
-    courses = [Course(c) for c in course_data]
+    courses = wt.data
     assignments = []
     if assignment_ids is None:
         for c in courses:
@@ -335,8 +335,7 @@ def grade(url, token, files):
 
     wt = WorkTree()
 
-    course_data = wt.data
-    courses = [Course(c) for c in course_data]
+    courses = wt.data
     grading_data = {}
     for file in files:
         # file_content = file.read()
@@ -392,7 +391,6 @@ def _make_config_parser_upload(subparsers, url_token_parser):
 
 
 def upload(url, token, files):
-    # wt = WorkTree()
     files = files
     ms = MoodleSession(url, token)
     reply = ms.upload_files(files)

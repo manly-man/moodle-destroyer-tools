@@ -6,6 +6,7 @@ import re
 import configparser
 from datetime import datetime
 from moodle.fieldnames import JsonFieldNames as Jn
+from moodle.models import Course, Assignment, Submission
 
 
 class WorkTree:
@@ -118,19 +119,30 @@ class WorkTree:
     @property
     def data(self):
         courses = self.courses
-        merged = []
-        for course in courses:
-            course[Jn.users] = self.users[str(course[Jn.id])]
-            course_assignments = [a for a in self.assignments.values() if a[Jn.course] == course[Jn.id]]
+        cs = []
+        for c in self.courses:
+            course = Course(c)
+            print(course)
+            course.users = self.users[str(course.id)]
+            course.assignments = [a for a in self.assignments.values() if a[Jn.course] == course.id]
+            for assignment in course.assignments.values():
+                assignment.submissions = self.submissions.get(assignment.id, None)
+                assignment.grades = self.grades.get(assignment.id, None)
+            cs.append(course)
 
-            for assignment in course_assignments:
-                assignment[Jn.submissions] = self.submissions.get(assignment['id'], None)
-                assignment[Jn.grades] = self.grades.get(assignment['id'], None)
-            course[Jn.assignments] = course_assignments
+        # merged = []
+        # for course in courses:
+        #     course[Jn.users] = self.users[str(course[Jn.id])]
+        #     course_assignments = [a for a in self.assignments.values() if a[Jn.course] == course[Jn.id]]
+        #
+        #     for assignment in course_assignments:
+        #         assignment[Jn.submissions] = self.submissions.get(assignment['id'], None)
+        #         assignment[Jn.grades] = self.grades.get(assignment['id'], None)
+        #     course[Jn.assignments] = course_assignments
+        #
+        #     merged.append(course)
 
-            merged.append(course)
-
-        return merged
+        return cs
 
     @property
     def assignments(self):
@@ -305,10 +317,7 @@ class MetaDataFolder(dict):
         try:
             return self.__getitem__(key)
         except KeyError as ke:
-            if default is not None:
-                return default
-            else:
-                raise ke
+            return default
 
     def copy(self):
         return {key: self.__getitem__(key) for key in self.keys()}
@@ -458,7 +467,7 @@ class GradeMetaDataFolder(MetaDataFolder):
         return result
 
 
-class MetaData(dict):
+class MetaDataFile(dict):
     def __init__(self, file, **kwargs):
         super().__init__(**kwargs)
         self._file = file
