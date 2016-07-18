@@ -11,7 +11,7 @@ import configargparse
 from moodle.exceptions import AccessDenied, InvalidResponse
 from moodle.communication import MoodleSession
 from moodle.fieldnames import JsonFieldNames as Jn
-from moodle.models import Course
+from moodle.models import Course, Submission, Assignment
 from moodle.parsers import strip_mlang
 import concurrent.futures as cf
 
@@ -162,17 +162,18 @@ def _make_config_parser_sync(subparsers, url_token_parser):
     sync_parser.add_argument('-s', '--submissions', help='sync submissions', action='store_true')
     sync_parser.add_argument('-g', '--grades', help='sync grades', action='store_true')
     sync_parser.add_argument('-u', '--users', help='sync users', action='store_true', default=False)
+    sync_parser.add_argument('-f', '--files', help='sync file metadata', action='store_true', default=False)
 
     sync_parser.set_defaults(func=sync)
 
 
-def sync(url, token, course_ids, assignments=False, submissions=False, grades=False, users=False):
+def sync(url, token, course_ids, assignments=False, submissions=False, grades=False, users=False, files=False):
     wt = WorkTree()
     course_ids = _unpack(course_ids)
     moodle = MoodleSession(moodle_url=url, token=token)
 
     sync_all = True
-    if users or submissions or assignments or grades:
+    if users or submissions or assignments or grades or files:
         sync_all = False
 
     if assignments or sync_all:
@@ -193,6 +194,23 @@ def sync(url, token, course_ids, assignments=False, submissions=False, grades=Fa
         # todo sync via:
         # moodle.get_submissions_for_assignments(assignment_ids, since=last_sync)
         # todo sync file metadata
+
+    if files:  # TODO WIP
+        print('syncing files… ', end='', flush=True)
+        files = []
+        for as_id, submissions in wt.submissions.items():
+            for submission in submissions:
+                files += Submission(submission).files
+
+        for file in files:
+            response = moodle.get_file_meta(**file.meta_data_params)
+            print(str(response.text))
+        # reply = moodle.get_submissions_for_assignments(wt.assignments.keys())
+        # data = json.loads(strip_mlang(reply.text))
+        # result = wt.submissions.update(data)
+        # output = ['{}: {:d}'.format(k, v) for k, v in result.items()]
+        # print('finished. ' + ' '.join(output))
+        print('finished')
 
     if grades or sync_all:
         print('syncing grades… ', end='', flush=True)
@@ -238,16 +256,18 @@ def status(course_ids, assignment_ids=None, submission_ids=None, full=False):
     course_ids = _unpack(course_ids)
     term_columns = shutil.get_terminal_size().columns
 
-    # courses = [Course(c) for c in wt.data]
-    courses = wt.data
     if assignment_ids is not None and submission_ids is None:
-        for course in sorted(courses, key=lambda c: c.name):
-            print(course)
-            assignments = course.get_assignments(assignment_ids)
-            a_status = [a.detailed_status_string(indent=1) for a in assignments]
-            for s in sorted(a_status):
-                print(s)
+        for assignment_id in assignment_ids:
+            assignment = Assignment(wt.assignments[assignment_id])
+            assignment.course = Course(wt.courses[assignment.course_id])
+            assignment.course.users = wt.users[str(assignment.course_id)]
+            assignment.submissions = wt.submissions[assignment_id]
+            assignment.grades = wt.grades[assignment_id]
+            print(assignment.course)
+            print(assignment.detailed_status_string(indent=1))
+
     elif submission_ids is not None:
+        courses = wt.data
         # TODO this.
         for course in sorted(courses, key=lambda c: c.name):
             print(course)
@@ -256,9 +276,11 @@ def status(course_ids, assignment_ids=None, submission_ids=None, full=False):
             for s in sorted(a_status):
                 print(s)
     elif full:
+        courses = wt.data
         for course in sorted(courses, key=lambda c: c.name):
             course.print_status()
     else:
+        courses = wt.data
         for course in sorted(courses, key=lambda c: c.name):
             course.print_short_status()
 
@@ -334,29 +356,27 @@ def grade(url, token, files):
             return args
 
     wt = WorkTree()
-
-    courses = wt.data
-    grading_data = {}
+    upload_data = []
     for file in files:
         # file_content = file.read()
         parsed = json.load(file)
         assignment_id = parsed['assignment_id']
-        grading_data[assignment_id] = parsed['grades']
 
-    upload_data = []
-    for assignment_id, data in grading_data.items():
-        for course in courses:
-            if assignment_id in course.assignments:
-                assignment = course.assignments[assignment_id]
-                upload_data.append(assignment.prepare_grade_upload_data(data))
+        assignment = Assignment(wt.assignments[assignment_id])
+        assignment.course = Course(wt.courses[assignment.course_id])
+
+        assignment.course.users = wt.users[str(assignment.course_id)]
+        assignment.submissions = wt.submissions[assignment_id]
+        upload_data.append(assignment.prepare_grade_upload_data(parsed['grades']))
 
     print('this will upload the following grades:')
     grade_format = '  {:>20}:{:6d} {:5.1f} > {}'
     for graded_assignment in upload_data:
-        print(' assignment {:5d}, teamsubmission: {}'.format(graded_assignment['assignment_id'], graded_assignment['team_submission']))
+        print(' assignment {:5d}, team_submission: {}'.format(graded_assignment['assignment_id'], graded_assignment['team_submission']))
         for gdata in graded_assignment['grade_data']:
             print(grade_format.format(gdata['name'], gdata['user_id'], gdata['grade'], gdata['feedback'][:40]))
     answer = input('does this look good? [Y/n]: ')
+
     if 'n' == answer:
         print('do it right, then')
         return

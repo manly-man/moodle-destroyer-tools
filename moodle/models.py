@@ -1,5 +1,6 @@
 from datetime import datetime
 from moodle.fieldnames import JsonFieldNames as Jn
+from moodle.parsers import file_meta_dict_from_url
 
 
 class JsonDataWrapper:
@@ -7,7 +8,11 @@ class JsonDataWrapper:
         self._data = json_data
 
     def get(self, name):
-        return self._data[name]
+        try:
+            return self._data[name]
+        except Exception as e:
+            print(name)
+            raise e
 
 
 class Course(JsonDataWrapper):
@@ -16,8 +21,6 @@ class Course(JsonDataWrapper):
         self._users = {}  # accessed via user.id
         self._groups = {}  # accessed via group.id
         self._assignments = {}
-        #self.users = self._data[Jn.users]
-        #self.assignments = self._data[Jn.assignments]
 
     @property
     def id(self): return self.get(Jn.id)
@@ -151,6 +154,9 @@ class Assignment(JsonDataWrapper):
     def id(self): return self.get(Jn.id)
 
     @property
+    def course_id(self): return self.get(Jn.course)
+
+    @property
     def team_submission(self):
         return 1 == self.get(Jn.team_submission)
 
@@ -191,6 +197,24 @@ class Assignment(JsonDataWrapper):
         grades = [Grade(g) for g in data]
         for g in grades:
             self.grades[g.user_id] = g
+
+    @property
+    def grading_file_content(self):
+        head = '{{"assignment_id": {:d}, "grades": [\n'
+        end = '\n]}'
+        line_format = '{{"name": "{}", "id": {:d}, "grade": {:3.1f}, "feedback":"" }}'
+        content = []
+
+        if self.team_submission:
+            for s_id, s in self.submissions.items():
+                group = self.course.groups[s.group_id]
+                content.append(line_format.format(group.name, s.id, s.grade.value))
+        else:
+            for s_id, s in self.submissions.items():
+                user = self.course.users[s.user_id]
+                content.append(line_format.format(user.name, s.id, s.grade.value))
+
+        return head.format(self.id) + ',\n'.join(sorted(content)) + end
 
     def __str__(self):
         return '{:40} id:{:5d}'.format(self.name[0:39], self.id)
@@ -269,10 +293,10 @@ class Assignment(JsonDataWrapper):
             tmp = ''
             if s.has_editor_field_content:
                 if self.team_submission:
-                    group = self._course.groups[s.group_id]
+                    group = self.course.groups[s.group_id]
                     tmp += seperator.format(group.name)
                 else:
-                    user = self._course.users[s.user_id]
+                    user = self.course.users[s.user_id]
                     tmp += seperator.format(user.name)
                 tmp += s.editor_field_content
             assembled_tmp.append(tmp)
@@ -292,7 +316,7 @@ class Assignment(JsonDataWrapper):
         for grade_data in data:
             submission = self.submissions[grade_data['id']]
             if self.team_submission:
-                group = self._course.groups[submission.group_id]
+                group = self.course.groups[submission.group_id]
                 user = group.members[0]
                 grade_data['user_id'] = user.id
             else:
@@ -325,8 +349,9 @@ class AssignmentConfig(JsonDataWrapper):
 class Submission(JsonDataWrapper):
     def __init__(self, data, assignment=None):
         super().__init__(data)
-        self._plugins = [Plugin(p) for p in self.get(Jn.plugins)]
-        self._assignment = assignment
+        self._plugins = []
+        self.assignment = assignment
+        self._plugins = [Plugin(p, self) for p in self.get(Jn.plugins)]
 
     @property
     def id(self): return self.get(Jn.id)
@@ -349,6 +374,10 @@ class Submission(JsonDataWrapper):
     @property
     def attempt_number(self): return self.get(Jn.attempt_number)
 
+    @property
+    def plugins(self):
+        return self._plugins
+
     def __str__(self):
         return 'id:{:7d} {:5d}:{:5d}'.format(self.id, self.user_id, self.group_id)
 
@@ -357,16 +386,16 @@ class Submission(JsonDataWrapper):
         return True in [p.has_content for p in self._plugins]
 
     def status_string(self, indent=0):
-        if self._assignment is None:
+        if self.assignment is None:
             return ' ' * indent + str(self)
-        elif self._assignment.team_submission and self._assignment.course is not None:
+        elif self.assignment.team_submission and self.assignment.course is not None:
             return self.status_team_submission_string(indent=indent)
         else:
             return self.status_single_submission_string(indent=indent)
 
     def get_team_members_and_grades(self):
-        group = self._assignment.course.groups[self.group_id]
-        grades = self._assignment.grades
+        group = self.assignment.course.groups[self.group_id]
+        grades = self.assignment.grades
         members = group.members
         graded_users = {}
         ungraded_users = {}
@@ -379,8 +408,16 @@ class Submission(JsonDataWrapper):
         return graded_users, ungraded_users
 
     @property
+    def grade(self):
+        if self.assignment.team_submission:
+            grade, warnings = self.get_grade_or_reason_if_team_ungraded()
+            return grade
+        else:
+            return self.assignment.grades.get(self.user_id, default=None)
+
+    @property
     def is_graded(self):
-        if self._assignment.team_submission:
+        if self.assignment.team_submission:
             return self.is_team_graded
         else:
             return self.is_single_submission_graded
@@ -411,30 +448,30 @@ class Submission(JsonDataWrapper):
             return None, warnings
 
     def status_team_submission_string(self, indent=0):
-        if self.group_id not in self._assignment.course.groups:
+        if self.group_id not in self.assignment.course.groups:
             return ' ' * indent + str(self) + ' could not find group?'
-        group = self._assignment.course.groups[self.group_id]
+        group = self.assignment.course.groups[self.group_id]
 
         grade, warnings = self.get_grade_or_reason_if_team_ungraded()
         grader = 'NAME UNKNOWN?'
         if grade is not None:
-            if grade.grader_id in self._assignment.course.users:
-                grader = self._assignment.course.users[grade.grader_id].name
+            if grade.grader_id in self.assignment.course.users:
+                grader = self.assignment.course.users[grade.grader_id].name
             return ' ' * indent + '{:20} id:{:7d} grade:{:4} graded_by:{:10}'.format(group.name, self.id, grade.value, grader)
         else:
             return ' ' * indent + '{:20} id:{:7d} WARNING:{}'.format(group.name, self.id, warnings)
 
     @property
     def is_single_submission_graded(self):
-        return self.user_id in self._assignment.grades
+        return self.user_id in self.assignment.grades
 
     def status_single_submission_string(self, indent=0):
-        user = self._assignment.course.users[self.user_id]
+        user = self.assignment.course.users[self.user_id]
         if self.is_graded:
-            grade = self._assignment.grades[self.user_id]
+            grade = self.assignment.grades[self.user_id]
             grader = 'NAME UNKNOWN?'
-            if grade.grader_id in self._assignment.course.users:
-                grader = self._assignment.course.users[grade.grader_id].name
+            if grade.grader_id in self.assignment.course.users:
+                grader = self.assignment.course.users[grade.grader_id].name
             return indent * ' ' + '{:20} grade:{:4} graded_by:{:10}'.format(user.name[0:19], grade.value, grader)
         else:
             return indent * ' ' + '{:20} ungraded'.format(user.name[0:19])
@@ -467,11 +504,11 @@ class Submission(JsonDataWrapper):
 
     @property
     def prefix(self):
-        if self._assignment.team_submission:
-            group = self._assignment.course.groups[self.group_id]
+        if self.assignment.team_submission:
+            group = self.assignment.course.groups[self.group_id]
             return group.name
         else:
-            user = self._assignment.course.users[self.user_id]
+            user = self.assignment.course.users[self.user_id]
             return user.name
 
 
@@ -504,14 +541,15 @@ class Grade(JsonDataWrapper):
 
 
 class Plugin(JsonDataWrapper):
-    def __init__(self, data):
+    def __init__(self, data, submission):
         super().__init__(data)
         self._editor_fields = []
         self._file_areas = []
+        self.submission = submission
         if Jn.editor_fields in self._data:
             self._editor_fields = [EditorField(e) for e in self.get(Jn.editor_fields)]
         if Jn.file_areas in self._data:
-            self._file_areas = [FileArea(f) for f in self.get(Jn.file_areas)]
+            self._file_areas = [FileArea(f, self.submission) for f in self.get(Jn.file_areas)]
 
     @property
     def type(self): return self.get(Jn.type)
@@ -564,9 +602,10 @@ class Plugin(JsonDataWrapper):
 
 
 class FileArea(JsonDataWrapper):
-    def __init__(self, data):
+    def __init__(self, data, submission):
         super().__init__(data)
         self._files = []
+        self.submission = submission
         if Jn.files in self._data:
             self.set_file_data(self.get(Jn.files))
         self.unparsed = data
@@ -589,19 +628,31 @@ class FileArea(JsonDataWrapper):
         return self._files
 
     def set_file_data(self, data):
-        self._files = [File(file) for file in data]
+        self._files = [File(file, self.submission) for file in data]
 
 
 class File(JsonDataWrapper):
-    # TODO metadata attributes
+    def __init__(self, data, submission):
+        super().__init__(data)
+        self.submission = submission
+        self._new_path = None
+
     @property
-    def path(self): return self.get(Jn.file_path)
+    def path(self):
+        if self._new_path is None:
+            return self.get(Jn.file_path)
+        else:
+            return self._new_path
+
+    @path.setter
+    def path(self, value):
+        self._new_path = value
 
     @property
     def url(self): return self.get(Jn.file_url)
 
-    def add_metadata(self, data):
-        pass
+    @property
+    def meta_data_params(self): return file_meta_dict_from_url(self.url)
 
 
 class EditorField(JsonDataWrapper):
@@ -630,3 +681,44 @@ class EditorField(JsonDataWrapper):
     @property
     def content(self):
         return self.text
+
+
+class FileMeta(JsonDataWrapper):
+    @property
+    def context_id(self): return self.get(Jn.context_id)
+
+    @property
+    def component(self): return self.get(Jn.component)
+
+    @property
+    def file_area(self): return self.get(Jn.file_area)
+
+    @property
+    def item_id(self): return self.get(Jn.item_id)
+
+    @property
+    def file_path(self): return self.get(Jn.file_path)
+
+    @property
+    def filename(self): return self.get(Jn.file_name)
+
+    @property
+    def isdir(self): return self.get(Jn.is_dir)
+
+    @property
+    def url(self): return self.get(Jn.url)
+
+    @property
+    def time_modified(self): return self.get(Jn.time_modified)
+
+    @property
+    def time_created(self): return self.get(Jn.time_created)
+
+    @property
+    def file_size(self): return self.get(Jn.file_size)
+
+    @property
+    def author(self): return self.get(Jn.author)
+
+    @property
+    def license(self): return self.get(Jn.license)

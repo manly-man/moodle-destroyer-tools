@@ -27,16 +27,15 @@ class WorkTree:
         self.sync_meta = self.meta_root + 'sync'
         self.moodle_meta = self.meta_root + 'moodle'
         self.course_meta = self.meta_root + 'courses'
-        self.assignment_meta = self.meta_root + 'assignments/'
-        self.submission_meta = self.meta_root + 'submissions/'
-        self.grade_meta = self.meta_root + 'grades/'
+        self.assignment_meta = self.meta_root + 'assignments'
+        self.submission_meta = self.meta_root + 'submissions'
+        self.grade_meta = self.meta_root + 'grades'
 
-        if not init:
-            self._course_data = self._load_json_file(self.course_meta)
-            self._user_data = self._load_json_file(self.user_meta)
-            self._assignment_data = AssignmentMetaDataFolder(self.assignment_meta)
-            self._submission_data = SubmissionMetaDataFolder(self.submission_meta)
-            self._grade_data = GradeMetaDataFolder(self.grade_meta)
+        self._course_data = self._load_json_file(self.course_meta)
+        self._user_data = self._load_json_file(self.user_meta)
+        self._assignment_data = AssignmentMetaDataFolder(self.assignment_meta)
+        self._submission_data = SubmissionMetaDataFolder(self.submission_meta)
+        self._grade_data = GradeMetaDataFolder(self.grade_meta)
 
     @staticmethod
     def _initialize(force):
@@ -118,30 +117,16 @@ class WorkTree:
 
     @property
     def data(self):
-        courses = self.courses
         cs = []
-        for c in self.courses:
+        for c in self.courses.values():
             course = Course(c)
-            print(course)
+
             course.users = self.users[str(course.id)]
             course.assignments = [a for a in self.assignments.values() if a[Jn.course] == course.id]
             for assignment in course.assignments.values():
                 assignment.submissions = self.submissions.get(assignment.id, None)
                 assignment.grades = self.grades.get(assignment.id, None)
             cs.append(course)
-
-        # merged = []
-        # for course in courses:
-        #     course[Jn.users] = self.users[str(course[Jn.id])]
-        #     course_assignments = [a for a in self.assignments.values() if a[Jn.course] == course[Jn.id]]
-        #
-        #     for assignment in course_assignments:
-        #         assignment[Jn.submissions] = self.submissions.get(assignment['id'], None)
-        #         assignment[Jn.grades] = self.grades.get(assignment['id'], None)
-        #     course[Jn.assignments] = course_assignments
-        #
-        #     merged.append(course)
-
         return cs
 
     @property
@@ -154,7 +139,10 @@ class WorkTree:
 
     @property
     def courses(self):
-        return self._course_data
+        courses = {}
+        for course in self._course_data:
+            courses[course['id']] = course
+        return courses
 
     @courses.setter
     def courses(self, value):
@@ -212,38 +200,26 @@ class WorkTree:
     def safe_file_name(name):
         return re.sub(r'\W', '_', name)
 
+    @staticmethod
+    def assignment_folder(assignment):
+        return WorkTree.safe_file_name('{}--{:d}'.format(assignment.name, assignment.id)) + '/'
+
     def write_grading_and_html_file(self, assignment):
-        grade_file_head = '{{"assignment_id": {:d}, "grades": [\n'
-        grade_file_end = '\n]}'
-        grade_line_format = '{{"name": "{}", "id": {:d}, "grade": 0.0, "feedback":"" }}'
-        grade_file_content = []
+        a_folder = self.assignment_folder(assignment)
         filename = 'gradingfile.json'
-        #todo add known grades to grading file.
-        if assignment.team_submission:
-            for s in assignment.valid_submissions:
-                group = assignment.course.groups[s.group_id]
-                grade_file_content.append(grade_line_format.format(group.name, s.id))
-        else:
-            for s in assignment.valid_submissions:
-                user = assignment.course.users[s.user_id]
-                grade_file_content.append(grade_line_format.format(user.name, s.id))
-        # checks for existing file and chooses new name, maybe merge data?
-        if os.path.isfile(filename):
+        if os.path.isfile(a_folder + filename):
             new_name = 'gradingfile_{:02d}.json'
             i = 0
             filename = new_name.format(i)
-            while os.path.isfile(filename):
+            while os.path.isfile(a_folder + filename):
                 i += 1
                 filename = new_name.format(i)
             print('grading file exists, writing to: {}'.format(filename))
-        a_folder = self.safe_file_name('{}--{:d}'.format(assignment.name, assignment.id)) + '/'
         os.makedirs(a_folder, exist_ok=True)
+
         with open(a_folder + filename, 'w') as grading_file:
-            grading_file.write(
-                grade_file_head.format(assignment.id) +
-                ',\n'.join(sorted(grade_file_content)) +
-                grade_file_end
-            )
+            grading_file.write(assignment.grading_file_content)
+
         html = assignment.merged_html
         if html is not None:
             with open(a_folder + '00_merged_submissions.html', 'w') as merged_html:
@@ -262,7 +238,7 @@ class WorkTree:
         files = []
         for a in assignments:
             for s in a.submissions.values():
-                a_folder = self.safe_file_name('{}--{:d}'.format(a.name, a.id))
+                a_folder = self.assignment_folder(a)
                 s_files = s.files
                 if len(s_files) > 1:
                     s_folder = a_folder + '/' + self.safe_file_name(s.prefix)
