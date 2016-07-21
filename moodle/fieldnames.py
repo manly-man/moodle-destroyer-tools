@@ -98,6 +98,7 @@ class JsonFieldNames:
     user_name = 'username'
     users = 'users'
     value = 'value'
+    warnings = 'warnings'
     workflow_state = 'workflowstate'
     ws_function = 'wsfunction'
     ws_token = 'wstoken'

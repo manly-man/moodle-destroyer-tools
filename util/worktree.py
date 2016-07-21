@@ -4,12 +4,20 @@ import math
 import os
 import re
 import configparser
+import collections
 from datetime import datetime
 from moodle.fieldnames import JsonFieldNames as Jn
 from moodle.models import Course, Assignment, Submission
 
 
 class WorkTree:
+    def __enter__(self):
+        print('enter')
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        print('exit')
+
     def __init__(self, init=False, force=False, skip_init=False):
         if skip_init:
             return
@@ -291,34 +299,34 @@ class MetaDataFolder(dict):
 
     def get(self, key, default=None):
         try:
-            return self.__getitem__(key)
+            return self[key]
         except KeyError as ke:
             return default
 
     def copy(self):
-        return {key: self.__getitem__(key) for key in self.keys()}
+        return {key: self[key] for key in self.keys()}
 
     def keys(self):
         return [int(filename) for filename in os.listdir(self._folder) if filename != self._meta_name]
 
     def items(self):
-        return [(key, self.__getitem__(key)) for key in self.keys()]
+        return [(key, self[key]) for key in self.keys()]
 
     def pop(self, key, default=None):
-        data = self.__getitem__(key)
-        self.__delitem__(key)
+        data = self[key]
+        del self[key]
         return data
 
     def setdefault(self, key, default=None):
         try:
-            return self.__getitem__(key)
+            return self[key]
         except KeyError:
-            self.__setitem__(key, default)
+            self[key] = default
             return default
 
     # noinspection PyMethodOverriding
     def values(self):
-        return [self.__getitem__(key) for key in self.keys()]
+        return [self[key] for key in self.keys()]
 
     def update(self, other=None, **kwargs):
         raise NotImplementedError('update')
@@ -344,16 +352,16 @@ class MetaDataFolder(dict):
         return self.__str__(*args, **kwargs)
 
     def __getitem__(self, key):
-        if key in self._cache:
-            return self._cache[key]
-
-        filename = self._folder + str(key)
         try:
-            with open(filename, 'r') as file:
-                self._cache[key] = json.load(file)
-                return self._cache[key]
-        except IOError:
-            raise KeyError(key)
+            return self._cache[key]
+        except KeyError:
+            filename = self._folder + str(key)
+            try:
+                with open(filename, 'r') as file:
+                    self._cache[key] = json.load(file)
+                    return self._cache[key]
+            except IOError:
+                raise KeyError('{} no data: {!s}'.format(self.__name__, key))
 
     def __setitem__(self, key, value):
         self._cache[key] = value
@@ -381,16 +389,19 @@ class AssignmentMetaDataFolder(MetaDataFolder):
                 key = int(assignment['id'])
                 value = assignment
                 try:
-                    local_data = self.__getitem__(key)
+                    local_data = self[key]
                     if local_data[Jn.time_modified] < assignment[Jn.time_modified]:
-                        self.__setitem__(key, value)
+                        self[key] = value
                         result['updated'] += 1
                     else:
                         result['unchanged'] += 1
                 except KeyError:
-                    self.__setitem__(key, value)
+                    self[key] = value
                     result['new'] += 1
         return result
+
+    def __getitem__(self, key):
+        return Assignment(super().__getitem__(key))
 
 
 class SubmissionMetaDataFolder(MetaDataFolder):
@@ -409,16 +420,18 @@ class SubmissionMetaDataFolder(MetaDataFolder):
             else:
                 result['new'] += 1
             if len(value) > 0:
-                self.__setitem__(key, value)
+                self[key] = value
             else:
                 result['unchanged'] += 1
         self.last_sync = math.floor(datetime.now().timestamp())
         self._write_meta()
         return result
 
+    def __getitem__(self, key):
+        return SubmissionShelf(self._folder + str(key))
+
 
 class GradeMetaDataFolder(MetaDataFolder):
-
     def __init__(self, folder, **kwargs):
         self.last_sync = 0
         super().__init__(folder, **kwargs)
@@ -525,3 +538,261 @@ class MetaDataFile(dict):
 
     def __str__(self, *args, **kwargs):
         return '<MetaData: {}>'.format(self._file)
+
+
+class JsonShelf(collections.MutableMapping):
+    """Base class for shelf implementations.
+
+    This is initialized with a dictionary-like object.
+    """
+
+    def __init__(self, filename, read_only=True):
+        self._filename = filename
+        self._meta_filename = filename + '_meta'
+        self._data = None
+        self._read_only = read_only
+        self._changed = False
+
+    def __len__(self):
+        return len(self._data)
+
+    def __iter__(self):
+        return self._data.__iter__()
+
+    def __delitem__(self, key):
+        del self._data[key]
+        self._changed = True
+
+    def __setitem__(self, key, value):
+        self._changed = True
+        self._data[key] = value
+
+    def __getitem__(self, key):
+        return self._data[key]
+
+    def __enter__(self):
+        print('enter {}'.format(self._filename))
+        try:
+            with open(self._filename, 'r') as file:
+                self._data = json.load(file)
+        except IOError:
+            print('could not read {}')
+            pass
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        print('exit {}'.format(self._filename))
+        self.close()
+
+    def close(self):
+        if self._data is None:
+            return
+        if not self._read_only and self._changed:
+            try:
+                with open(self._filename, 'w') as file:
+                    json.dump(self._data, file)
+            except IOError:
+                print('could not write {}'.format(self._filename))
+                pass
+
+
+class JsonShelfSet(collections.MutableSet):
+    def __init__(self, filename, read_only=True):
+        self._filename = filename
+        self._meta_filename = filename + '_meta'
+        print(filename)
+        self._data = json.load(open(filename, 'r'))
+        self._read_only = read_only
+        self._changed = False
+
+    def __contains__(self, x):
+        pass
+
+    def discard(self, value):
+        pass
+
+    def add(self, value):
+        pass
+
+    def __len__(self):
+        return len(self._data)
+
+    def __iter__(self):
+        return self._data.__iter__()
+
+    def __enter__(self):
+        print('enter {}'.format(self._filename))
+        try:
+            with open(self._filename, 'r') as file:
+                self._data = json.load(file)
+        except IOError:
+            print('could not read {}')
+            pass
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        print('exit {}'.format(self._filename))
+        self.close()
+
+    def close(self):
+        if self._data is None:
+            return
+        if not self._read_only and self._changed:
+            try:
+                with open(self._filename, 'w') as file:
+                    json.dump(self._data, file)
+            except IOError:
+                print('could not write {}'.format(self._filename))
+                pass
+
+
+class SubmissionShelf(JsonShelfSet):
+    def __iter__(self):
+        for subdata in self._data:
+            yield Submission(subdata)
+
+    def __getitem__(self, key):
+        return Submission(self._data[key])
+
+
+class JsonSet(collections.Set):
+    def __init__(self, filename):
+        self._filename = filename
+        self._meta_filename = filename + '_meta'
+        self._data = None
+
+    @property
+    def _cache(self):
+        raise NotImplementedError('JsonSet')
+
+    def __contains__(self, x):
+        raise NotImplementedError('JsonSet')
+
+    def __len__(self):
+        return len(self._cache)
+
+    def __iter__(self):
+        raise NotImplementedError('JsonSet')
+
+
+class SynchronizedJsonSet(JsonSet, collections.MutableSet):
+    def discard(self, value):
+        raise NotImplementedError('SynchronizedJsonSet')
+
+    def add(self, value):
+        raise NotImplementedError('SynchronizedJsonSet')
+
+    def __iter__(self):
+        raise NotImplementedError('SynchronizedJsonSet')
+
+    @property
+    def _cache(self):
+        raise NotImplementedError('SynchronizedJsonSet')
+
+    def __contains__(self, x):
+        raise NotImplementedError('SynchronizedJsonSet')
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        print('exit')
+        if self._data is None:
+            print('data was none')
+            return
+        try:
+            with open(self._filename, 'w') as file:
+                print('writing {:d} items'.format(len(self._data)))
+                json.dump(list(self._data.values()), file)
+        except IOError:
+            print('could not write changes to {}'.format(self._filename))
+
+
+class SubmissionSet(JsonSet):
+    @property
+    def _cache(self):
+        if self._data is None:
+            self._data = {}
+            with open(self._filename, 'r') as file:
+                data_list = json.load(file)
+            for sub in data_list:
+                self._data[sub[Jn.id]] = sub
+        return self._data
+
+    def __iter__(self):
+        for data in self._cache.values():
+            yield Submission(data)
+
+    def __contains__(self, x):
+        if not isinstance(x, Submission):
+            return False
+        return x.id in self._cache
+
+
+class MutableSubmissionSet(SubmissionSet, SynchronizedJsonSet):
+    def __enter__(self):
+        print('enter')
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        print('exit')
+        if self._data is None:
+            print('data was none')
+            return
+        try:
+            with open(self._filename, 'w') as file:
+                print('writing {:d} items'.format(len(self._data)))
+                json.dump(list(self._data.values()), file)
+        except IOError:
+            print('could not write changes to {}'.format(self._filename))
+
+    def discard(self, submission):
+        if not isinstance(submission, Submission):
+            raise Exception('cannot discard type {} from SubmissionSet'.format(type(submission)))
+        del self._cache[submission.id]
+
+    def add(self, submission):
+        if not isinstance(submission, Submission):
+            raise Exception('cannot add type {} to SubmissionSet'.format(type(submission)))
+        self._cache[submission.id] = submission.raw
+
+
+class ShelfSet(collections.MutableSet):
+    def __init__(self, filename, read_only=True):
+        self._filename = filename
+        self._meta_filename = filename + '_meta'
+        self._data = None
+        self._submissions = []
+        self._read_only = read_only
+        self._changed = False
+
+    @property
+    def _cache(self):
+        if self._data is None:
+            with open(self._filename, 'r') as file:
+                self._data = json.load(file)
+            for sub in self._data:
+                self._submissions.append(Submission(sub))
+        return self._submissions
+
+    def __contains__(self, x):
+        for submission in iter(self):
+            if submission.id == x.id:
+                return True
+        return False
+
+    def __len__(self):
+        return len(self._cache)
+
+    def __iter__(self):
+        for s in self._cache:
+            yield s
+
+    def discard(self, value):
+        pass
+
+    def add(self, value):
+        if value in self:
+            print('discarding other')
+
+        pass

@@ -3,6 +3,9 @@ from moodle.fieldnames import JsonFieldNames as Jn
 from moodle.parsers import file_meta_dict_from_url
 
 
+def json(name): return property(lambda self: self.get(name))
+
+
 class JsonDataWrapper:
     def __init__(self, json_data):
         self._data = json_data
@@ -10,9 +13,29 @@ class JsonDataWrapper:
     def get(self, name):
         try:
             return self._data[name]
-        except Exception as e:
+        except Exception:
             print(name)
-            raise e
+            raise
+
+    @property
+    def raw(self):
+        return self._data
+
+
+class Courses(JsonDataWrapper):
+    def __iter__(self):
+        for course in self.raw['courses']:
+            yield Course(course)
+
+    def __getitem__(self, key):
+        for course in self:
+            if course.id == key:
+                return course
+        raise KeyError
+
+    def keys(self):
+        for course in self:
+            yield course.id
 
 
 class Course(JsonDataWrapper):
@@ -32,8 +55,7 @@ class Course(JsonDataWrapper):
     def short_name(self): return self.get(Jn.short_name)
 
     @property
-    def users(self):
-        return self._users
+    def users(self): return self._users
 
     @users.setter
     def users(self, data):
@@ -48,7 +70,7 @@ class Course(JsonDataWrapper):
             self.groups = user
 
     @property
-    def assignments(self): return self._assignments
+    def assignments(self): return Assignments(self.raw['assignments'])
 
     @assignments.setter
     def assignments(self, data):
@@ -125,24 +147,37 @@ class Group(JsonDataWrapper):
         super().__init__(data)
         self.members = []
 
-    @property
-    def name(self): return self._data[Jn.name]
+    id = json(Jn.id)
+    description = json(Jn.description)
+    name = json(Jn.name)
+    description_format = json(Jn.description_format)
+    # @property
+    # def name(self): return self._data[Jn.name]
 
-    @property
-    def id(self): return self._data[Jn.id]
+    # @property
+    # def id(self): return self._data[Jn.id]
 
-    @property
-    def description(self): return self._data[Jn.description]
+    # @property
+    # def description(self): return self._data[Jn.description]
 
-    @property
-    def description_format(self): return self._data[Jn.description_format]
+    # @property
+    # def description_format(self): return self._data[Jn.description_format]
 
     def __str__(self):
         return '{:10} id:{:5d} '.format(self.name, self.id)
 
 
+class Assignments(JsonDataWrapper):
+    warnings = json(Jn.warnings)
+
+    def __iter__(self):
+        for assignment in self.raw:
+            yield Assignment(assignment)
+
+
 class Assignment(JsonDataWrapper):
     def __init__(self, data, course=None):
+
         super().__init__(data)
         self.course = course
         self._submissions = {}  # accesed via submission.id
@@ -155,6 +190,9 @@ class Assignment(JsonDataWrapper):
 
     @property
     def course_id(self): return self.get(Jn.course)
+
+    @property
+    def course_module_id(self): return self.get(Jn.course_module_id)
 
     @property
     def team_submission(self):
@@ -171,9 +209,6 @@ class Assignment(JsonDataWrapper):
 
     @property
     def submissions(self): return self._submissions
-
-    @property
-    def course_module_id(self): return self.get(Jn.course_module_id)
 
     @submissions.setter
     def submissions(self, data):
@@ -344,6 +379,21 @@ class AssignmentConfig(JsonDataWrapper):
 
     def __str__(self):
         return '{}[{}]={}'.format(self.plugin, self.name, self.value)
+
+
+class Submissions(JsonDataWrapper):
+    def __init__(self, data, assignment):
+        super().__init__(data)
+        self.assignment = assignment
+        self._data = data
+
+    @property
+    def _submissions(self):
+        return self._data
+
+    def __iter__(self):
+        for sub in self._submissions:
+            yield Submission(sub)
 
 
 class Submission(JsonDataWrapper):

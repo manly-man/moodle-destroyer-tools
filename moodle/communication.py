@@ -11,6 +11,7 @@ from moodle.fieldnames import text_format
 from moodle.fieldnames import JsonFieldNames as Jn
 from moodle.fieldnames import UrlPaths as Paths
 from moodle.parsers import strip_mlang
+import moodle.models as mm
 
 import logging
 
@@ -56,7 +57,7 @@ class MoodleSession(requests.Session):
             Jn.user_id: user_id,
         }
 
-        return self.post_web_service(data)
+        return mm.Courses(self.post_web_service(data).json())
 
     def get_assignments(self, course_ids=None, capabilities=None, include_not_enrolled_courses=False):
         """
@@ -83,7 +84,7 @@ class MoodleSession(requests.Session):
             # fn.include_not_enrolled_courses: include_not_enrolled_courses, #  moodle 3.2
         }
 
-        return self.post_web_service(data)
+        return mm.Courses(self.post_web_service(data).json())
 
     def get_grades(self, assignment_ids, since=0):
         """

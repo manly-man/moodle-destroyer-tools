@@ -18,7 +18,10 @@ def input_choices_from_list(choices, text):
     format_str = '{:' + digits + 'd} {}'
     for n, c in enumerate(choices, 0):
         print(format_str.format(n, c))
-    chosen = [int(c) for c in input(text).split()]
+    try:
+        chosen = [int(c) for c in input(text).split()]
+    except EOFError:
+        return []
     return chosen
 
 

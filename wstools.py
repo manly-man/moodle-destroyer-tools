@@ -11,7 +11,7 @@ import configargparse
 from moodle.exceptions import AccessDenied, InvalidResponse
 from moodle.communication import MoodleSession
 from moodle.fieldnames import JsonFieldNames as Jn
-from moodle.models import Course, Submission, Assignment
+from moodle.models import Course, Submission, Assignment, Group
 from moodle.parsers import strip_mlang
 import concurrent.futures as cf
 
@@ -130,12 +130,10 @@ def init(url, token, user_id, force=False, course_ids=None):
 
     ms = MoodleSession(moodle_url=url, token=token)
 
-    reply = ms.get_users_course_list(user_id)
-    courses = [Course(c) for c in reply.json()]
-    courses.sort(key=lambda course: course.name)
+    courses = ms.get_users_course_list(user_id)
 
     if course_ids is None or force:
-        choices = interaction.input_choices_from_list(courses, '\n  choose courses, seperate with space: ')
+        choices = interaction.input_choices_from_list(sorted(courses, key=lambda course: course.name), '\n  choose courses, seperate with space: ')
         if len(choices) == 0:
             print('nothing chosen.')
             raise SystemExit(1)
@@ -258,7 +256,7 @@ def status(course_ids, assignment_ids=None, submission_ids=None, full=False):
 
     if assignment_ids is not None and submission_ids is None:
         for assignment_id in assignment_ids:
-            assignment = Assignment(wt.assignments[assignment_id])
+            assignment = wt.assignments[assignment_id]
             assignment.course = Course(wt.courses[assignment.course_id])
             assignment.course.users = wt.users[str(assignment.course_id)]
             assignment.submissions = wt.submissions[assignment_id]
@@ -362,9 +360,8 @@ def grade(url, token, files):
         parsed = json.load(file)
         assignment_id = parsed['assignment_id']
 
-        assignment = Assignment(wt.assignments[assignment_id])
+        assignment = wt.assignments[assignment_id]
         assignment.course = Course(wt.courses[assignment.course_id])
-
         assignment.course.users = wt.users[str(assignment.course_id)]
         assignment.submissions = wt.submissions[assignment_id]
         upload_data.append(assignment.prepare_grade_upload_data(parsed['grades']))
