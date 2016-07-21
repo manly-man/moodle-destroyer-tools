@@ -186,14 +186,11 @@ def sync(url, token, course_ids, assignments=False, submissions=False, grades=Fa
 
     if submissions or sync_all:
         print('syncing submissions… ', end='', flush=True)
-        reply = moodle.get_submissions_for_assignments(wt.assignments.keys())
+        reply = moodle.get_submissions_for_assignments(wt.assignments.keys(), since=wt.submissions.last_sync)
         data = json.loads(strip_mlang(reply.text))
         result = wt.submissions.update(data)
         output = ['{}: {:d}'.format(k, v) for k, v in result.items()]
         print('finished. ' + ' '.join(output))
-        # todo sync via:
-        # moodle.get_submissions_for_assignments(assignment_ids, since=last_sync)
-        # todo sync file metadata
 
     if files:  # TODO WIP
         print('syncing files… ', end='', flush=True)
@@ -214,11 +211,11 @@ def sync(url, token, course_ids, assignments=False, submissions=False, grades=Fa
 
     if grades or sync_all:
         print('syncing grades… ', end='', flush=True)
-        response = moodle.get_grades(wt.assignments.keys())
+        response = moodle.get_grades(wt.assignments.keys(), since=wt.grades.last_sync)
         data = json.loads(strip_mlang(response.text))
-        wt.grades.update(data)
-        print('finished. total: {:d}'.format(len(data[Jn.assignments])))
-        # todo, sync via moodle.get_grades(assignment_ids, since=last_sync)
+        result = wt.grades.update(data)
+        output = ['{}: {:d}'.format(k, v) for k, v in result.items()]
+        print('finished. ' + ' '.join(output))
 
     if users or sync_all:
         print('syncing users…', end=' ', flush=True)
