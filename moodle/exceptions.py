@@ -46,3 +46,10 @@ class InvalidResponse(MoodleError):
 
 # webservice_access_exception accessexception Access Control Exception Invalid token - token expired - check validuntil time for the token
 
+# when asking for a unknown module ID, translates to nothing found, I guess.
+# {
+#   "message": "Datensatz kann nicht in der Datenbank gefunden werden",
+#   "exception": "dml_missing_record_exception",
+#   "errorcode": "invalidrecordunknown"
+#   "debuginfo": "SELECT md.name\n                                                 FROM {modules} md\n                                                 JOIN {course_modules} cm ON cm.module = md.id\n                                                WHERE cm.id = :cmid\n[array (\n  'cmid' => 117242,\n)]",
+# }

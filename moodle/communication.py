@@ -187,7 +187,7 @@ class MoodleSession(requests.Session):
         :param file_path:
         :param file_name:
         :param since:
-        :param context_level:
+        :param context_level: (block, course, coursecat, system, user, module)
         :param instance_id:
         :return: what you asked for … welp?
         """
@@ -203,6 +203,37 @@ class MoodleSession(requests.Session):
             Jn.context_level: context_level,
             Jn.instance_id: instance_id,
         }
+
+        return self.post_web_service(data)
+
+    def get_course_content(self, course_id, options=None):
+        """
+        get course content
+
+        :param course_id: the course id you want to get contents of
+        :param options:
+        * excludemodules (bool) Do not return modules, return only the sections structure
+        * excludecontents (bool) Do not return module contents (i.e: files inside a resource)
+        * sectionid (int) Return only this section
+        * sectionnumber (int) Return only this section with number (order)
+        * cmid (int) Return only this module information (among the whole sections structure)
+        * modname (string) Return only modules with this name "label, forum, etc..."
+        * modid (int) Return only the module with this id (to be used with modname)
+
+        :return: the course content
+        """
+
+        data = {
+            Jn.ws_function: 'core_course_get_contents',
+            Jn.course_id: course_id
+        }
+
+        if options is not None:
+            for num, (key, value) in enumerate(options.items(), 0):
+                data.update({
+                    Jn.options.format(num, Jn.name): key,
+                    Jn.options.format(num, Jn.value): value,
+                })
 
         return self.post_web_service(data)
 
