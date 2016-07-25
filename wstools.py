@@ -10,7 +10,7 @@ import configargparse
 
 from moodle.exceptions import AccessDenied, InvalidResponse
 from moodle.communication import MoodleSession
-from moodle.fieldnames import JsonFieldNames as Jn
+from moodle.fieldnames import JsonFieldNames as Jn, text_format
 from moodle.models import Course, Submission, Assignment
 from moodle.parsers import strip_mlang
 import concurrent.futures as cf
@@ -23,7 +23,7 @@ import logging
 log = logging.getLogger('wstools')
 MAX_WORKERS = 10
 
-__all__ = ['auth', 'config', 'grade', 'init', 'pull', 'status', 'sync', 'upload']
+__all__ = ['auth', 'config', 'grade', 'init', 'pull', 'status', 'sync', 'upload', 'enrol', 'submit']
 
 
 def make_config_parser():
@@ -32,8 +32,8 @@ def make_config_parser():
 
     url_token_parser = configargparse.ArgumentParser(add_help=False,
                                                      default_config_files=WorkTree.get_config_file_list())
-    url_token_parser.add_argument('--url')
-    url_token_parser.add_argument('--token')
+    url_token_parser.add_argument('--url', help='config override, only for testing')
+    url_token_parser.add_argument('--token',  help='config override, only for testing')
 
     _make_config_parser_auth(subparsers, url_token_parser)
     _make_config_parser_init(subparsers, url_token_parser)
@@ -43,6 +43,8 @@ def make_config_parser():
     _make_config_parser_grade(subparsers, url_token_parser)
     _make_config_parser_upload(subparsers, url_token_parser)
     _make_config_parser_config(subparsers, url_token_parser)
+    _make_config_parser_enrol(subparsers, url_token_parser)
+    _make_config_parser_submit(subparsers, url_token_parser)
 
     return parser
 
@@ -413,6 +415,127 @@ def upload(url, token, files):
     reply = ms.upload_files(files)
     j = json.loads(reply.text)
     print(json.dumps(j, indent=2, ensure_ascii=False))
+
+
+def _make_config_parser_enrol(subparsers, url_token_parser):
+    enrol_parser = subparsers.add_parser(
+        'enrol',
+        help='enrol in a course',
+        parents=[url_token_parser]
+    )
+    enrol_parser.add_argument('keywords', nargs='+', help='some words to search for')
+    enrol_parser.set_defaults(func=enrol)
+
+
+def enrol(url, token, keywords):
+    ms = MoodleSession(url, token)
+    reply = ms.search_for_courses(' '.join(keywords))
+    data = json.loads(reply.text)
+    courses = [c for c in data['courses']]
+    courses.sort(key=lambda d: d['fullname'])
+
+    print('received {} courses'.format(data['total']))
+    course_strs = []
+    for course in courses:
+        course_strs.append(
+            '{:40} {:5d} {:20} {}'.format(course[Jn.full_name][:39], course[Jn.id], course[Jn.short_name][:19], str(set(course['enrollmentmethods'])))
+        )
+
+    choices = interaction.input_choices_from_list(course_strs, '\n  choose courses, seperate with space: ')
+    if len(choices) == 0:
+        print('nothing chosen.')
+        raise SystemExit(1)
+    chosen_courses = [courses[c] for c in choices]
+    print('using:\n' + ' '.join([str(c[Jn.short_name]) for c in chosen_courses]))
+    for course in chosen_courses:
+        reply = ms.get_course_enrolment_methods(course[Jn.id])
+        # [{
+        #     "type": "self",
+        #     "status": true,
+        #     "id": 16696,
+        #     "courseid": 5498,
+        #     "name": "Selbsteinschreibung (Student)"
+        # }]
+
+        j = reply.json()
+        print(json.dumps(j, indent=2, ensure_ascii=False))
+
+    # enrol_self_get_instance_info
+    # course_ids = [c.id for c in chosen_courses]
+    # saved_data = [c for c in reply.json() if c['id'] in course_ids]
+    #
+    # print('received {} courses'.format(data['total']))
+    # print(json.dumps(data, indent=2, ensure_ascii=False))
+
+
+def _make_config_parser_submit(subparsers, url_token_parser):
+    submission_parser = subparsers.add_parser(
+        'submit',
+        help='submit text or files to assignment for grading',
+        parents=[url_token_parser]
+    )
+
+    submission_parser.add_argument('-a', '--assignment_id', help='the assignment id to submit to.')
+
+    online_group = submission_parser.add_argument_group('online', 'for online text submission')
+    online_group.add_argument('-t', '--text', type=configargparse.FileType('r'),
+                              help='the text file with content you want to submit (txt,md,html)')
+    online_group.add_argument('-tf', '--textfiles', nargs='+', type=configargparse.FileType('rb'),
+                              help='files you want in the text. pictures in markdown?')
+    file_group = submission_parser.add_argument_group('files', 'for file submission')
+    file_group.add_argument('-f', '--files', nargs='+', type=configargparse.FileType('rb'),
+                            help='the files you want to sumbit.')
+    submission_parser.set_defaults(func=submit)
+
+
+def submit(url, token, text=None, textfiles=None, files=None, assignment_id=None):
+    """ Bei nur Datei Abgabe, keine File ID angegeben. [
+    {
+    "item": "Es wurde nichts eingereicht.",
+    "itemid": 4987,
+    "warningcode": "couldnotsavesubmission",
+    "message": "Could not save submission."
+    }
+    ]"""
+
+    def determine_text_format_id(file_name):
+        ending = file_name.split('.')[-1]
+        if 'md' == ending:
+            return text_format['markdown']
+        if 'html' == ending:
+            return text_format['html']
+        if 'txt' == ending:
+            return text_format['plain']
+        return 0
+
+    moodle = MoodleSession(url, token)
+    file_item_id = 0
+    if files is not None:
+        file_response = moodle.upload_files(files).json()
+        file_item_id = file_response[0]['itemid']
+
+    text_file_item_id = 0
+    if textfiles is not None:
+        text_file_response = moodle.upload_files(textfiles).json()
+        text_file_item_id = text_file_response[0]['itemid']
+
+    submission_text = ''
+    submission_text_format = 0
+    if text is not None:
+        submission_text = text.read()
+        submission_text_format = determine_text_format_id(text.name)
+
+    assignments = []
+    if assignment_id is None:
+        wt = WorkTree()
+        for aid, data in wt.assignments.items():
+            assignments.append(Assignment(data))
+        choice = interaction.input_choices_from_list(assignments, 'which assignment? ')
+        assignment_id = assignments[choice[0]].id
+
+    #print('{:s} {:d} {:d} {:d}'.format(text, submission_text_format, text_file_item_id, file_item_id))
+    response = moodle.save_submission(assignment_id, submission_text, submission_text_format, text_file_item_id, file_item_id)
+    print(response.text)
 
 
 def _make_config_parser_config(subparsers, url_token_parser):

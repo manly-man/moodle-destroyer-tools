@@ -16,6 +16,7 @@ import logging
 
 log = logging.getLogger('moodle.communication')
 
+
 # TODO handle ws exceptions in sensible manner, collate warnings: MoodleAdapter?
 # TODO check if server supports wsfunction
 
@@ -34,8 +35,8 @@ class MoodleSession(requests.Session):
 
     def post_web_service(self, data=None):
         needed_args = {
-                Jn.moodle_ws_rest_format: 'json',
-                Jn.ws_token: self.token,
+            Jn.moodle_ws_rest_format: 'json',
+            Jn.ws_token: self.token,
         }
         if data is None:
             data = needed_args
@@ -255,7 +256,7 @@ class MoodleSession(requests.Session):
             Jn.password: password,
             Jn.service: service
         }
-        return self.post(self.url+Paths.token, data)
+        return self.post(self.url + Paths.token, data)
 
     def save_grade(self, assignment_id, user_id, grade,
                    feedback_text='', team_submission=False, feedback_format='plain',
@@ -297,13 +298,6 @@ class MoodleSession(requests.Session):
 
         return self.post_web_service(data)
 
-    def send_submission(self, assignment, text, format, itemid):
-        """
-
-        :return:
-        """
-        pass
-
     def get_course_enrolment_methods(self, course_id):
 
         data = {
@@ -343,6 +337,40 @@ class MoodleSession(requests.Session):
         }
         return self.post_web_service(data)
 
+    def search_for_courses(self, criteria_value, criteria_name='search', page=0, per_page=0,
+                           required_capabilities=None, limit_to_enrolled=0):
+        """
+        Search Moodle for courses.
+
+        :param criteria_value: the words you want to search for
+        :param criteria_name: where you want to search in? not sure. default is 'search'
+        (search, modulelist (only admins), blocklist (only admins), tagid)
+        :param page: if you set per_page to anything else, you select which one you want to get
+        :param per_page: how many items per page, starting from 0
+        :param required_capabilities: I dunno, moodle doc says it whould be required and documentation is '2'
+        :param limit_to_enrolled: display only enrolled courses, could be boolean?
+        :return:
+        """
+
+        data = {
+            Jn.ws_function: 'core_course_search_courses',
+            Jn.criteria_name: criteria_name,
+            Jn.criteria_value: criteria_value
+        }
+
+        return self.post_web_service(data)
+
+    def save_submission(self, assignment_id, text='', format=0, text_file_id=0, files_id=0):
+        data = {
+            Jn.ws_function: 'mod_assign_save_submission',
+            Jn.assignment_id: assignment_id,
+            Jn.plugin_data_online_text: text,
+            Jn.plugin_data_online_text_format: format,
+            Jn.plugin_data_online_text_item_id: text_file_id,
+            Jn.plugin_data_submission_files_item_id: files_id
+        }
+        return self.post_web_service(data)
+
     def upload_files(self, fd_list, file_path='/', file_area='draft', item_id=0):
         mimetypes.init()
 
@@ -361,7 +389,7 @@ class MoodleSession(requests.Session):
             Jn.item_id: item_id,
             Jn.token: self.token
         }
-        return self.post(self.url+Paths.upload, data, files=upload_info)
+        return self.post(self.url + Paths.upload, data, files=upload_info)
 
     def download_file(self, file_url):
         args = {Jn.token: self.token}
