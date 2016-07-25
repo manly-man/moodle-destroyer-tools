@@ -208,11 +208,17 @@ class Assignment(JsonDataWrapper):
         if self.team_submission:
             for s_id, s in self.submissions.items():
                 group = self.course.groups[s.group_id]
-                content.append(line_format.format(group.name, s.id, s.grade.value))
+                grade = 0.0
+                if s.grade is not None:
+                    grade = s.grade.value
+                content.append(line_format.format(group.name, s.id, grade))
         else:
             for s_id, s in self.submissions.items():
                 user = self.course.users[s.user_id]
-                content.append(line_format.format(user.name, s.id, s.grade.value))
+                grade = 0.0
+                if s.grade is not None:
+                    grade = s.grade.value
+                content.append(line_format.format(user.name, s.id, grade))
 
         return head.format(self.id) + ',\n'.join(sorted(content)) + end
 
@@ -413,7 +419,7 @@ class Submission(JsonDataWrapper):
             grade, warnings = self.get_grade_or_reason_if_team_ungraded()
             return grade
         else:
-            return self.assignment.grades.get(self.user_id, default=None)
+            return self.assignment.grades.get(self.user_id, None)
 
     @property
     def is_graded(self):
