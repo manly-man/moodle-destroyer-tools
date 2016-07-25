@@ -7,7 +7,7 @@ from requests.adapters import HTTPAdapter
 from urllib.parse import parse_qs
 
 import moodle.exceptions
-from moodle.fieldnames import TextFormat
+from moodle.fieldnames import text_format
 from moodle.fieldnames import JsonFieldNames as Jn
 from moodle.fieldnames import UrlPaths as Paths
 from moodle.parsers import strip_mlang
@@ -259,7 +259,7 @@ class MoodleSession(requests.Session):
         return self.post(self.url + Paths.token, data)
 
     def save_grade(self, assignment_id, user_id, grade,
-                   feedback_text='', team_submission=False, feedback_format=TextFormat.plain,
+                   feedback_text='', team_submission=False, feedback_format='plain',
                    attempt_number=-1, add_attempt=False, workflow_state='',
                    feedback_draft_area_id=0):
         """
@@ -287,7 +287,7 @@ class MoodleSession(requests.Session):
             Jn.workflow_state: workflow_state,
             Jn.apply_to_all: 0,
             Jn.assign_feedback_text: feedback_text,
-            Jn.assign_feedback_format: feedback_format,
+            Jn.assign_feedback_format: text_format[feedback_format],
             Jn.assign_feedback_file: feedback_draft_area_id
         }
 

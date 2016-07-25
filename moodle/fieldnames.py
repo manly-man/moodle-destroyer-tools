@@ -1,26 +1,17 @@
-class TextFormat:
-    _text_format = {
-        0: 'moodle',
-        1: 'html',
-        2: 'plain',
-        # don't know why format 3 is not defined. Documentation says nothing about it.
-        4: 'markdown'
-    }
+class LookupDict(dict):
+    def __getitem__(self, key):
+        return self.__dict__.get(key, None)
 
-    @property
-    def markdown(self): return 4
+    def get(self, key, default=None):
+        return self.__dict__.get(key, default)
 
-    @property
-    def html(self): return 1
-
-    @property
-    def plain(self): return 2
-
-    @property
-    def moodle(self): return 0
-
-    @staticmethod
-    def lookup(key): return TextFormat._text_format[key]
+_text_format = {
+    0: 'moodle',
+    1: 'html',
+    2: 'plain',
+    # don't know why format 3 is not defined. Documentation says nothing about it.
+    4: 'markdown'
+}
 
 
 # maybe use gettext for different versions?
@@ -123,3 +114,8 @@ class UrlPaths:
     token = '/login/token.php'
     upload = '/webservice/upload.php'
     download = '/webservice/pluginfile.php'
+
+text_format = LookupDict()
+
+for number, fmt in _text_format.items():
+    setattr(text_format, fmt, number)

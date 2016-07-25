@@ -10,7 +10,7 @@ import configargparse
 
 from moodle.exceptions import AccessDenied, InvalidResponse
 from moodle.communication import MoodleSession
-from moodle.fieldnames import JsonFieldNames as Jn, TextFormat
+from moodle.fieldnames import JsonFieldNames as Jn, text_format
 from moodle.models import Course, Submission, Assignment
 from moodle.parsers import strip_mlang
 import concurrent.futures as cf
@@ -501,12 +501,12 @@ def submit(url, token, text=None, textfiles=None, files=None, assignment_id=None
     def determine_text_format_id(file_name):
         ending = file_name.split('.')[-1]
         if 'md' == ending:
-            return TextFormat.markdown
+            return text_format['markdown']
         if 'html' == ending:
-            return TextFormat.html
+            return text_format['html']
         if 'txt' == ending:
-            return TextFormat.plain
-        return TextFormat.moodle
+            return text_format['plain']
+        return 0
 
     moodle = MoodleSession(url, token)
     file_item_id = 0
