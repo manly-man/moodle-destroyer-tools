@@ -289,21 +289,22 @@ class Assignment(JsonDataWrapper):
 
     @property
     def merged_html(self):
-        # TODO deduplicate for group submissions? seems unnecessary
         # TODO use mathjax local, not remote cdn. maybe on init or auth?
         html = '<head><meta charset="UTF-8"></head><body>' \
                '<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>'
-        seperator = '\n\n\n<h1>{}</h1>\n\n\n'
+        seperator_single = '\n\n\n<h1>{}</h1>\n\n\n'
+        seperator_team = '\n\n\n<h1>{} - {}</h1>\n\n\n'
         assembled_tmp = []
         for s in self.valid_submissions:
             tmp = ''
             if s.has_editor_field_content:
                 if self.team_submission:
                     group = self.course.groups[s.group_id]
-                    tmp += seperator.format(group.name)
+                    member_names = [user.name for user in group.members]
+                    tmp += seperator_team.format(group.name, ', '.join(member_names))
                 else:
                     user = self.course.users[s.user_id]
-                    tmp += seperator.format(user.name)
+                    tmp += seperator_single.format(user.name)
                 tmp += s.editor_field_content
             assembled_tmp.append(tmp)
 
