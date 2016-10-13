@@ -10,6 +10,14 @@ def strip_mlang(string, preferred_lang='en'):
     # tuples = tuple_regex.findall(string)
 
     # creates set with possible languages like {'en', 'de'}
+    """
+    Strips all {mlang} tags from a string.
+    Also strips content between tags except for tags matching preferred_lang.
+
+    :param string: The string, possibly containing mlang tags
+    :param preferred_lang: Strip all mlang content extept this, default: en
+    :return: stripped text, free of mlang tags, only containing preferred_lang content.
+    """
     lang_set = set(mlang_tags.findall(string))
 
     # if there is more than one language, discard all but preferred_lang
@@ -20,8 +28,8 @@ def strip_mlang(string, preferred_lang='en'):
         string = pattern.sub('', string)
 
     # remove remaining mlang tags.
-    strip_mlang = re.compile(r'(\s*\{mlang.*?\}\s*)+?')
-    return strip_mlang.sub('', string)
+    strip_mlang_tag = re.compile(r'(\s*\{mlang.*?\}\s*)+?')
+    return strip_mlang_tag.sub('', string)
 
 
 parse_args_from_url = re.compile(r'.*pluginfile.php'

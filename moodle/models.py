@@ -270,7 +270,7 @@ class Assignment(JsonDataWrapper):
         return [s for s in self.submissions.values() if s.has_content]
 
     def update_config(self, configs):
-        #todo meh
+        # todo meh
         for config in configs:
             acfg = AssignmentConfig(config)
             if acfg.sub_type not in self._configs:

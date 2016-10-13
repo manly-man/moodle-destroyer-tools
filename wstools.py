@@ -33,7 +33,7 @@ def make_config_parser():
     url_token_parser = configargparse.ArgumentParser(add_help=False,
                                                      default_config_files=WorkTree.get_config_file_list())
     url_token_parser.add_argument('--url', help='config override, only for testing')
-    url_token_parser.add_argument('--token',  help='config override, only for testing')
+    url_token_parser.add_argument('--token', help='config override, only for testing')
 
     _make_config_parser_auth(subparsers, url_token_parser)
     _make_config_parser_init(subparsers, url_token_parser)
@@ -117,7 +117,8 @@ def _make_config_parser_init(subparsers, url_token_parser):
     )
     init_parser.add_argument('--uid', dest='user_id')
     init_parser.add_argument('--force', help='overwrite the config', action='store_true')
-    init_parser.add_argument('-c', '--courseids', dest='course_ids', nargs='+', help='moodle course id', type=int, action='append')
+    init_parser.add_argument('-c', '--courseids', dest='course_ids', nargs='+', help='moodle course id',
+                             action='append')
     init_parser.set_defaults(func=init)
 
 
@@ -159,7 +160,8 @@ def _make_config_parser_sync(subparsers, url_token_parser):
         help='download metadata from server',
         parents=[url_token_parser]
     )
-    sync_parser.add_argument('-c', '--courseids', dest='course_ids', nargs='+', help='moodle course id', type=int, action='append')
+    sync_parser.add_argument('-c', '--courseids', dest='course_ids', nargs='+', help='moodle course id', type=int,
+                             action='append')
     sync_parser.add_argument('-a', '--assignments', help='sync assignments', action='store_true')
     sync_parser.add_argument('-s', '--submissions', help='sync submissions', action='store_true')
     sync_parser.add_argument('-g', '--grades', help='sync grades', action='store_true')
@@ -241,11 +243,12 @@ def sync(url, token, course_ids, assignments=False, submissions=False, grades=Fa
 
 def _make_config_parser_status(subparsers, url_token_parser):
     status_parser = subparsers.add_parser('status', help='display various information about work tree')
-    status_parser.add_argument('-c', '--courseids', dest='course_ids', nargs='+', help='moodle course ids', type=int, action='append')
-    status_parser.add_argument('-a', '--assignmentids', dest='assignment_ids', nargs='+', help='show detailed status for assignment id',
-                               type=int)
-    status_parser.add_argument('-s', '--submissionids', dest='submission_ids', nargs='+', help='show detailed status for submission id',
-                               type=int)
+    status_parser.add_argument('-c', '--courseids', dest='course_ids', nargs='+', help='moodle course ids', type=int,
+                               action='append')
+    status_parser.add_argument('-a', '--assignmentids', dest='assignment_ids', nargs='+',
+                               help='show detailed status for assignment id', type=int)
+    status_parser.add_argument('-s', '--submissionids', dest='submission_ids', nargs='+',
+                               help='show detailed status for submission id', type=int)
     status_parser.add_argument('--full', help='display all assignments', action='store_true')
     status_parser.set_defaults(func=status)
 
@@ -290,7 +293,8 @@ def _make_config_parser_pull(subparsers, url_token_parser):
         help='retrieve files for grading',
         parents=[url_token_parser]
     )
-    pull_parser.add_argument('-c', '--courseids', dest='course_ids', nargs='+', help='moodle course ids', type=int, action='append')
+    pull_parser.add_argument('-c', '--courseids', dest='course_ids', nargs='+', help='moodle course ids', type=int,
+                             action='append')
     pull_parser.add_argument('-a', '--assignmentids', dest='assignment_ids', nargs='+', type=int)
     pull_parser.add_argument('--all', help='pull all due submissions, even old ones', action='store_true')
     pull_parser.set_defaults(func=pull)
@@ -371,7 +375,8 @@ def grade(url, token, files):
     print('this will upload the following grades:')
     grade_format = '  {:>20}:{:6d} {:5.1f} > {}'
     for graded_assignment in upload_data:
-        print(' assignment {:5d}, team_submission: {}'.format(graded_assignment['assignment_id'], graded_assignment['team_submission']))
+        print(' assignment {:5d}, team_submission: {}'.format(graded_assignment['assignment_id'],
+                                                              graded_assignment['team_submission']))
         for gdata in graded_assignment['grade_data']:
             print(grade_format.format(gdata['name'], gdata['user_id'], gdata['grade'], gdata['feedback'][:40]))
     answer = input('does this look good? [Y/n]: ')
@@ -438,7 +443,8 @@ def enrol(url, token, keywords):
     course_strs = []
     for course in courses:
         course_strs.append(
-            '{:40} {:5d} {:20} {}'.format(course[Jn.full_name][:39], course[Jn.id], course[Jn.short_name][:19], str(set(course['enrollmentmethods'])))
+            '{:40} {:5d} {:20} {}'.format(course[Jn.full_name][:39], course[Jn.id], course[Jn.short_name][:19],
+                                          str(set(course['enrollmentmethods'])))
         )
 
     choices = interaction.input_choices_from_list(course_strs, '\n  choose courses, seperate with space: ')
@@ -460,12 +466,12 @@ def enrol(url, token, keywords):
         j = reply.json()
         print(json.dumps(j, indent=2, ensure_ascii=False))
 
-    # enrol_self_get_instance_info
-    # course_ids = [c.id for c in chosen_courses]
-    # saved_data = [c for c in reply.json() if c['id'] in course_ids]
-    #
-    # print('received {} courses'.format(data['total']))
-    # print(json.dumps(data, indent=2, ensure_ascii=False))
+        # enrol_self_get_instance_info
+        # course_ids = [c.id for c in chosen_courses]
+        # saved_data = [c for c in reply.json() if c['id'] in course_ids]
+        #
+        # print('received {} courses'.format(data['total']))
+        # print(json.dumps(data, indent=2, ensure_ascii=False))
 
 
 def _make_config_parser_submit(subparsers, url_token_parser):
@@ -533,8 +539,9 @@ def submit(url, token, text=None, textfiles=None, files=None, assignment_id=None
         choice = interaction.input_choices_from_list(assignments, 'which assignment? ')
         assignment_id = assignments[choice[0]].id
 
-    #print('{:s} {:d} {:d} {:d}'.format(text, submission_text_format, text_file_item_id, file_item_id))
-    response = moodle.save_submission(assignment_id, submission_text, submission_text_format, text_file_item_id, file_item_id)
+    # print('{:s} {:d} {:d} {:d}'.format(text, submission_text_format, text_file_item_id, file_item_id))
+    response = moodle.save_submission(assignment_id, submission_text, submission_text_format, text_file_item_id,
+                                      file_item_id)
     print(response.text)
 
 
@@ -556,15 +563,3 @@ def _unpack(elements):
     if elements is None:
         return []
     return [elem[0] for elem in elements if type(elem) is list]
-
-
-class MoodleDestroyerCommand:
-    def __init__(self, name, help_text):
-        self.name = name
-        self.help = help_text
-
-    def __str__(self):
-        return self.name + ' ' + self.help
-
-    def __call__(self, *args, **kwargs):
-        raise NotImplementedError()
