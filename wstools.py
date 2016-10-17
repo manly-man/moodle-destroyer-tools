@@ -19,6 +19,7 @@ from util.worktree import WorkTree
 from util import interaction
 import shutil
 import logging
+import getpass
 
 log = logging.getLogger('wstools')
 MAX_WORKERS = 10
@@ -125,18 +126,14 @@ def _make_config_parser_init(subparsers, url_token_parser):
 def init(url, token, user_id, force=False, course_ids=None):
     """initializes working tree: creates local .mdt/config, with chosen courses"""
 
-    try:
-        wt = WorkTree(init=True, force=force)
-    except FileExistsError:
-        print('already initialized')
-        raise SystemExit(1)
-
     ms = MoodleSession(moodle_url=url, token=token)
 
     reply = ms.get_users_course_list(user_id)
     courses = [Course(c) for c in reply.json()]
+
     courses.sort(key=lambda course: course.name)
 
+    saved_data = []
     if course_ids is None or force:
         choices = interaction.input_choices_from_list(courses, '\n  choose courses, seperate with space: ')
         if len(choices) == 0:
@@ -147,7 +144,13 @@ def init(url, token, user_id, force=False, course_ids=None):
         course_ids = [c.id for c in chosen_courses]
         saved_data = [c for c in reply.json() if c['id'] in course_ids]
 
-        wt.courses = saved_data
+    try:
+        wt = WorkTree(init=True, force=force)
+    except FileExistsError:
+        print('already initialized')
+        raise SystemExit(1)
+
+    wt.courses = saved_data
 
     wt.write_local_config('courseids = ' + str(course_ids))
     course_ids = [[i] for i in course_ids]  # pack hotfix, do not liek.
@@ -447,31 +450,48 @@ def enrol(url, token, keywords):
                                           str(set(course['enrollmentmethods'])))
         )
 
-    choices = interaction.input_choices_from_list(course_strs, '\n  choose courses, seperate with space: ')
+    choices = interaction.input_choices_from_list(course_strs, '\n  choose one course: ')
     if len(choices) == 0:
         print('nothing chosen.')
         raise SystemExit(1)
-    chosen_courses = [courses[c] for c in choices]
-    print('using:\n' + ' '.join([str(c[Jn.short_name]) for c in chosen_courses]))
-    for course in chosen_courses:
-        reply = ms.get_course_enrolment_methods(course[Jn.id])
-        # [{
-        #     "type": "self",
-        #     "status": true,
-        #     "id": 16696,
-        #     "courseid": 5498,
-        #     "name": "Selbsteinschreibung (Student)"
-        # }]
+    elif len(choices) > 1:
+        print('please choose only one, to enrol in')
+        raise SystemExit(1)
 
-        j = reply.json()
-        print(json.dumps(j, indent=2, ensure_ascii=False))
+    chosen_course = courses[choices[0]]
+    #print('using:\n' + ' '.join([str(c[Jn.short_name]) for c in chosen_course]))
+    reply = ms.get_course_enrolment_methods(chosen_course[Jn.id])
 
-        # enrol_self_get_instance_info
-        # course_ids = [c.id for c in chosen_courses]
-        # saved_data = [c for c in reply.json() if c['id'] in course_ids]
-        #
-        # print('received {} courses'.format(data['total']))
-        # print(json.dumps(data, indent=2, ensure_ascii=False))
+    enrolment_methods = reply.json()
+    chosen_method_instance_id = None
+    if len(enrolment_methods) > 1:
+        print(json.dumps(enrolment_methods, indent=2, sort_keys=True))
+        # todo: let user choose enrolment method
+        raise NotImplementedError('there are multiple enrolment methods, please send this output as bugreport')
+    elif len(enrolment_methods) == 1:
+        if enrolment_methods[0][Jn.status]:
+            chosen_method_instance_id = enrolment_methods[0][Jn.id]
+
+    if chosen_method_instance_id is None:
+        # no active enrolment method
+        print('No available enrolment method, sorry')
+        raise SystemExit(0)
+    # todo: if wsfunction in enrolment method, try that. on accessexception, try without password.
+    # todo: if without password fails, possibly warning code 4, then ask for password
+    reply = ms.enrol_in_course(chosen_course[Jn.id], instance_id=chosen_method_instance_id)
+    answer = reply.json()
+    if not answer[Jn.status] and Jn.warnings in answer:
+        warning = answer[Jn.warnings][0]
+        if warning[Jn.warning_code] == '4':  # wrong password?
+            unsuccessful = True
+            while unsuccessful:
+                print(warning[Jn.message])
+                password=getpass.getpass(prompt='enrolment key: ')
+                reply = ms.enrol_in_course(chosen_course[Jn.id], password=password, instance_id=chosen_method_instance_id)
+                data = reply.json()
+                if data[Jn.status]:
+                    unsuccessful = False
+    # todo: this is pretty hacky and error prone, fix possibly soon, or maybe not.
 
 
 def _make_config_parser_submit(subparsers, url_token_parser):
