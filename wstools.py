@@ -8,11 +8,12 @@ $serviceshortname  = required_param('service',  PARAM_ALPHANUMEXT);
 import json
 import configargparse
 
-from moodle.exceptions import AccessDenied, InvalidResponse
 from moodle.communication import MoodleSession
+
 from moodle.fieldnames import JsonFieldNames as Jn, text_format
-from moodle.models import Course, Submission, Assignment
-from moodle.parsers import strip_mlang
+from moodle.frontend.models import Course, Submission, Assignment
+from moodle.frontend.moodle import MoodleFrontend
+import moodle.models as wrappers
 import concurrent.futures as cf
 
 from util.worktree import WorkTree
@@ -128,21 +129,21 @@ def init(url, token, user_id, force=False, course_ids=None):
 
     ms = MoodleSession(moodle_url=url, token=token)
 
-    reply = ms.get_users_course_list(user_id)
-    courses = [Course(c) for c in reply.json()]
+    wrapped = wrappers.CourseListResponse(ms.get_users_course_list(user_id))
+    courses = list(wrapped)
 
-    courses.sort(key=lambda course: course.name)
+    courses.sort(key=lambda course: course.full_name)
 
     saved_data = []
     if course_ids is None or force:
         choices = interaction.input_choices_from_list(courses, '\n  choose courses, seperate with space: ')
         if len(choices) == 0:
             print('nothing chosen.')
-            raise SystemExit(1)
+            raise SystemExit(0)
         chosen_courses = [courses[c] for c in choices]
         print('using:\n' + ' '.join([str(c) for c in chosen_courses]))
         course_ids = [c.id for c in chosen_courses]
-        saved_data = [c for c in reply.json() if c['id'] in course_ids]
+        saved_data = [c for c in wrapped.raw if c['id'] in course_ids]
 
     try:
         wt = WorkTree(init=True, force=force)
@@ -153,8 +154,7 @@ def init(url, token, user_id, force=False, course_ids=None):
     wt.courses = saved_data
 
     wt.write_local_config('courseids = ' + str(course_ids))
-    course_ids = [[i] for i in course_ids]  # pack hotfix, do not liek.
-    sync(url=url, token=token, course_ids=course_ids)
+    sync(url=url, token=token)
 
 
 def _make_config_parser_sync(subparsers, url_token_parser):
@@ -163,8 +163,7 @@ def _make_config_parser_sync(subparsers, url_token_parser):
         help='download metadata from server',
         parents=[url_token_parser]
     )
-    sync_parser.add_argument('-c', '--courseids', dest='course_ids', nargs='+', help='moodle course id', type=int,
-                             action='append')
+    # sync_parser.add_argument('-c', '--courseids', dest='course_ids', nargs='+', help='moodle course id', type=int, action='append')
     sync_parser.add_argument('-a', '--assignments', help='sync assignments', action='store_true')
     sync_parser.add_argument('-s', '--submissions', help='sync submissions', action='store_true')
     sync_parser.add_argument('-g', '--grades', help='sync grades', action='store_true')
@@ -174,10 +173,10 @@ def _make_config_parser_sync(subparsers, url_token_parser):
     sync_parser.set_defaults(func=sync)
 
 
-def sync(url, token, course_ids, assignments=False, submissions=False, grades=False, users=False, files=False):
+def sync(url, token, assignments=False, submissions=False, grades=False, users=False, files=False):
     wt = WorkTree()
-    course_ids = _unpack(course_ids)
     moodle = MoodleSession(moodle_url=url, token=token)
+    frontend = MoodleFrontend(url, token, wt)
 
     sync_all = True
     if users or submissions or assignments or grades or files:
@@ -185,21 +184,25 @@ def sync(url, token, course_ids, assignments=False, submissions=False, grades=Fa
 
     if assignments or sync_all:
         print('syncing assignments… ', end='', flush=True)
-        response = moodle.get_assignments(course_ids)
-        data = json.loads(strip_mlang(response.text))
-        result = wt.assignments.update(data)
-        output = ['{}: {:d}'.format(k, v) for k, v in result.items()]
+        output = frontend.sync_assignments()
         print('finished. ' + ' '.join(output))
 
     if submissions or sync_all:
         print('syncing submissions… ', end='', flush=True)
-        reply = moodle.get_submissions_for_assignments(wt.assignments.keys(), since=wt.submissions.last_sync)
-        data = json.loads(strip_mlang(reply.text))
-        result = wt.submissions.update(data)
-        output = ['{}: {:d}'.format(k, v) for k, v in result.items()]
+        output = frontend.sync_submissions()
         print('finished. ' + ' '.join(output))
 
-    if files:  # TODO WIP
+    if grades or sync_all:
+        print('syncing grades… ', end='', flush=True)
+        output = frontend.sync_grades()
+        print('finished. ' + ' '.join(output))
+
+    if users or sync_all:
+        print('syncing users…', end=' ', flush=True)
+        output = frontend.sync_users()
+        print(output + 'finished.')
+
+    if files:  # TODO WIP, then add sync all
         print('syncing files… ', end='', flush=True)
         files = []
         for as_id, submissions in wt.submissions.items():
@@ -207,8 +210,8 @@ def sync(url, token, course_ids, assignments=False, submissions=False, grades=Fa
                 files += Submission(submission).files
 
         for file in files:
-            response = moodle.get_file_meta(**file.meta_data_params)
-            print(str(response.text))
+            wrapped = wrappers.FileMetaDataResponse(moodle.get_file_meta(**file.meta_data_params))
+            print(str(wrapped.raw))
         # reply = moodle.get_submissions_for_assignments(wt.assignments.keys())
         # data = json.loads(strip_mlang(reply.text))
         # result = wt.submissions.update(data)
@@ -216,38 +219,11 @@ def sync(url, token, course_ids, assignments=False, submissions=False, grades=Fa
         # print('finished. ' + ' '.join(output))
         print('finished')
 
-    if grades or sync_all:
-        print('syncing grades… ', end='', flush=True)
-        response = moodle.get_grades(wt.assignments.keys(), since=wt.grades.last_sync)
-        data = json.loads(strip_mlang(response.text))
-        result = wt.grades.update(data)
-        output = ['{}: {:d}'.format(k, v) for k, v in result.items()]
-        print('finished. ' + ' '.join(output))
-
-    if users or sync_all:
-        print('syncing users…', end=' ', flush=True)
-        users = {}
-        for cid in course_ids:
-            try:
-                reply = moodle.get_enrolled_users(course_id=cid)
-                data = json.loads(strip_mlang(reply.text))
-                users[int(cid)] = data
-                print('{:5d}:got {:4d}'.format(cid, len(data)), end=' ', flush=True)
-            except AccessDenied as denied:
-                message = '{:d} denied access to users: {}'.format(cid, denied)
-                print(message, end=' ', flush=True)
-            except InvalidResponse as e:
-                message = 'Moodle encountered an error: msg:{} \n debug:{}'.format(e.message, e.debug_message)
-                print(message)
-
-        wt.users = users
-        print('finished.')
-
 
 def _make_config_parser_status(subparsers, url_token_parser):
     status_parser = subparsers.add_parser('status', help='display various information about work tree')
-    status_parser.add_argument('-c', '--courseids', dest='course_ids', nargs='+', help='moodle course ids', type=int,
-                               action='append')
+#    status_parser.add_argument('-c', '--courseids', dest='course_ids', nargs='+', help='moodle course ids', type=int,
+#                               action='append')
     status_parser.add_argument('-a', '--assignmentids', dest='assignment_ids', nargs='+',
                                help='show detailed status for assignment id', type=int)
     status_parser.add_argument('-s', '--submissionids', dest='submission_ids', nargs='+',
@@ -256,9 +232,8 @@ def _make_config_parser_status(subparsers, url_token_parser):
     status_parser.set_defaults(func=status)
 
 
-def status(course_ids, assignment_ids=None, submission_ids=None, full=False):
+def status(assignment_ids=None, submission_ids=None, full=False):
     wt = WorkTree()
-    course_ids = _unpack(course_ids)
     term_columns = shutil.get_terminal_size().columns
 
     if assignment_ids is not None and submission_ids is None:
@@ -267,7 +242,11 @@ def status(course_ids, assignment_ids=None, submission_ids=None, full=False):
             assignment.course = Course(wt.courses[assignment.course_id])
             assignment.course.users = wt.users[str(assignment.course_id)]
             assignment.submissions = wt.submissions[assignment_id]
-            assignment.grades = wt.grades[assignment_id]
+            try:
+                assignment.grades = wt.grades[assignment_id]
+            except KeyError:
+                assignment.grades = None
+
             print(assignment.course)
             print(assignment.detailed_status_string(indent=1))
 
@@ -276,7 +255,7 @@ def status(course_ids, assignment_ids=None, submission_ids=None, full=False):
         # TODO this.
         for course in sorted(courses, key=lambda c: c.name):
             print(course)
-            assignments = course.get_assignments(assignment_ids)
+            assignments = course.sync_assignments(assignment_ids)
             a_status = [a.detailed_status_string() for a in assignments]
             for s in sorted(a_status):
                 print(s)
@@ -296,16 +275,15 @@ def _make_config_parser_pull(subparsers, url_token_parser):
         help='retrieve files for grading',
         parents=[url_token_parser]
     )
-    pull_parser.add_argument('-c', '--courseids', dest='course_ids', nargs='+', help='moodle course ids', type=int,
-                             action='append')
+#    pull_parser.add_argument('-c', '--courseids', dest='course_ids', nargs='+', help='moodle course ids', type=int,
+#                             action='append')
     pull_parser.add_argument('-a', '--assignmentids', dest='assignment_ids', nargs='+', type=int)
     pull_parser.add_argument('--all', help='pull all due submissions, even old ones', action='store_true')
     pull_parser.set_defaults(func=pull)
 
 
-def pull(url, token, course_ids, assignment_ids=None, all=False):
+def pull(url, token, assignment_ids=None, all=False):
     wt = WorkTree()
-    course_ids = _unpack(course_ids)
 
     courses = wt.data
     assignments = []
@@ -314,7 +292,7 @@ def pull(url, token, course_ids, assignment_ids=None, all=False):
             assignments += c.assignments.values()
     else:
         for c in courses:
-            assignments += c.get_assignments(assignment_ids)
+            assignments += c.sync_assignments(assignment_ids)
 
     files = wt.prepare_download(assignments)
 
@@ -486,7 +464,8 @@ def enrol(url, token, keywords):
             unsuccessful = True
             while unsuccessful:
                 print(warning[Jn.message])
-                password=getpass.getpass(prompt='enrolment key: ')
+                # todo, move to utils.interaction
+                password = getpass.getpass(prompt='enrolment key: ')
                 reply = ms.enrol_in_course(chosen_course[Jn.id], password=password, instance_id=chosen_method_instance_id)
                 data = reply.json()
                 if data[Jn.status]:

@@ -3,6 +3,7 @@ import json
 import os
 from datetime import datetime
 from moodle.fieldnames import JsonFieldNames as Jn
+import _collections_abc
 
 
 class MetaDataFolder(dict):
@@ -21,7 +22,7 @@ class MetaDataFolder(dict):
                 meta = json.load(file)
                 for k, v in meta.items():
                     setattr(self, k, v)
-        except IOError:
+        except FileNotFoundError:
             pass
 
     def _write_meta(self):
@@ -93,7 +94,7 @@ class MetaDataFolder(dict):
             with open(filename, 'r') as file:
                 self._cache[key] = json.load(file)
                 return self._cache[key]
-        except IOError:
+        except FileNotFoundError:
             raise KeyError(key)
 
     def __setitem__(self, key, value):
@@ -218,7 +219,7 @@ class MetaDataFile(dict):
                 meta = json.load(file)
                 for k, v in meta.items():
                     setattr(self, k, v)
-        except IOError:
+        except FileNotFoundError:
             pass
 
     def _write_meta(self):

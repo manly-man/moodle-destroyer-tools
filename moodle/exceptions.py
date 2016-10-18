@@ -10,11 +10,22 @@ class MoodleError(Exception):
 
     def __str__(self):
         msg = 'Please Report this Exception!\n' \
-              '{} {} {} {}'.format(self.exception_name, self.error_code, self.message, self.debug_message)
+              '{} <<{}>>, Message: {} Debug:{}'.format(self.exception_name, self.error_code, self.message, self.debug_message)
         return msg
 
 
 class InvalidToken(MoodleError):
+    def __init__(self, message):
+        self.exception_name = Jn.moodle_exception
+        self.error_code = Jn.invalid_token
+        self.message = message
+
+    def __str__(self):
+        return 'your token is invalid, please use auth: {}'.format(self.message)
+
+
+class ExpiredToken(MoodleError):
+    # todo, is only matched fpr accessexception error_code, could possiby something else.
     def __init__(self, message):
         self.exception_name = Jn.moodle_exception
         self.error_code = Jn.invalid_token

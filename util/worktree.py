@@ -4,7 +4,7 @@ import os
 import re
 import configparser
 from moodle.fieldnames import JsonFieldNames as Jn
-from moodle.models import Course, Assignment, Submission
+from moodle.frontend.models import Course, Assignment, Submission
 from util.resources import AssignmentMetaDataFolder, SubmissionMetaDataFolder, GradeMetaDataFolder
 
 
