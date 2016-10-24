@@ -2,9 +2,9 @@ import glob
 import json
 import os
 import re
-import configparser
+
 from moodle.fieldnames import JsonFieldNames as Jn
-from moodle.frontend.models import Course, Assignment, Submission
+from moodle.frontend.models import Course, Assignment, Submission, GlobalConfig
 from util.resources import AssignmentMetaDataFolder, SubmissionMetaDataFolder, GradeMetaDataFolder
 
 
@@ -53,7 +53,7 @@ class WorkTree:
             raise
 
     @staticmethod
-    def global_config():
+    def get_global_config_filename():
         if 'XDG_CONFIG_HOME' in os.environ:
             if os.path.isfile(os.environ['XDG_CONFIG_HOME'] + '/mdtconfig'):
                 return os.environ['XDG_CONFIG_HOME'] + '/mdtconfig'
@@ -63,6 +63,10 @@ class WorkTree:
             return os.path.expanduser('~/.mdtconfig')
         else:
             return WorkTree.create_global_config_file()
+
+    @staticmethod
+    def get_global_config_values():
+        return GlobalConfig(WorkTree._load_json_file(WorkTree.get_global_config_filename()))
 
     @staticmethod
     def create_global_config_file():
@@ -76,12 +80,13 @@ class WorkTree:
             file = os.path.expanduser('~/.mdtconfig')
         text = 'could not find global config, creating {}'
         print(text.format(file))
-        open(file, 'w').close()
+        with open(file, 'w') as cfg_file:
+            cfg_file.write('{}')
         return file
 
     @staticmethod
     def get_config_file_list():
-        global_config = WorkTree.global_config()
+        global_config = WorkTree.get_global_config_filename()
         cfg_files = [global_config]
         work_tree = WorkTree.get_work_tree_root()
         if work_tree is not None:
@@ -187,10 +192,12 @@ class WorkTree:
 
     @staticmethod
     def write_global_config(config_dict):
-        with open(WorkTree.global_config(), 'w') as file:
-            cfg_parser = configparser.ConfigParser()
-            cfg_parser['global moodle settings'] = config_dict
-            cfg_parser.write(file)
+        WorkTree._write_data(WorkTree.get_global_config_filename(), config_dict)
+        #with open(WorkTree.global_config(), 'w') as file:
+            #cfg_parser = configparser.ConfigParser()
+            #cfg_parser['global moodle settings'] = config_dict
+            #cfg_parser.write(file)
+            # json.dump(config_dict, file)
 
     def write_local_config(self, config_data):
         self._write_config(self.config, config_data)

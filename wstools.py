@@ -1,20 +1,10 @@
 #!/usr/bin/env python3
-""" login/token.php params
-// MDL-43119 Token valid for 3 months (12 weeks).
-$username = required_param('username', PARAM_USERNAME);
-$password = required_param('password', PARAM_RAW);
-$serviceshortname  = required_param('service',  PARAM_ALPHANUMEXT);
-"""
 import json
 import configargparse
 
-from moodle.communication import MoodleSession
-
 from moodle.fieldnames import JsonFieldNames as Jn, text_format
-from moodle.frontend.models import Course, Submission, Assignment
+from moodle.frontend.models import Course, Submission, Assignment, GradingFile
 from moodle.frontend.moodle import MoodleFrontend
-import moodle.models as wrappers
-import concurrent.futures as cf
 
 from util.worktree import WorkTree
 from util import interaction
@@ -23,113 +13,83 @@ import logging
 import getpass
 
 log = logging.getLogger('wstools')
-MAX_WORKERS = 10
 
 __all__ = ['auth', 'config', 'grade', 'init', 'pull', 'status', 'sync', 'upload', 'enrol', 'submit']
 
 
+class ParserManager:
+    def __init__(self):
+        self.parser = configargparse.ArgumentParser(default_config_files=WorkTree.get_config_file_list())
+        self.subparsers = self.parser.add_subparsers(help="internal sub command help")
+
+    def register(self, name, help_text):
+        return self.subparsers.add_parser(name, help=help_text)
+
+_pm = ParserManager()
+
+
 def make_config_parser():
-    parser = configargparse.ArgumentParser(default_config_files=WorkTree.get_config_file_list())
-    subparsers = parser.add_subparsers(help="internal sub command help")
-
-    url_token_parser = configargparse.ArgumentParser(add_help=False,
-                                                     default_config_files=WorkTree.get_config_file_list())
-    url_token_parser.add_argument('--url', help='config override, only for testing')
-    url_token_parser.add_argument('--token', help='config override, only for testing')
-
-    _make_config_parser_auth(subparsers, url_token_parser)
-    _make_config_parser_init(subparsers, url_token_parser)
-    _make_config_parser_status(subparsers, url_token_parser)
-    _make_config_parser_sync(subparsers, url_token_parser)
-    _make_config_parser_pull(subparsers, url_token_parser)
-    _make_config_parser_grade(subparsers, url_token_parser)
-    _make_config_parser_upload(subparsers, url_token_parser)
-    _make_config_parser_config(subparsers, url_token_parser)
-    _make_config_parser_enrol(subparsers, url_token_parser)
-    _make_config_parser_submit(subparsers, url_token_parser)
-
-    return parser
+    return _pm.parser
 
 
-def _make_config_parser_auth(subparsers, url_token_parser):
-    auth_parser = subparsers.add_parser(
-        'auth',
-        help='retrieve access token from server',
-        parents=[url_token_parser]
-    )
-    auth_parser.add_argument('-u', '--username', help='username', required=False)
-    auth_parser.add_argument('-s', '--service', help='the webservice, has to be set explicitly',
-                             default='moodle_mobile_app')
-    auth_parser.add_argument('-a', '--ask', help='will ask for all credentials, again', action='store_true')
-    auth_parser.set_defaults(func=auth)
-
-
-def auth(url=None, token=None, ask=False, username=None, service='moodle_mobile_app'):
+def auth(url=None, ask=False, username=None, service='moodle_mobile_app'):
     _url = 'url'
-    _user = 'username'
+    _user = 'user_name'
     _service = 'service'
 
-    settings = {}
+    cfg = WorkTree.get_global_config_values()
+
+    settings = {
+        _url: url or cfg.get(_url, None),
+        _user: username or cfg.get(_user, None),
+        _service: service
+    }
 
     if ask:
-        settings[_url] = interaction.input_moodle_url(url)
-        settings[_user] = interaction.input_user_name(username)
+        settings[_url] = interaction.input_moodle_url(settings[_url])
+        settings[_user] = interaction.input_user_name(settings[_user])
         del ask
     else:
-        if url is None or url == '':
+        if settings[_url] is None or settings[_url].strip() == '':
             settings[_url] = interaction.input_moodle_url()
-        else:
-            settings[_url] = url
 
-        if username is None or username == '':
+        if settings[_user] is None or settings[_user].strip() == '':
             settings[_user] = interaction.input_user_name()
-        else:
-            settings[_user] = username
-
-    settings[_service] = service
 
     password = interaction.input_password()
 
-    ms = MoodleSession(moodle_url=settings[_url])
-    reply = ms.get_token(user_name=settings[_user], password=password, service=settings[_service])
+    frontend = MoodleFrontend(True)
+    token = frontend.get_token(settings[_url], settings[_user], password, settings[_service])
+    settings[Jn.token] = token
     del password
 
-    try:
-        j = reply.json()
-        settings[Jn.token] = j[Jn.token]
-        ms.token = settings[Jn.token]
-    except KeyError:
-        print(reply.text)
-        raise SystemExit(1)
-
-    reply = ms.get_site_info().json()
-    settings['uid'] = reply[Jn.user_id]
-    # functions_json = reply['functions']
-    # functions = [func_dict['name'] for func_dict in functions_json]
-    # print(functions)
+    settings['user_id'] = frontend.get_user_id()
 
     WorkTree.write_global_config(settings)
 
-
-def _make_config_parser_init(subparsers, url_token_parser):
-    init_parser = subparsers.add_parser(
-        'init',
-        help='initialize work tree',
-        parents=[url_token_parser]
-    )
-    init_parser.add_argument('--uid', dest='user_id')
-    init_parser.add_argument('--force', help='overwrite the config', action='store_true')
-    init_parser.add_argument('-c', '--courseids', dest='course_ids', nargs='+', help='moodle course id',
-                             action='append')
-    init_parser.set_defaults(func=init)
+_auth = _pm.register('auth', 'retrieve access token from server')
+_auth.add_argument('-u', '--username', help='username', required=False)
+_auth.add_argument('--url', help='the moodle host name', required=False)
+_auth.add_argument('-s', '--service', help='the webservice, has to be set explicitly, defaults to mobile api',
+                         default='moodle_mobile_app')
+_auth.add_argument('-a', '--ask', help='will ask for all credentials, again', action='store_true')
+_auth.set_defaults(func=auth)
 
 
-def init(url, token, user_id, force=False, course_ids=None):
+def init(force=False, course_ids=None):
     """initializes working tree: creates local .mdt/config, with chosen courses"""
 
-    ms = MoodleSession(moodle_url=url, token=token)
+    try:
+        wt = WorkTree(init=True, force=force)
+    except FileExistsError:
+        print('already initialized, use --force to overwrite or delete .mdt folder')
+        raise SystemExit(1)
 
-    wrapped = wrappers.CourseListResponse(ms.get_users_course_list(user_id))
+    # ms = MoodleSession(moodle_url=url, token=token)
+    frontend = MoodleFrontend(wt)
+
+    # wrapped = wrappers.CourseListResponse(ms.get_users_course_list(user_id))
+    wrapped = frontend.get_course_list()
     courses = list(wrapped)
 
     courses.sort(key=lambda course: course.full_name)
@@ -145,38 +105,20 @@ def init(url, token, user_id, force=False, course_ids=None):
         course_ids = [c.id for c in chosen_courses]
         saved_data = [c for c in wrapped.raw if c['id'] in course_ids]
 
-    try:
-        wt = WorkTree(init=True, force=force)
-    except FileExistsError:
-        print('already initialized')
-        raise SystemExit(1)
-
     wt.courses = saved_data
 
     wt.write_local_config('courseids = ' + str(course_ids))
-    sync(url=url, token=token)
 
 
-def _make_config_parser_sync(subparsers, url_token_parser):
-    sync_parser = subparsers.add_parser(
-        'sync',
-        help='download metadata from server',
-        parents=[url_token_parser]
-    )
-    # sync_parser.add_argument('-c', '--courseids', dest='course_ids', nargs='+', help='moodle course id', type=int, action='append')
-    sync_parser.add_argument('-a', '--assignments', help='sync assignments', action='store_true')
-    sync_parser.add_argument('-s', '--submissions', help='sync submissions', action='store_true')
-    sync_parser.add_argument('-g', '--grades', help='sync grades', action='store_true')
-    sync_parser.add_argument('-u', '--users', help='sync users', action='store_true', default=False)
-    sync_parser.add_argument('-f', '--files', help='sync file metadata', action='store_true', default=False)
-
-    sync_parser.set_defaults(func=sync)
+_init = _pm.register('init', 'initialize work tree')
+_init.add_argument('--force', help='overwrite the config', action='store_true')
+_init.add_argument('-c', '--courseids', dest='course_ids', nargs='+', help='moodle course id',
+                   action='append')
+_init.set_defaults(func=init)
 
 
-def sync(url, token, assignments=False, submissions=False, grades=False, users=False, files=False):
-    wt = WorkTree()
-    moodle = MoodleSession(moodle_url=url, token=token)
-    frontend = MoodleFrontend(url, token, wt)
+def sync(assignments=False, submissions=False, grades=False, users=False, files=False):
+    frontend = MoodleFrontend()
 
     sync_all = True
     if users or submissions or assignments or grades or files:
@@ -202,34 +144,18 @@ def sync(url, token, assignments=False, submissions=False, grades=False, users=F
         output = frontend.sync_users()
         print(output + 'finished.')
 
-    if files:  # TODO WIP, then add sync all
+    if files:  # TODO: when finished, add 'or sync_all'
         print('syncing files… ', end='', flush=True)
-        files = []
-        for as_id, submissions in wt.submissions.items():
-            for submission in submissions:
-                files += Submission(submission).files
-
-        for file in files:
-            wrapped = wrappers.FileMetaDataResponse(moodle.get_file_meta(**file.meta_data_params))
-            print(str(wrapped.raw))
-        # reply = moodle.get_submissions_for_assignments(wt.assignments.keys())
-        # data = json.loads(strip_mlang(reply.text))
-        # result = wt.submissions.update(data)
-        # output = ['{}: {:d}'.format(k, v) for k, v in result.items()]
-        # print('finished. ' + ' '.join(output))
+        frontend.sync_file_meta_data()
         print('finished')
 
-
-def _make_config_parser_status(subparsers, url_token_parser):
-    status_parser = subparsers.add_parser('status', help='display various information about work tree')
-#    status_parser.add_argument('-c', '--courseids', dest='course_ids', nargs='+', help='moodle course ids', type=int,
-#                               action='append')
-    status_parser.add_argument('-a', '--assignmentids', dest='assignment_ids', nargs='+',
-                               help='show detailed status for assignment id', type=int)
-    status_parser.add_argument('-s', '--submissionids', dest='submission_ids', nargs='+',
-                               help='show detailed status for submission id', type=int)
-    status_parser.add_argument('--full', help='display all assignments', action='store_true')
-    status_parser.set_defaults(func=status)
+_sync = _pm.register('sync', 'download metadata from server')
+_sync.add_argument('-a', '--assignments', help='sync assignments', action='store_true')
+_sync.add_argument('-s', '--submissions', help='sync submissions', action='store_true')
+_sync.add_argument('-g', '--grades', help='sync grades', action='store_true')
+_sync.add_argument('-u', '--users', help='sync users', action='store_true', default=False)
+_sync.add_argument('-f', '--files', help='sync file metadata', action='store_true', default=False)
+_sync.set_defaults(func=sync)
 
 
 def status(assignment_ids=None, submission_ids=None, full=False):
@@ -269,89 +195,40 @@ def status(assignment_ids=None, submission_ids=None, full=False):
             course.print_short_status()
 
 
-def _make_config_parser_pull(subparsers, url_token_parser):
-    pull_parser = subparsers.add_parser(
-        'pull',
-        help='retrieve files for grading',
-        parents=[url_token_parser]
-    )
-#    pull_parser.add_argument('-c', '--courseids', dest='course_ids', nargs='+', help='moodle course ids', type=int,
-#                             action='append')
-    pull_parser.add_argument('-a', '--assignmentids', dest='assignment_ids', nargs='+', type=int)
-    pull_parser.add_argument('--all', help='pull all due submissions, even old ones', action='store_true')
-    pull_parser.set_defaults(func=pull)
+_status = _pm.register('status', 'display various information about work tree')
+_status.add_argument('-a', '--assignmentids', dest='assignment_ids', nargs='+',
+                     help='show detailed status for assignment id', type=int)
+_status.add_argument('-s', '--submissionids', dest='submission_ids', nargs='+',
+                     help='show detailed status for submission id', type=int)
+_status.add_argument('--full', help='display all assignments', action='store_true')
+_status.set_defaults(func=status)
 
 
-def pull(url, token, assignment_ids=None, all=False):
-    wt = WorkTree()
+def pull(assignment_ids=None, all=False):
+    frontend = MoodleFrontend()
 
-    courses = wt.data
-    assignments = []
-    if assignment_ids is None:
-        for c in courses:
-            assignments += c.assignments.values()
-    else:
-        for c in courses:
-            assignments += c.sync_assignments(assignment_ids)
+    frontend.download_files(assignment_ids)
 
-    files = wt.prepare_download(assignments)
-
-    moodle = MoodleSession(moodle_url=url, token=token)
-    file_count = len(files)
-    counter = 0
-    if file_count > 0:
-        interaction.print_progress(counter, file_count)
-        with cf.ThreadPoolExecutor(max_workers=MAX_WORKERS) as tpe:
-            future_to_file = {tpe.submit(moodle.download_file, file.url): file for file in files}
-            for future in cf.as_completed(future_to_file):
-                file = future_to_file[future]
-                response = future.result()
-                counter += 1
-                interaction.print_progress(counter, file_count, suffix=file.path)
-                wt.write_submission_file(file, response.content)
-    for a in assignments:
-        wt.write_grading_and_html_file(a)
+_pull = _pm.register('pull', 'retrieve files for grading')
+_pull.add_argument('assignment_ids', nargs='+', type=int)
+_pull.add_argument('--all', help='pull all due submissions, even old ones', action='store_true')
+_pull.set_defaults(func=pull)
 
 
-def _make_config_parser_grade(subparsers, url_token_parser):
-    grade_parser = subparsers.add_parser(
-        'grade',
-        help='upload grades from files',
-        parents=[url_token_parser]
-    )
-    grade_parser.add_argument('files', nargs='+', help='files containing grades', type=configargparse.FileType('r'))
-    grade_parser.set_defaults(func=grade)
-
-
-def grade(url, token, files):
-    def argument_list(upload_data):
-        for grades_assignment in upload_data:
-            as_id = grades_assignment['assignment_id']
-            team = grades_assignment['team_submission']
-            args = []
-            for gdata in grades_assignment['grade_data']:
-                args.append({
-                    'assignment_id': as_id,
-                    'user_id': gdata['user_id'],
-                    'grade': gdata['grade'],
-                    'feedback_text': gdata['feedback'],
-                    'team_submission': team
-                })
-            return args
-
+def grade(grading_files):
     wt = WorkTree()
     upload_data = []
-    for file in files:
+    for file in grading_files:
         # file_content = file.read()
-        parsed = json.load(file)
-        assignment_id = parsed['assignment_id']
+        wrapped = GradingFile(json.load(file))
+        assignment_id = wrapped.assignment_id
 
         assignment = Assignment(wt.assignments[assignment_id])
         assignment.course = Course(wt.courses[assignment.course_id])
 
         assignment.course.users = wt.users[str(assignment.course_id)]
         assignment.submissions = wt.submissions[assignment_id]
-        upload_data.append(assignment.prepare_grade_upload_data(parsed['grades']))
+        upload_data.append(assignment.prepare_grade_upload_data(wrapped.grades.raw))
 
     print('this will upload the following grades:')
     grade_format = '  {:>20}:{:6d} {:5.1f} > {}'
@@ -369,54 +246,28 @@ def grade(url, token, files):
         print('wat')
         return
 
-    moodle = MoodleSession(url, token)
-    args_list = argument_list(upload_data)
-    grade_count = len(args_list)
-    counter = 0
-
-    if grade_count > 0:
-        interaction.print_progress(counter, grade_count)
-        with cf.ThreadPoolExecutor(max_workers=MAX_WORKERS) as tpe:
-            future_to_grade = {tpe.submit(moodle.save_grade, **args): args for args in args_list}
-            for future in cf.as_completed(future_to_grade):
-                args = future_to_grade[future]
-                response = future.result()
-                counter += 1
-                interaction.print_progress(counter, grade_count)
+    frontend = MoodleFrontend(wt)
+    frontend.upload_grades(upload_data)
 
 
-def _make_config_parser_upload(subparsers, url_token_parser):
-    upload_parser = subparsers.add_parser(
-        'upload',
-        help='upload files to draft area',
-        parents=[url_token_parser]
-    )
-    upload_parser.add_argument('files', nargs='+', help='files to upload', type=configargparse.FileType('rb'))
-    upload_parser.set_defaults(func=upload)
+_grade = _pm.register('grade','upload grades from files')
+_grade.add_argument('grading_files', nargs='+', help='files containing grades', type=configargparse.FileType('r'))
+_grade.set_defaults(func=grade)
 
 
-def upload(url, token, files):
-    files = files
-    ms = MoodleSession(url, token)
-    reply = ms.upload_files(files)
-    j = json.loads(reply.text)
-    print(json.dumps(j, indent=2, ensure_ascii=False))
+def upload(files):
+    frontend = MoodleFrontend(True)  # TODO: HACK, for not initializing worktree
+    frontend.upload_files(files)
 
 
-def _make_config_parser_enrol(subparsers, url_token_parser):
-    enrol_parser = subparsers.add_parser(
-        'enrol',
-        help='enrol in a course',
-        parents=[url_token_parser]
-    )
-    enrol_parser.add_argument('keywords', nargs='+', help='some words to search for')
-    enrol_parser.set_defaults(func=enrol)
+_upload = _pm.register('upload', 'upload files to draft area')
+_upload.add_argument('files', nargs='+', help='files to upload', type=configargparse.FileType('rb'))
+_upload.set_defaults(func=upload)
 
 
-def enrol(url, token, keywords):
-    ms = MoodleSession(url, token)
-    reply = ms.search_for_courses(' '.join(keywords))
-    data = json.loads(reply.text)
+def enrol(keywords):
+    frontend = MoodleFrontend(True)
+    data = frontend.search_courses_by_keywords(keywords)
     courses = [c for c in data['courses']]
     courses.sort(key=lambda d: d['fullname'])
 
@@ -437,10 +288,10 @@ def enrol(url, token, keywords):
         raise SystemExit(1)
 
     chosen_course = courses[choices[0]]
-    #print('using:\n' + ' '.join([str(c[Jn.short_name]) for c in chosen_course]))
-    reply = ms.get_course_enrolment_methods(chosen_course[Jn.id])
+    # print('using:\n' + ' '.join([str(c[Jn.short_name]) for c in chosen_course]))
+    # reply = ms.get_course_enrolment_methods(chosen_course[Jn.id])
 
-    enrolment_methods = reply.json()
+    enrolment_methods = frontend.get_course_enrolment_methods(chosen_course[Jn.id])
     chosen_method_instance_id = None
     if len(enrolment_methods) > 1:
         print(json.dumps(enrolment_methods, indent=2, sort_keys=True))
@@ -456,8 +307,8 @@ def enrol(url, token, keywords):
         raise SystemExit(0)
     # todo: if wsfunction in enrolment method, try that. on accessexception, try without password.
     # todo: if without password fails, possibly warning code 4, then ask for password
-    reply = ms.enrol_in_course(chosen_course[Jn.id], instance_id=chosen_method_instance_id)
-    answer = reply.json()
+
+    answer = frontend.enrol_in_course(chosen_course[Jn.id], instance_id=chosen_method_instance_id)
     if not answer[Jn.status] and Jn.warnings in answer:
         warning = answer[Jn.warnings][0]
         if warning[Jn.warning_code] == '4':  # wrong password?
@@ -466,34 +317,19 @@ def enrol(url, token, keywords):
                 print(warning[Jn.message])
                 # todo, move to utils.interaction
                 password = getpass.getpass(prompt='enrolment key: ')
-                reply = ms.enrol_in_course(chosen_course[Jn.id], password=password, instance_id=chosen_method_instance_id)
-                data = reply.json()
+                data = frontend.enrol_in_course(chosen_course[Jn.id], password=password, instance_id=chosen_method_instance_id)
+
                 if data[Jn.status]:
                     unsuccessful = False
-    # todo: this is pretty hacky and error prone, fix possibly soon, or maybe not.
+    # todo: this is pretty hacky and error prone, fix possibly soon, or maybe not. this has no priority.
 
 
-def _make_config_parser_submit(subparsers, url_token_parser):
-    submission_parser = subparsers.add_parser(
-        'submit',
-        help='submit text or files to assignment for grading',
-        parents=[url_token_parser]
-    )
-
-    submission_parser.add_argument('-a', '--assignment_id', help='the assignment id to submit to.')
-
-    online_group = submission_parser.add_argument_group('online', 'for online text submission')
-    online_group.add_argument('-t', '--text', type=configargparse.FileType('r'),
-                              help='the text file with content you want to submit (txt,md,html)')
-    online_group.add_argument('-tf', '--textfiles', nargs='+', type=configargparse.FileType('rb'),
-                              help='files you want in the text. pictures in markdown?')
-    file_group = submission_parser.add_argument_group('files', 'for file submission')
-    file_group.add_argument('-f', '--files', nargs='+', type=configargparse.FileType('rb'),
-                            help='the files you want to sumbit.')
-    submission_parser.set_defaults(func=submit)
+_enrol = _pm.register('enrol', 'enrol in a course')
+_enrol.add_argument('keywords', nargs='+', help='some words to search for')
+_enrol.set_defaults(func=enrol)
 
 
-def submit(url, token, text=None, textfiles=None, files=None, assignment_id=None):
+def submit(text=None, textfiles=None, files=None, assignment_id=None):
     """ Bei nur Datei Abgabe, keine File ID angegeben. [
     {
     "item": "Es wurde nichts eingereicht.",
@@ -513,15 +349,15 @@ def submit(url, token, text=None, textfiles=None, files=None, assignment_id=None
             return text_format['plain']
         return 0
 
-    moodle = MoodleSession(url, token)
+    frontend = MoodleFrontend()
     file_item_id = 0
     if files is not None:
-        file_response = moodle.upload_files(files).json()
+        file_response = frontend.upload_files(files)
         file_item_id = file_response[0]['itemid']
 
     text_file_item_id = 0
     if textfiles is not None:
-        text_file_response = moodle.upload_files(textfiles).json()
+        text_file_response = frontend.upload_files(textfiles)
         text_file_item_id = text_file_response[0]['itemid']
 
     submission_text = ''
@@ -539,23 +375,35 @@ def submit(url, token, text=None, textfiles=None, files=None, assignment_id=None
         assignment_id = assignments[choice[0]].id
 
     # print('{:s} {:d} {:d} {:d}'.format(text, submission_text_format, text_file_item_id, file_item_id))
-    response = moodle.save_submission(assignment_id, submission_text, submission_text_format, text_file_item_id,
-                                      file_item_id)
-    print(response.text)
+    data = frontend.save_submission(assignment_id, submission_text, submission_text_format, text_file_item_id,
+                                    file_item_id)
+    print(data)
 
 
-def _make_config_parser_config(subparsers, url_token_parser):
-    config_parser = subparsers.add_parser(
-        'config',
-        help='shows config values, nothing else'
-    )
-    config_parser.set_defaults(func=config)
+_submit = _pm.register('submit', 'submit text or files to assignment for grading')
+_submit.add_argument('-a', '--assignment_id', help='the assignment id to submit to.')
+
+_submit_online_group = _submit.add_argument_group('online', 'for online text submission')
+_submit_online_group.add_argument('-t', '--text', type=configargparse.FileType('r'),
+                                  help='the text file with content you want to submit (txt,md,html)')
+_submit_online_group.add_argument('-tf', '--textfiles', nargs='+', type=configargparse.FileType('rb'),
+                                  help='files you want in the text. pictures in markdown?')
+
+_submit_file_group = _submit.add_argument_group('files', 'for file submission')
+_submit_file_group.add_argument('-f', '--files', nargs='+', type=configargparse.FileType('rb'),
+                                help='the files you want to sumbit.')
+
+_submit.set_defaults(func=submit)
 
 
 def config():
     parser = make_config_parser()
     parser.parse_known_args()
     parser.print_values()
+
+
+_config = _pm.register('config', 'shows config values, nothing else')
+_config.set_defaults(func=config)
 
 
 def _unpack(elements):

@@ -2,9 +2,53 @@ from datetime import datetime
 from werkzeug.utils import cached_property
 
 from moodle.parsers import file_meta_dict_from_url
+from moodle.models import JsonDictWrapper, JsonListWrapper
 from moodle.models import MoodleAssignment, MoodleCourse, MoodleUser, MoodleGroup, \
     MoodleSubmission, MoodlePlugin, MoodleEditorField, MoodleFileArea, MoodleSubmissionFile, \
     MoodleGrade, MoodleFileMeta
+
+
+class GlobalConfig(JsonDictWrapper):
+    @property
+    def service(self): return self['service']
+
+    @property
+    def token(self): return self['token']
+
+    @property
+    def user_id(self): return self['user_id']
+
+    @property
+    def url(self): return self['url']
+
+    @property
+    def user_name(self): return self['user_name']
+
+
+class GradingFile(JsonDictWrapper):
+    @property
+    def assignment_id(self): return self['assignment_id']
+
+    @property
+    def grades(self): return self.GradeList(self['grades'])
+
+    class GradeList(JsonListWrapper):
+        def __iter__(self):
+            for grade in self._data:
+                yield self.Grade(grade)
+
+        class Grade(JsonDictWrapper):
+            @property
+            def name(self): return self['name']
+
+            @property
+            def id(self): return self['id']
+
+            @property
+            def grade(self): return self['grade']
+
+            @property
+            def feedback(self): return self['feedback']
 
 
 class Course(MoodleCourse):
@@ -260,6 +304,7 @@ class Assignment(MoodleAssignment):
         return html + '</body>'
 
     def prepare_grade_upload_data(self, data):
+        # TODO: check for invalid grade value, since moodle will just ignore it.
         upload_data = {
             'assignment_id': self.id,
             'team_submission': self.is_team_submission
