@@ -140,3 +140,6 @@ tramp
 
 # pycharm
 .idea/
+
+# moodle destroyer tools
+.mdt/
