@@ -1,0 +1,666 @@
+<div class="collapsibleregioninner" id="aera_tool_lp_data_for_template_competencies_page_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Load the data for the template competencies page template.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>templateid</b> (Required)<br/>        The template id<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//The template id</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[templateid] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+templateid= int
+
+</pre></div></div></span><span style="font-size:80%"><b>pagecontext</b> (Required)<br/>        <br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>contextid</b> int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//Context ID. Either use this value, or level and instanceid.</i></span><br/><b>contextlevel</b> string <span style="color:#2A33A6"> <b>Default to ""</b> <i>//Context level. To be used with instanceid.</i></span><br/><b>instanceid</b> int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//Context instance ID. To be used with level</i></span><br/>} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[pagecontext] =&gt;
+    Array 
+        (
+        [contextid] =&gt; int        
+        [contextlevel] =&gt; string        
+        [instanceid] =&gt; int        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+pagecontext[contextid]= int
+pagecontext[contextlevel]= string
+pagecontext[instanceid]= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>template</b> object {<br/><b>shortname</b> string <span style="color:#2A33A6">  <i>//shortname</i></span><br/><b>description</b> string <span style="color:#2A33A6">  <i>//description</i></span><br/><b>descriptionformat</b> int <span style="color:#2A33A6"> <b>Default to "1"</b> <i>//description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>duedate</b> int <span style="color:#2A33A6">  <i>//duedate</i></span><br/><b>visible</b> int <span style="color:#2A33A6">  <i>//visible</i></span><br/><b>contextid</b> int <span style="color:#2A33A6">  <i>//contextid</i></span><br/><b>id</b> int <span style="color:#2A33A6">  <i>//id</i></span><br/><b>timecreated</b> int <span style="color:#2A33A6">  <i>//timecreated</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6">  <i>//timemodified</i></span><br/><b>usermodified</b> int <span style="color:#2A33A6">  <i>//usermodified</i></span><br/><b>duedateformatted</b> string <span style="color:#2A33A6">  <i>//duedateformatted</i></span><br/><b>cohortscount</b> int <span style="color:#2A33A6">  <i>//cohortscount</i></span><br/><b>planscount</b> int <span style="color:#2A33A6">  <i>//planscount</i></span><br/><b>canmanage</b> int <span style="color:#2A33A6">  <i>//canmanage</i></span><br/><b>canread</b> int <span style="color:#2A33A6">  <i>//canread</i></span><br/><b>contextname</b> string <span style="color:#2A33A6">  <i>//contextname</i></span><br/><b>contextnamenoprefix</b> string <span style="color:#2A33A6">  <i>//contextnamenoprefix</i></span><br/>} <br/><b>pagecontextid</b> int <span style="color:#2A33A6">  <i>//Context ID</i></span><br/><b>canmanagecompetencyframeworks</b> int <span style="color:#2A33A6">  <i>//User can manage competency frameworks</i></span><br/><b>canmanagetemplatecompetencies</b> int <span style="color:#2A33A6">  <i>//User can manage learning plan templates</i></span><br/><b>competencies</b> list of ( <br/>object {<br/><b>linkedcourses</b> list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//id</i></span><br/><b>fullname</b> string <span style="color:#2A33A6">  <i>//fullname</i></span><br/><b>shortname</b> string <span style="color:#2A33A6">  <i>//shortname</i></span><br/><b>idnumber</b> string <span style="color:#2A33A6">  <i>//idnumber</i></span><br/><b>viewurl</b> string <span style="color:#2A33A6">  <i>//viewurl</i></span><br/>} <br/>)<b>relatedcompetencies</b> list of ( <br/>object {<br/><b>shortname</b> string <span style="color:#2A33A6">  <i>//shortname</i></span><br/><b>idnumber</b> string <span style="color:#2A33A6">  <i>//idnumber</i></span><br/><b>description</b> string <span style="color:#2A33A6">  <i>//description</i></span><br/><b>descriptionformat</b> int <span style="color:#2A33A6"> <b>Default to "1"</b> <i>//description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>sortorder</b> int <span style="color:#2A33A6">  <i>//sortorder</i></span><br/><b>parentid</b> int <span style="color:#2A33A6">  <i>//parentid</i></span><br/><b>path</b> string <span style="color:#2A33A6">  <i>//path</i></span><br/><b>ruleoutcome</b> int <span style="color:#2A33A6">  <i>//ruleoutcome</i></span><br/><b>ruletype</b> string <span style="color:#2A33A6">  <i>//ruletype</i></span><br/><b>ruleconfig</b> string <span style="color:#2A33A6">  <i>//ruleconfig</i></span><br/><b>scaleid</b> int <span style="color:#2A33A6">  <i>//scaleid</i></span><br/><b>scaleconfiguration</b> string <span style="color:#2A33A6">  <i>//scaleconfiguration</i></span><br/><b>competencyframeworkid</b> int <span style="color:#2A33A6">  <i>//competencyframeworkid</i></span><br/><b>id</b> int <span style="color:#2A33A6">  <i>//id</i></span><br/><b>timecreated</b> int <span style="color:#2A33A6">  <i>//timecreated</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6">  <i>//timemodified</i></span><br/><b>usermodified</b> int <span style="color:#2A33A6">  <i>//usermodified</i></span><br/>} <br/>)<b>competency</b> object {<br/><b>shortname</b> string <span style="color:#2A33A6">  <i>//shortname</i></span><br/><b>idnumber</b> string <span style="color:#2A33A6">  <i>//idnumber</i></span><br/><b>description</b> string <span style="color:#2A33A6">  <i>//description</i></span><br/><b>descriptionformat</b> int <span style="color:#2A33A6"> <b>Default to "1"</b> <i>//description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>sortorder</b> int <span style="color:#2A33A6">  <i>//sortorder</i></span><br/><b>parentid</b> int <span style="color:#2A33A6">  <i>//parentid</i></span><br/><b>path</b> string <span style="color:#2A33A6">  <i>//path</i></span><br/><b>ruleoutcome</b> int <span style="color:#2A33A6">  <i>//ruleoutcome</i></span><br/><b>ruletype</b> string <span style="color:#2A33A6">  <i>//ruletype</i></span><br/><b>ruleconfig</b> string <span style="color:#2A33A6">  <i>//ruleconfig</i></span><br/><b>scaleid</b> int <span style="color:#2A33A6">  <i>//scaleid</i></span><br/><b>scaleconfiguration</b> string <span style="color:#2A33A6">  <i>//scaleconfiguration</i></span><br/><b>competencyframeworkid</b> int <span style="color:#2A33A6">  <i>//competencyframeworkid</i></span><br/><b>id</b> int <span style="color:#2A33A6">  <i>//id</i></span><br/><b>timecreated</b> int <span style="color:#2A33A6">  <i>//timecreated</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6">  <i>//timemodified</i></span><br/><b>usermodified</b> int <span style="color:#2A33A6">  <i>//usermodified</i></span><br/>} <br/><b>framework</b> object {<br/><b>shortname</b> string <span style="color:#2A33A6">  <i>//shortname</i></span><br/><b>idnumber</b> string <span style="color:#2A33A6">  <i>//idnumber</i></span><br/><b>description</b> string <span style="color:#2A33A6">  <i>//description</i></span><br/><b>descriptionformat</b> int <span style="color:#2A33A6"> <b>Default to "1"</b> <i>//description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>visible</b> int <span style="color:#2A33A6">  <i>//visible</i></span><br/><b>scaleid</b> int <span style="color:#2A33A6">  <i>//scaleid</i></span><br/><b>scaleconfiguration</b> string <span style="color:#2A33A6">  <i>//scaleconfiguration</i></span><br/><b>contextid</b> int <span style="color:#2A33A6">  <i>//contextid</i></span><br/><b>taxonomies</b> string <span style="color:#2A33A6">  <i>//taxonomies</i></span><br/><b>id</b> int <span style="color:#2A33A6">  <i>//id</i></span><br/><b>timecreated</b> int <span style="color:#2A33A6">  <i>//timecreated</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6">  <i>//timemodified</i></span><br/><b>usermodified</b> int <span style="color:#2A33A6">  <i>//usermodified</i></span><br/><b>canmanage</b> int <span style="color:#2A33A6">  <i>//canmanage</i></span><br/><b>competenciescount</b> int <span style="color:#2A33A6">  <i>//competenciescount</i></span><br/><b>contextname</b> string <span style="color:#2A33A6">  <i>//contextname</i></span><br/><b>contextnamenoprefix</b> string <span style="color:#2A33A6">  <i>//contextnamenoprefix</i></span><br/>} <br/><b>hascourses</b> int <span style="color:#2A33A6">  <i>//hascourses</i></span><br/><b>hasrelatedcompetencies</b> int <span style="color:#2A33A6">  <i>//hasrelatedcompetencies</i></span><br/><b>scaleid</b> int <span style="color:#2A33A6">  <i>//scaleid</i></span><br/><b>scaleconfiguration</b> string <span style="color:#2A33A6">  <i>//scaleconfiguration</i></span><br/><b>taxonomyterm</b> string <span style="color:#2A33A6">  <i>//taxonomyterm</i></span><br/><b>comppath</b> object {<br/><b>ancestors</b> list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//id</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//name</i></span><br/><b>first</b> int <span style="color:#2A33A6">  <i>//first</i></span><br/><b>last</b> int <span style="color:#2A33A6">  <i>//last</i></span><br/><b>position</b> int <span style="color:#2A33A6">  <i>//position</i></span><br/>} <br/>)<b>framework</b> object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//id</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//name</i></span><br/><b>first</b> int <span style="color:#2A33A6">  <i>//first</i></span><br/><b>last</b> int <span style="color:#2A33A6">  <i>//last</i></span><br/><b>position</b> int <span style="color:#2A33A6">  <i>//position</i></span><br/>} <br/><b>pluginbaseurl</b> string <span style="color:#2A33A6">  <i>//pluginbaseurl</i></span><br/><b>pagecontextid</b> int <span style="color:#2A33A6">  <i>//pagecontextid</i></span><br/>} <br/>} <br/>)<b>manageurl</b> string <span style="color:#2A33A6">  <i>//Url to the manage competencies page.</i></span><br/><b>pluginbaseurl</b> string <span style="color:#2A33A6">  <i>//Base URL of the plugin.</i></span><br/><b>statistics</b> object {<br/><b>competencycount</b> int <span style="color:#2A33A6">  <i>//competencycount</i></span><br/><b>unlinkedcompetencycount</b> int <span style="color:#2A33A6">  <i>//unlinkedcompetencycount</i></span><br/><b>plancount</b> int <span style="color:#2A33A6">  <i>//plancount</i></span><br/><b>completedplancount</b> int <span style="color:#2A33A6">  <i>//completedplancount</i></span><br/><b>usercompetencyplancount</b> int <span style="color:#2A33A6">  <i>//usercompetencyplancount</i></span><br/><b>proficientusercompetencyplancount</b> int <span style="color:#2A33A6">  <i>//proficientusercompetencyplancount</i></span><br/><b>linkedcompetencypercentage</b> double <span style="color:#2A33A6">  <i>//linkedcompetencypercentage</i></span><br/><b>linkedcompetencypercentageformatted</b> string <span style="color:#2A33A6">  <i>//linkedcompetencypercentageformatted</i></span><br/><b>linkedcompetencycount</b> int <span style="color:#2A33A6">  <i>//linkedcompetencycount</i></span><br/><b>completedplanpercentage</b> double <span style="color:#2A33A6">  <i>//completedplanpercentage</i></span><br/><b>completedplanpercentageformatted</b> string <span style="color:#2A33A6">  <i>//completedplanpercentageformatted</i></span><br/><b>proficientusercompetencyplanpercentage</b> double <span style="color:#2A33A6">  <i>//proficientusercompetencyplanpercentage</i></span><br/><b>proficientusercompetencyplanpercentageformatted</b> string <span style="color:#2A33A6">  <i>//proficientusercompetencyplanpercentageformatted</i></span><br/><b>leastproficient</b> list of ( <br/>object {<br/><b>shortname</b> string <span style="color:#2A33A6">  <i>//shortname</i></span><br/><b>idnumber</b> string <span style="color:#2A33A6">  <i>//idnumber</i></span><br/><b>description</b> string <span style="color:#2A33A6">  <i>//description</i></span><br/><b>descriptionformat</b> int <span style="color:#2A33A6"> <b>Default to "1"</b> <i>//description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>sortorder</b> int <span style="color:#2A33A6">  <i>//sortorder</i></span><br/><b>parentid</b> int <span style="color:#2A33A6">  <i>//parentid</i></span><br/><b>path</b> string <span style="color:#2A33A6">  <i>//path</i></span><br/><b>ruleoutcome</b> int <span style="color:#2A33A6">  <i>//ruleoutcome</i></span><br/><b>ruletype</b> string <span style="color:#2A33A6">  <i>//ruletype</i></span><br/><b>ruleconfig</b> string <span style="color:#2A33A6">  <i>//ruleconfig</i></span><br/><b>scaleid</b> int <span style="color:#2A33A6">  <i>//scaleid</i></span><br/><b>scaleconfiguration</b> string <span style="color:#2A33A6">  <i>//scaleconfiguration</i></span><br/><b>competencyframeworkid</b> int <span style="color:#2A33A6">  <i>//competencyframeworkid</i></span><br/><b>id</b> int <span style="color:#2A33A6">  <i>//id</i></span><br/><b>timecreated</b> int <span style="color:#2A33A6">  <i>//timecreated</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6">  <i>//timemodified</i></span><br/><b>usermodified</b> int <span style="color:#2A33A6">  <i>//usermodified</i></span><br/>} <br/>)<b>leastproficientcount</b> int <span style="color:#2A33A6">  <i>//leastproficientcount</i></span><br/>} <br/>} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [template] =&gt;
+            Array 
+                (
+                [shortname] =&gt; string                
+                [description] =&gt; string                
+                [descriptionformat] =&gt; int                
+                [duedate] =&gt; int                
+                [visible] =&gt; int                
+                [contextid] =&gt; int                
+                [id] =&gt; int                
+                [timecreated] =&gt; int                
+                [timemodified] =&gt; int                
+                [usermodified] =&gt; int                
+                [duedateformatted] =&gt; string                
+                [cohortscount] =&gt; int                
+                [planscount] =&gt; int                
+                [canmanage] =&gt; int                
+                [canread] =&gt; int                
+                [contextname] =&gt; string                
+                [contextnamenoprefix] =&gt; string                
+                )        
+        [pagecontextid] =&gt; int        
+        [canmanagecompetencyframeworks] =&gt; int        
+        [canmanagetemplatecompetencies] =&gt; int        
+        [competencies] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [linkedcourses] =&gt;
+                            Array 
+                                (
+                                [0] =&gt;
+                                    Array 
+                                        (
+                                        [id] =&gt; int                                        
+                                        [fullname] =&gt; string                                        
+                                        [shortname] =&gt; string                                        
+                                        [idnumber] =&gt; string                                        
+                                        [viewurl] =&gt; string                                        
+                                        )
+                                )                        
+                        [relatedcompetencies] =&gt;
+                            Array 
+                                (
+                                [0] =&gt;
+                                    Array 
+                                        (
+                                        [shortname] =&gt; string                                        
+                                        [idnumber] =&gt; string                                        
+                                        [description] =&gt; string                                        
+                                        [descriptionformat] =&gt; int                                        
+                                        [sortorder] =&gt; int                                        
+                                        [parentid] =&gt; int                                        
+                                        [path] =&gt; string                                        
+                                        [ruleoutcome] =&gt; int                                        
+                                        [ruletype] =&gt; string                                        
+                                        [ruleconfig] =&gt; string                                        
+                                        [scaleid] =&gt; int                                        
+                                        [scaleconfiguration] =&gt; string                                        
+                                        [competencyframeworkid] =&gt; int                                        
+                                        [id] =&gt; int                                        
+                                        [timecreated] =&gt; int                                        
+                                        [timemodified] =&gt; int                                        
+                                        [usermodified] =&gt; int                                        
+                                        )
+                                )                        
+                        [competency] =&gt;
+                            Array 
+                                (
+                                [shortname] =&gt; string                                
+                                [idnumber] =&gt; string                                
+                                [description] =&gt; string                                
+                                [descriptionformat] =&gt; int                                
+                                [sortorder] =&gt; int                                
+                                [parentid] =&gt; int                                
+                                [path] =&gt; string                                
+                                [ruleoutcome] =&gt; int                                
+                                [ruletype] =&gt; string                                
+                                [ruleconfig] =&gt; string                                
+                                [scaleid] =&gt; int                                
+                                [scaleconfiguration] =&gt; string                                
+                                [competencyframeworkid] =&gt; int                                
+                                [id] =&gt; int                                
+                                [timecreated] =&gt; int                                
+                                [timemodified] =&gt; int                                
+                                [usermodified] =&gt; int                                
+                                )                        
+                        [framework] =&gt;
+                            Array 
+                                (
+                                [shortname] =&gt; string                                
+                                [idnumber] =&gt; string                                
+                                [description] =&gt; string                                
+                                [descriptionformat] =&gt; int                                
+                                [visible] =&gt; int                                
+                                [scaleid] =&gt; int                                
+                                [scaleconfiguration] =&gt; string                                
+                                [contextid] =&gt; int                                
+                                [taxonomies] =&gt; string                                
+                                [id] =&gt; int                                
+                                [timecreated] =&gt; int                                
+                                [timemodified] =&gt; int                                
+                                [usermodified] =&gt; int                                
+                                [canmanage] =&gt; int                                
+                                [competenciescount] =&gt; int                                
+                                [contextname] =&gt; string                                
+                                [contextnamenoprefix] =&gt; string                                
+                                )                        
+                        [hascourses] =&gt; int                        
+                        [hasrelatedcompetencies] =&gt; int                        
+                        [scaleid] =&gt; int                        
+                        [scaleconfiguration] =&gt; string                        
+                        [taxonomyterm] =&gt; string                        
+                        [comppath] =&gt;
+                            Array 
+                                (
+                                [ancestors] =&gt;
+                                    Array 
+                                        (
+                                        [0] =&gt;
+                                            Array 
+                                                (
+                                                [id] =&gt; int                                                
+                                                [name] =&gt; string                                                
+                                                [first] =&gt; int                                                
+                                                [last] =&gt; int                                                
+                                                [position] =&gt; int                                                
+                                                )
+                                        )                                
+                                [framework] =&gt;
+                                    Array 
+                                        (
+                                        [id] =&gt; int                                        
+                                        [name] =&gt; string                                        
+                                        [first] =&gt; int                                        
+                                        [last] =&gt; int                                        
+                                        [position] =&gt; int                                        
+                                        )                                
+                                [pluginbaseurl] =&gt; string                                
+                                [pagecontextid] =&gt; int                                
+                                )                        
+                        )
+                )        
+        [manageurl] =&gt; string        
+        [pluginbaseurl] =&gt; string        
+        [statistics] =&gt;
+            Array 
+                (
+                [competencycount] =&gt; int                
+                [unlinkedcompetencycount] =&gt; int                
+                [plancount] =&gt; int                
+                [completedplancount] =&gt; int                
+                [usercompetencyplancount] =&gt; int                
+                [proficientusercompetencyplancount] =&gt; int                
+                [linkedcompetencypercentage] =&gt; double                
+                [linkedcompetencypercentageformatted] =&gt; string                
+                [linkedcompetencycount] =&gt; int                
+                [completedplanpercentage] =&gt; double                
+                [completedplanpercentageformatted] =&gt; string                
+                [proficientusercompetencyplanpercentage] =&gt; double                
+                [proficientusercompetencyplanpercentageformatted] =&gt; string                
+                [leastproficient] =&gt;
+                    Array 
+                        (
+                        [0] =&gt;
+                            Array 
+                                (
+                                [shortname] =&gt; string                                
+                                [idnumber] =&gt; string                                
+                                [description] =&gt; string                                
+                                [descriptionformat] =&gt; int                                
+                                [sortorder] =&gt; int                                
+                                [parentid] =&gt; int                                
+                                [path] =&gt; string                                
+                                [ruleoutcome] =&gt; int                                
+                                [ruletype] =&gt; string                                
+                                [ruleconfig] =&gt; string                                
+                                [scaleid] =&gt; int                                
+                                [scaleconfiguration] =&gt; string                                
+                                [competencyframeworkid] =&gt; int                                
+                                [id] =&gt; int                                
+                                [timecreated] =&gt; int                                
+                                [timemodified] =&gt; int                                
+                                [usermodified] =&gt; int                                
+                                )
+                        )                
+                [leastproficientcount] =&gt; int                
+                )        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="template"&gt;
+            &lt;SINGLE&gt;
+                &lt;KEY name="shortname"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="description"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="descriptionformat"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="duedate"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="visible"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="contextid"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="id"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="timecreated"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="timemodified"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="usermodified"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="duedateformatted"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="cohortscount"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="planscount"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="canmanage"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="canread"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="contextname"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="contextnamenoprefix"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+            &lt;/SINGLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="pagecontextid"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="canmanagecompetencyframeworks"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="canmanagetemplatecompetencies"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="competencies"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="linkedcourses"&gt;
+                        &lt;MULTIPLE&gt;
+                            &lt;SINGLE&gt;
+                                &lt;KEY name="id"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="fullname"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="shortname"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="idnumber"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="viewurl"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                            &lt;/SINGLE&gt;
+                        &lt;/MULTIPLE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="relatedcompetencies"&gt;
+                        &lt;MULTIPLE&gt;
+                            &lt;SINGLE&gt;
+                                &lt;KEY name="shortname"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="idnumber"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="description"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="descriptionformat"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="sortorder"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="parentid"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="path"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="ruleoutcome"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="ruletype"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="ruleconfig"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="scaleid"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="scaleconfiguration"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="competencyframeworkid"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="id"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="timecreated"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="timemodified"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="usermodified"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                            &lt;/SINGLE&gt;
+                        &lt;/MULTIPLE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="competency"&gt;
+                        &lt;SINGLE&gt;
+                            &lt;KEY name="shortname"&gt;
+                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="idnumber"&gt;
+                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="description"&gt;
+                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="descriptionformat"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="sortorder"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="parentid"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="path"&gt;
+                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="ruleoutcome"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="ruletype"&gt;
+                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="ruleconfig"&gt;
+                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="scaleid"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="scaleconfiguration"&gt;
+                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="competencyframeworkid"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="id"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="timecreated"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="timemodified"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="usermodified"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                        &lt;/SINGLE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="framework"&gt;
+                        &lt;SINGLE&gt;
+                            &lt;KEY name="shortname"&gt;
+                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="idnumber"&gt;
+                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="description"&gt;
+                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="descriptionformat"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="visible"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="scaleid"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="scaleconfiguration"&gt;
+                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="contextid"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="taxonomies"&gt;
+                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="id"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="timecreated"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="timemodified"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="usermodified"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="canmanage"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="competenciescount"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="contextname"&gt;
+                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="contextnamenoprefix"&gt;
+                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                        &lt;/SINGLE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="hascourses"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="hasrelatedcompetencies"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="scaleid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="scaleconfiguration"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="taxonomyterm"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="comppath"&gt;
+                        &lt;SINGLE&gt;
+                            &lt;KEY name="ancestors"&gt;
+                                &lt;MULTIPLE&gt;
+                                    &lt;SINGLE&gt;
+                                        &lt;KEY name="id"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="name"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="first"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="last"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="position"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                    &lt;/SINGLE&gt;
+                                &lt;/MULTIPLE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="framework"&gt;
+                                &lt;SINGLE&gt;
+                                    &lt;KEY name="id"&gt;
+                                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                    &lt;/KEY&gt;
+                                    &lt;KEY name="name"&gt;
+                                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                    &lt;/KEY&gt;
+                                    &lt;KEY name="first"&gt;
+                                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                    &lt;/KEY&gt;
+                                    &lt;KEY name="last"&gt;
+                                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                    &lt;/KEY&gt;
+                                    &lt;KEY name="position"&gt;
+                                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                    &lt;/KEY&gt;
+                                &lt;/SINGLE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="pluginbaseurl"&gt;
+                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="pagecontextid"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                        &lt;/SINGLE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="manageurl"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="pluginbaseurl"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="statistics"&gt;
+            &lt;SINGLE&gt;
+                &lt;KEY name="competencycount"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="unlinkedcompetencycount"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="plancount"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="completedplancount"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="usercompetencyplancount"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="proficientusercompetencyplancount"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="linkedcompetencypercentage"&gt;
+                    &lt;VALUE&gt;double&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="linkedcompetencypercentageformatted"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="linkedcompetencycount"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="completedplanpercentage"&gt;
+                    &lt;VALUE&gt;double&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="completedplanpercentageformatted"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="proficientusercompetencyplanpercentage"&gt;
+                    &lt;VALUE&gt;double&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="proficientusercompetencyplanpercentageformatted"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="leastproficient"&gt;
+                    &lt;MULTIPLE&gt;
+                        &lt;SINGLE&gt;
+                            &lt;KEY name="shortname"&gt;
+                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="idnumber"&gt;
+                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="description"&gt;
+                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="descriptionformat"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="sortorder"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="parentid"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="path"&gt;
+                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="ruleoutcome"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="ruletype"&gt;
+                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="ruleconfig"&gt;
+                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="scaleid"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="scaleconfiguration"&gt;
+                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="competencyframeworkid"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="id"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="timecreated"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="timemodified"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="usermodified"&gt;
+                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                        &lt;/SINGLE&gt;
+                    &lt;/MULTIPLE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="leastproficientcount"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+            &lt;/SINGLE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>Yes<br/><br/></div>

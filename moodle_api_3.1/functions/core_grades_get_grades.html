@@ -1,0 +1,266 @@
+<div class="collapsibleregioninner" id="aera_core_grades_get_grades_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Returns student course total grade and grades for activities.
+                                     This function does not return category or manual items.
+                                     This function is suitable for managers or teachers not students.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>courseid</b> (Required)<br/>        id of course<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//id of course</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[courseid] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+courseid= int
+
+</pre></div></div></span><span style="font-size:80%"><b>component</b> (Default to "")<br/>        A component, for example mod_forum or mod_quiz<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+string <span style="color:#2A33A6"> <b>Default to ""</b> <i>//A component, for example mod_forum or mod_quiz</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[component] =&gt; string
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+component= string
+
+</pre></div></div></span><span style="font-size:80%"><b>activityid</b> (Default to "null")<br/>        The activity ID<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6"> <b>Default to "null"</b> <i>//The activity ID</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[activityid] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+activityid= int
+
+</pre></div></div></span><span style="font-size:80%"><b>userids</b> (Default to "Array
+(
+)
+")<br/>        An array of user IDs, leave empty to just retrieve grade item information<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+<span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//An array of user IDs, leave empty to just retrieve grade item information</i></span><br/>list of ( <br/>int <span style="color:#2A33A6">  <i>//user ID</i></span><br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[userids] =&gt;
+    Array 
+        (
+        [0] =&gt; int
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+userids[0]= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>items</b> list of ( <br/>object {<br/><b>activityid</b> string <span style="color:#2A33A6">  <i>//The ID of the activity or "course" for the course grade item</i></span><br/><b>itemnumber</b> int <span style="color:#2A33A6">  <i>//Will be 0 unless the module has multiple grades</i></span><br/><b>scaleid</b> int <span style="color:#2A33A6">  <i>//The ID of the custom scale or 0</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//The module name</i></span><br/><b>grademin</b> double <span style="color:#2A33A6">  <i>//Minimum grade</i></span><br/><b>grademax</b> double <span style="color:#2A33A6">  <i>//Maximum grade</i></span><br/><b>gradepass</b> double <span style="color:#2A33A6">  <i>//The passing grade threshold</i></span><br/><b>locked</b> int <span style="color:#2A33A6">  <i>//0 means not locked, &gt; 1 is a date to lock until</i></span><br/><b>hidden</b> int <span style="color:#2A33A6">  <i>//0 means not hidden, &gt; 1 is a date to hide until</i></span><br/><b>grades</b> list of ( <br/>object {<br/><b>userid</b> int <span style="color:#2A33A6">  <i>//Student ID</i></span><br/><b>grade</b> double <span style="color:#2A33A6">  <i>//Student grade</i></span><br/><b>locked</b> int <span style="color:#2A33A6">  <i>//0 means not locked, &gt; 1 is a date to lock until</i></span><br/><b>hidden</b> int <span style="color:#2A33A6">  <i>//0 means not hidden, 1 hidden, &gt; 1 is a date to hide until</i></span><br/><b>overridden</b> int <span style="color:#2A33A6">  <i>//0 means not overridden, &gt; 1 means overridden</i></span><br/><b>feedback</b> string <span style="color:#2A33A6">  <i>//Feedback from the grader</i></span><br/><b>feedbackformat</b> int <span style="color:#2A33A6">  <i>//The format of the feedback</i></span><br/><b>usermodified</b> int <span style="color:#2A33A6">  <i>//The ID of the last user to modify this student grade</i></span><br/><b>datesubmitted</b> int <span style="color:#2A33A6">  <i>//A timestamp indicating when the student submitted the activity</i></span><br/><b>dategraded</b> int <span style="color:#2A33A6">  <i>//A timestamp indicating when the assignment was grades</i></span><br/><b>str_grade</b> string <span style="color:#2A33A6">  <i>//A string representation of the grade</i></span><br/><b>str_long_grade</b> string <span style="color:#2A33A6">  <i>//A nicely formatted string representation of the grade</i></span><br/><b>str_feedback</b> string <span style="color:#2A33A6">  <i>//A formatted string representation of the feedback from the grader</i></span><br/>} <br/>)} <br/>)<b>outcomes</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//An array of outcomes associated with the grade items</i></span><br/>list of ( <br/>object {<br/><b>activityid</b> string <span style="color:#2A33A6">  <i>//The ID of the activity or "course" for the course grade item</i></span><br/><b>itemnumber</b> int <span style="color:#2A33A6">  <i>//Will be 0 unless the module has multiple grades</i></span><br/><b>scaleid</b> int <span style="color:#2A33A6">  <i>//The ID of the custom scale or 0</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//The module name</i></span><br/><b>locked</b> int <span style="color:#2A33A6">  <i>//0 means not locked, &gt; 1 is a date to lock until</i></span><br/><b>hidden</b> int <span style="color:#2A33A6">  <i>//0 means not hidden, &gt; 1 is a date to hide until</i></span><br/><b>grades</b> list of ( <br/>object {<br/><b>userid</b> int <span style="color:#2A33A6">  <i>//Student ID</i></span><br/><b>grade</b> double <span style="color:#2A33A6">  <i>//Student grade</i></span><br/><b>locked</b> int <span style="color:#2A33A6">  <i>//0 means not locked, &gt; 1 is a date to lock until</i></span><br/><b>hidden</b> int <span style="color:#2A33A6">  <i>//0 means not hidden, 1 hidden, &gt; 1 is a date to hide until</i></span><br/><b>feedback</b> string <span style="color:#2A33A6">  <i>//Feedback from the grader</i></span><br/><b>feedbackformat</b> int <span style="color:#2A33A6">  <i>//The feedback format</i></span><br/><b>usermodified</b> int <span style="color:#2A33A6">  <i>//The ID of the last user to modify this student grade</i></span><br/><b>str_grade</b> string <span style="color:#2A33A6">  <i>//A string representation of the grade</i></span><br/><b>str_feedback</b> string <span style="color:#2A33A6">  <i>//A formatted string representation of the feedback from the grader</i></span><br/>} <br/>)} <br/>)} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [items] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [activityid] =&gt; string                        
+                        [itemnumber] =&gt; int                        
+                        [scaleid] =&gt; int                        
+                        [name] =&gt; string                        
+                        [grademin] =&gt; double                        
+                        [grademax] =&gt; double                        
+                        [gradepass] =&gt; double                        
+                        [locked] =&gt; int                        
+                        [hidden] =&gt; int                        
+                        [grades] =&gt;
+                            Array 
+                                (
+                                [0] =&gt;
+                                    Array 
+                                        (
+                                        [userid] =&gt; int                                        
+                                        [grade] =&gt; double                                        
+                                        [locked] =&gt; int                                        
+                                        [hidden] =&gt; int                                        
+                                        [overridden] =&gt; int                                        
+                                        [feedback] =&gt; string                                        
+                                        [feedbackformat] =&gt; int                                        
+                                        [usermodified] =&gt; int                                        
+                                        [datesubmitted] =&gt; int                                        
+                                        [dategraded] =&gt; int                                        
+                                        [str_grade] =&gt; string                                        
+                                        [str_long_grade] =&gt; string                                        
+                                        [str_feedback] =&gt; string                                        
+                                        )
+                                )                        
+                        )
+                )        
+        [outcomes] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [activityid] =&gt; string                        
+                        [itemnumber] =&gt; int                        
+                        [scaleid] =&gt; int                        
+                        [name] =&gt; string                        
+                        [locked] =&gt; int                        
+                        [hidden] =&gt; int                        
+                        [grades] =&gt;
+                            Array 
+                                (
+                                [0] =&gt;
+                                    Array 
+                                        (
+                                        [userid] =&gt; int                                        
+                                        [grade] =&gt; double                                        
+                                        [locked] =&gt; int                                        
+                                        [hidden] =&gt; int                                        
+                                        [feedback] =&gt; string                                        
+                                        [feedbackformat] =&gt; int                                        
+                                        [usermodified] =&gt; int                                        
+                                        [str_grade] =&gt; string                                        
+                                        [str_feedback] =&gt; string                                        
+                                        )
+                                )                        
+                        )
+                )        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="items"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="activityid"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="itemnumber"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="scaleid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="name"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="grademin"&gt;
+                        &lt;VALUE&gt;double&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="grademax"&gt;
+                        &lt;VALUE&gt;double&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="gradepass"&gt;
+                        &lt;VALUE&gt;double&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="locked"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="hidden"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="grades"&gt;
+                        &lt;MULTIPLE&gt;
+                            &lt;SINGLE&gt;
+                                &lt;KEY name="userid"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="grade"&gt;
+                                    &lt;VALUE&gt;double&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="locked"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="hidden"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="overridden"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="feedback"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="feedbackformat"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="usermodified"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="datesubmitted"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="dategraded"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="str_grade"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="str_long_grade"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="str_feedback"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                            &lt;/SINGLE&gt;
+                        &lt;/MULTIPLE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="outcomes"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="activityid"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="itemnumber"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="scaleid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="name"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="locked"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="hidden"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="grades"&gt;
+                        &lt;MULTIPLE&gt;
+                            &lt;SINGLE&gt;
+                                &lt;KEY name="userid"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="grade"&gt;
+                                    &lt;VALUE&gt;double&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="locked"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="hidden"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="feedback"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="feedbackformat"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="usermodified"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="str_grade"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="str_feedback"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                            &lt;/SINGLE&gt;
+                        &lt;/MULTIPLE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

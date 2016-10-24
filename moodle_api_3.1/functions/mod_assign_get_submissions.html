@@ -1,0 +1,244 @@
+<div class="collapsibleregioninner" id="aera_mod_assign_get_submissions_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Returns the submissions for assignments</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>assignmentids</b> (Required)<br/>        1 or more assignment ids<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+<span style="color:#2A33A6">  <i>//1 or more assignment ids</i></span><br/>list of ( <br/>int <span style="color:#2A33A6">  <i>//assignment id</i></span><br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[assignmentids] =&gt;
+    Array 
+        (
+        [0] =&gt; int
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+assignmentids[0]= int
+
+</pre></div></div></span><span style="font-size:80%"><b>status</b> (Default to "")<br/>        status<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+string <span style="color:#2A33A6"> <b>Default to ""</b> <i>//status</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[status] =&gt; string
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+status= string
+
+</pre></div></div></span><span style="font-size:80%"><b>since</b> (Default to "0")<br/>        submitted since<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//submitted since</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[since] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+since= int
+
+</pre></div></div></span><span style="font-size:80%"><b>before</b> (Default to "0")<br/>        submitted before<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//submitted before</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[before] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+before= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>assignments</b> <span style="color:#2A33A6">  <i>//assignment submissions</i></span><br/>list of ( <br/>object {<br/><b>assignmentid</b> int <span style="color:#2A33A6">  <i>//assignment id</i></span><br/><b>submissions</b> list of ( <br/><span style="color:#2A33A6">  <i>//submission info</i></span><br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//submission id</i></span><br/><b>userid</b> int <span style="color:#2A33A6">  <i>//student id</i></span><br/><b>attemptnumber</b> int <span style="color:#2A33A6">  <i>//attempt number</i></span><br/><b>timecreated</b> int <span style="color:#2A33A6">  <i>//submission creation time</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6">  <i>//submission last modified time</i></span><br/><b>status</b> string <span style="color:#2A33A6">  <i>//submission status</i></span><br/><b>groupid</b> int <span style="color:#2A33A6">  <i>//group id</i></span><br/><b>assignment</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//assignment id</i></span><br/><b>latest</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//latest attempt</i></span><br/><b>plugins</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//plugins</i></span><br/>list of ( <br/>object {<br/><b>type</b> string <span style="color:#2A33A6">  <i>//submission plugin type</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//submission plugin name</i></span><br/><b>fileareas</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//fileareas</i></span><br/>list of ( <br/>object {<br/><b>area</b> string <span style="color:#2A33A6">  <i>//file area</i></span><br/><b>files</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//files</i></span><br/>list of ( <br/>object {<br/><b>filepath</b> string <span style="color:#2A33A6">  <i>//file path</i></span><br/><b>fileurl</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//file download url</i></span><br/>} <br/>)} <br/>)<b>editorfields</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//editorfields</i></span><br/>list of ( <br/>object {<br/><b>name</b> string <span style="color:#2A33A6">  <i>//field name</i></span><br/><b>description</b> string <span style="color:#2A33A6">  <i>//field description</i></span><br/><b>text</b> string <span style="color:#2A33A6">  <i>//field value</i></span><br/><b>format</b> int <span style="color:#2A33A6">  <i>//text format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/>} <br/>)} <br/>)} <br/>)} <br/>)<b>warnings</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//list of warnings</i></span><br/>list of ( <br/><span style="color:#2A33A6">  <i>//warning</i></span><br/>object {<br/><b>item</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//item</i></span><br/><b>itemid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//item id</i></span><br/><b>warningcode</b> string <span style="color:#2A33A6">  <i>//the warning code can be used by the client app to implement specific behaviour</i></span><br/><b>message</b> string <span style="color:#2A33A6">  <i>//untranslated english message to explain the warning</i></span><br/>} <br/>)} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [assignments] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [assignmentid] =&gt; int                        
+                        [submissions] =&gt;
+                            Array 
+                                (
+                                [0] =&gt;
+                                    Array 
+                                        (
+                                        [id] =&gt; int                                        
+                                        [userid] =&gt; int                                        
+                                        [attemptnumber] =&gt; int                                        
+                                        [timecreated] =&gt; int                                        
+                                        [timemodified] =&gt; int                                        
+                                        [status] =&gt; string                                        
+                                        [groupid] =&gt; int                                        
+                                        [assignment] =&gt; int                                        
+                                        [latest] =&gt; int                                        
+                                        [plugins] =&gt;
+                                            Array 
+                                                (
+                                                [0] =&gt;
+                                                    Array 
+                                                        (
+                                                        [type] =&gt; string                                                        
+                                                        [name] =&gt; string                                                        
+                                                        [fileareas] =&gt;
+                                                            Array 
+                                                                (
+                                                                [0] =&gt;
+                                                                    Array 
+                                                                        (
+                                                                        [area] =&gt; string                                                                        
+                                                                        [files] =&gt;
+                                                                            Array 
+                                                                                (
+                                                                                [0] =&gt;
+                                                                                    Array 
+                                                                                        (
+                                                                                        [filepath] =&gt; string                                                                                        
+                                                                                        [fileurl] =&gt; string                                                                                        
+                                                                                        )
+                                                                                )                                                                        
+                                                                        )
+                                                                )                                                        
+                                                        [editorfields] =&gt;
+                                                            Array 
+                                                                (
+                                                                [0] =&gt;
+                                                                    Array 
+                                                                        (
+                                                                        [name] =&gt; string                                                                        
+                                                                        [description] =&gt; string                                                                        
+                                                                        [text] =&gt; string                                                                        
+                                                                        [format] =&gt; int                                                                        
+                                                                        )
+                                                                )                                                        
+                                                        )
+                                                )                                        
+                                        )
+                                )                        
+                        )
+                )        
+        [warnings] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [item] =&gt; string                        
+                        [itemid] =&gt; int                        
+                        [warningcode] =&gt; string                        
+                        [message] =&gt; string                        
+                        )
+                )        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="assignments"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="assignmentid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="submissions"&gt;
+                        &lt;MULTIPLE&gt;
+                            &lt;SINGLE&gt;
+                                &lt;KEY name="id"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="userid"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="attemptnumber"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="timecreated"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="timemodified"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="status"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="groupid"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="assignment"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="latest"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="plugins"&gt;
+                                    &lt;MULTIPLE&gt;
+                                        &lt;SINGLE&gt;
+                                            &lt;KEY name="type"&gt;
+                                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                            &lt;/KEY&gt;
+                                            &lt;KEY name="name"&gt;
+                                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                            &lt;/KEY&gt;
+                                            &lt;KEY name="fileareas"&gt;
+                                                &lt;MULTIPLE&gt;
+                                                    &lt;SINGLE&gt;
+                                                        &lt;KEY name="area"&gt;
+                                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                                        &lt;/KEY&gt;
+                                                        &lt;KEY name="files"&gt;
+                                                            &lt;MULTIPLE&gt;
+                                                                &lt;SINGLE&gt;
+                                                                    &lt;KEY name="filepath"&gt;
+                                                                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                                                    &lt;/KEY&gt;
+                                                                    &lt;KEY name="fileurl"&gt;
+                                                                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                                                    &lt;/KEY&gt;
+                                                                &lt;/SINGLE&gt;
+                                                            &lt;/MULTIPLE&gt;
+                                                        &lt;/KEY&gt;
+                                                    &lt;/SINGLE&gt;
+                                                &lt;/MULTIPLE&gt;
+                                            &lt;/KEY&gt;
+                                            &lt;KEY name="editorfields"&gt;
+                                                &lt;MULTIPLE&gt;
+                                                    &lt;SINGLE&gt;
+                                                        &lt;KEY name="name"&gt;
+                                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                                        &lt;/KEY&gt;
+                                                        &lt;KEY name="description"&gt;
+                                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                                        &lt;/KEY&gt;
+                                                        &lt;KEY name="text"&gt;
+                                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                                        &lt;/KEY&gt;
+                                                        &lt;KEY name="format"&gt;
+                                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                                        &lt;/KEY&gt;
+                                                    &lt;/SINGLE&gt;
+                                                &lt;/MULTIPLE&gt;
+                                            &lt;/KEY&gt;
+                                        &lt;/SINGLE&gt;
+                                    &lt;/MULTIPLE&gt;
+                                &lt;/KEY&gt;
+                            &lt;/SINGLE&gt;
+                        &lt;/MULTIPLE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="warnings"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="item"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="itemid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="warningcode"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="message"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

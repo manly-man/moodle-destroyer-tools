@@ -1,0 +1,131 @@
+<div class="collapsibleregioninner" id="aera_mod_assign_save_grades_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Save multiple grade updates for an assignment.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>assignmentid</b> (Required)<br/>        The assignment id to operate on<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//The assignment id to operate on</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[assignmentid] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+assignmentid= int
+
+</pre></div></div></span><span style="font-size:80%"><b>applytoall</b> (Required)<br/>        If true, this grade will be applied to all members of the group (for group assignments).<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//If true, this grade will be applied to all members of the group (for group assignments).</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[applytoall] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+applytoall= int
+
+</pre></div></div></span><span style="font-size:80%"><b>grades</b> (Required)<br/>        <br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+list of ( <br/>object {<br/><b>userid</b> int <span style="color:#2A33A6">  <i>//The student id to operate on</i></span><br/><b>grade</b> double <span style="color:#2A33A6">  <i>//The new grade for this user. Ignored if advanced grading used</i></span><br/><b>attemptnumber</b> int <span style="color:#2A33A6">  <i>//The attempt number (-1 means latest attempt)</i></span><br/><b>addattempt</b> int <span style="color:#2A33A6">  <i>//Allow another attempt if manual attempt reopen method</i></span><br/><b>workflowstate</b> string <span style="color:#2A33A6">  <i>//The next marking workflow state</i></span><br/><b>plugindata</b> <span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//plugin data</i></span><br/>object {<br/><b>assignfeedbackcomments_editor</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//Editor structure</i></span><br/>object {<br/><b>text</b> string <span style="color:#2A33A6">  <i>//The text for this feedback.</i></span><br/><b>format</b> int <span style="color:#2A33A6">  <i>//The format for this feedback</i></span><br/>} <br/><b>files_filemanager</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//The id of a draft area containing files for this feedback.</i></span><br/>} <br/><b>advancedgradingdata</b> <span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//advanced grading data</i></span><br/>object {<br/><b>guide</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//items</i></span><br/>object {<br/><b>criteria</b> list of ( <br/>object {<br/><b>criterionid</b> int <span style="color:#2A33A6">  <i>//criterion id</i></span><br/><b>fillings</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//filling</i></span><br/>list of ( <br/>object {<br/><b>criterionid</b> int <span style="color:#2A33A6">  <i>//criterion id</i></span><br/><b>levelid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//level id</i></span><br/><b>remark</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//remark</i></span><br/><b>remarkformat</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//remark format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>score</b> double <span style="color:#2A33A6">  <i>//maximum score</i></span><br/>} <br/>)} <br/>)} <br/><b>rubric</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//items</i></span><br/>object {<br/><b>criteria</b> list of ( <br/>object {<br/><b>criterionid</b> int <span style="color:#2A33A6">  <i>//criterion id</i></span><br/><b>fillings</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//filling</i></span><br/>list of ( <br/>object {<br/><b>criterionid</b> int <span style="color:#2A33A6">  <i>//criterion id</i></span><br/><b>levelid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//level id</i></span><br/><b>remark</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//remark</i></span><br/><b>remarkformat</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//remark format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/>} <br/>)} <br/>)} <br/>} <br/>} <br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[grades] =&gt;
+    Array 
+        (
+        [0] =&gt;
+            Array 
+                (
+                [userid] =&gt; int                
+                [grade] =&gt; double                
+                [attemptnumber] =&gt; int                
+                [addattempt] =&gt; int                
+                [workflowstate] =&gt; string                
+                [plugindata] =&gt;
+                    Array 
+                        (
+                        [assignfeedbackcomments_editor] =&gt;
+                            Array 
+                                (
+                                [text] =&gt; string                                
+                                [format] =&gt; int                                
+                                )                        
+                        [files_filemanager] =&gt; int                        
+                        )                
+                [advancedgradingdata] =&gt;
+                    Array 
+                        (
+                        [guide] =&gt;
+                            Array 
+                                (
+                                [criteria] =&gt;
+                                    Array 
+                                        (
+                                        [0] =&gt;
+                                            Array 
+                                                (
+                                                [criterionid] =&gt; int                                                
+                                                [fillings] =&gt;
+                                                    Array 
+                                                        (
+                                                        [0] =&gt;
+                                                            Array 
+                                                                (
+                                                                [criterionid] =&gt; int                                                                
+                                                                [levelid] =&gt; int                                                                
+                                                                [remark] =&gt; string                                                                
+                                                                [remarkformat] =&gt; int                                                                
+                                                                [score] =&gt; double                                                                
+                                                                )
+                                                        )                                                
+                                                )
+                                        )                                
+                                )                        
+                        [rubric] =&gt;
+                            Array 
+                                (
+                                [criteria] =&gt;
+                                    Array 
+                                        (
+                                        [0] =&gt;
+                                            Array 
+                                                (
+                                                [criterionid] =&gt; int                                                
+                                                [fillings] =&gt;
+                                                    Array 
+                                                        (
+                                                        [0] =&gt;
+                                                            Array 
+                                                                (
+                                                                [criterionid] =&gt; int                                                                
+                                                                [levelid] =&gt; int                                                                
+                                                                [remark] =&gt; string                                                                
+                                                                [remarkformat] =&gt; int                                                                
+                                                                )
+                                                        )                                                
+                                                )
+                                        )                                
+                                )                        
+                        )                
+                )
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+grades[0][userid]= int
+grades[0][grade]= double
+grades[0][attemptnumber]= int
+grades[0][addattempt]= int
+grades[0][workflowstate]= string
+grades[0][plugindata][assignfeedbackcomments_editor][text]= string
+grades[0][plugindata][assignfeedbackcomments_editor][format]= int
+grades[0][plugindata][files_filemanager]= int
+grades[0][advancedgradingdata][guide][criteria][0][criterionid]= int
+grades[0][advancedgradingdata][guide][criteria][0][fillings][0][criterionid]= int
+grades[0][advancedgradingdata][guide][criteria][0][fillings][0][levelid]= int
+grades[0][advancedgradingdata][guide][criteria][0][fillings][0][remark]= string
+grades[0][advancedgradingdata][guide][criteria][0][fillings][0][remarkformat]= int
+grades[0][advancedgradingdata][guide][criteria][0][fillings][0][score]= double
+grades[0][advancedgradingdata][rubric][criteria][0][criterionid]= int
+grades[0][advancedgradingdata][rubric][criteria][0][fillings][0][criterionid]= int
+grades[0][advancedgradingdata][rubric][criteria][0][fillings][0][levelid]= int
+grades[0][advancedgradingdata][rubric][criteria][0][fillings][0][remark]= string
+grades[0][advancedgradingdata][rubric][criteria][0][fillings][0][remarkformat]= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

@@ -1,0 +1,85 @@
+<div class="collapsibleregioninner" id="aera_core_user_update_users_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Update users.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>users</b> (Required)<br/>        <br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//ID of the user</i></span><br/><b>username</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Username policy is defined in Moodle security config.</i></span><br/><b>password</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Plain text password consisting of any characters</i></span><br/><b>firstname</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//The first name(s) of the user</i></span><br/><b>lastname</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//The family name of the user</i></span><br/><b>email</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//A valid and unique email address</i></span><br/><b>auth</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Auth plugins include manual, ldap, imap, etc</i></span><br/><b>idnumber</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//An arbitrary ID code number perhaps from the institution</i></span><br/><b>lang</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Language code such as "en", must exist on server</i></span><br/><b>calendartype</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Calendar type such as "gregorian", must exist on server</i></span><br/><b>theme</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Theme name such as "standard", must exist on server</i></span><br/><b>timezone</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Timezone code such as Australia/Perth, or 99 for default</i></span><br/><b>mailformat</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Mail format code is 0 for plain text, 1 for HTML etc</i></span><br/><b>description</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//User profile description, no HTML</i></span><br/><b>city</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Home city of the user</i></span><br/><b>country</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Home country code of the user, such as AU or CZ</i></span><br/><b>firstnamephonetic</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//The first name(s) phonetically of the user</i></span><br/><b>lastnamephonetic</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//The family name phonetically of the user</i></span><br/><b>middlename</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//The middle name of the user</i></span><br/><b>alternatename</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//The alternate name of the user</i></span><br/><b>customfields</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//User custom fields (also known as user profil fields)</i></span><br/>list of ( <br/>object {<br/><b>type</b> string <span style="color:#2A33A6">  <i>//The name of the custom field</i></span><br/><b>value</b> string <span style="color:#2A33A6">  <i>//The value of the custom field</i></span><br/>} <br/>)<b>preferences</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//User preferences</i></span><br/>list of ( <br/>object {<br/><b>type</b> string <span style="color:#2A33A6">  <i>//The name of the preference</i></span><br/><b>value</b> string <span style="color:#2A33A6">  <i>//The value of the preference</i></span><br/>} <br/>)} <br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[users] =&gt;
+    Array 
+        (
+        [0] =&gt;
+            Array 
+                (
+                [id] =&gt; int                
+                [username] =&gt; string                
+                [password] =&gt; string                
+                [firstname] =&gt; string                
+                [lastname] =&gt; string                
+                [email] =&gt; string                
+                [auth] =&gt; string                
+                [idnumber] =&gt; string                
+                [lang] =&gt; string                
+                [calendartype] =&gt; string                
+                [theme] =&gt; string                
+                [timezone] =&gt; string                
+                [mailformat] =&gt; int                
+                [description] =&gt; string                
+                [city] =&gt; string                
+                [country] =&gt; string                
+                [firstnamephonetic] =&gt; string                
+                [lastnamephonetic] =&gt; string                
+                [middlename] =&gt; string                
+                [alternatename] =&gt; string                
+                [customfields] =&gt;
+                    Array 
+                        (
+                        [0] =&gt;
+                            Array 
+                                (
+                                [type] =&gt; string                                
+                                [value] =&gt; string                                
+                                )
+                        )                
+                [preferences] =&gt;
+                    Array 
+                        (
+                        [0] =&gt;
+                            Array 
+                                (
+                                [type] =&gt; string                                
+                                [value] =&gt; string                                
+                                )
+                        )                
+                )
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+users[0][id]= int
+users[0][username]= string
+users[0][password]= string
+users[0][firstname]= string
+users[0][lastname]= string
+users[0][email]= string
+users[0][auth]= string
+users[0][idnumber]= string
+users[0][lang]= string
+users[0][calendartype]= string
+users[0][theme]= string
+users[0][timezone]= string
+users[0][mailformat]= int
+users[0][description]= string
+users[0][city]= string
+users[0][country]= string
+users[0][firstnamephonetic]= string
+users[0][lastnamephonetic]= string
+users[0][middlename]= string
+users[0][alternatename]= string
+users[0][customfields][0][type]= string
+users[0][customfields][0][value]= string
+users[0][preferences][0][type]= string
+users[0][preferences][0][value]= string
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

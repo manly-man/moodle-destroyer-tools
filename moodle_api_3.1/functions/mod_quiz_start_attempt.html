@@ -1,0 +1,158 @@
+<div class="collapsibleregioninner" id="aera_mod_quiz_start_attempt_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Starts a new attempt at a quiz.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>quizid</b> (Required)<br/>        quiz instance id<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//quiz instance id</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[quizid] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+quizid= int
+
+</pre></div></div></span><span style="font-size:80%"><b>preflightdata</b> (Default to "Array
+(
+)
+")<br/>        Preflight required data (like passwords)<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+<span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//Preflight required data (like passwords)</i></span><br/>list of ( <br/>object {<br/><b>name</b> string <span style="color:#2A33A6">  <i>//data name</i></span><br/><b>value</b> string <span style="color:#2A33A6">  <i>//data value</i></span><br/>} <br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[preflightdata] =&gt;
+    Array 
+        (
+        [0] =&gt;
+            Array 
+                (
+                [name] =&gt; string                
+                [value] =&gt; string                
+                )
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+preflightdata[0][name]= string
+preflightdata[0][value]= string
+
+</pre></div></div></span><span style="font-size:80%"><b>forcenew</b> (Default to "")<br/>        Whether to force a new attempt or not.<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6"> <b>Default to ""</b> <i>//Whether to force a new attempt or not.</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[forcenew] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+forcenew= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>attempt</b> object {<br/><b>id</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Attempt id.</i></span><br/><b>quiz</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Foreign key reference to the quiz that was attempted.</i></span><br/><b>userid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Foreign key reference to the user whose attempt this is.</i></span><br/><b>attempt</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Sequentially numbers this students attempts at this quiz.</i></span><br/><b>uniqueid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Foreign key reference to the question_usage that holds the
+                                                    details of the the question_attempts that make up this quiz
+                                                    attempt.</i></span><br/><b>layout</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Attempt layout.</i></span><br/><b>currentpage</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Attempt current page.</i></span><br/><b>preview</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Whether is a preview attempt or not.</i></span><br/><b>state</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//The current state of the attempts. 'inprogress',
+                                                'overdue', 'finished' or 'abandoned'.</i></span><br/><b>timestart</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Time when the attempt was started.</i></span><br/><b>timefinish</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Time when the attempt was submitted.
+                                                    0 if the attempt has not been submitted yet.</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Last modified time.</i></span><br/><b>timecheckstate</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Next time quiz cron should check attempt for
+                                                        state changes.  NULL means never check.</i></span><br/><b>sumgrades</b> double <span style="color:#2A33A6"> <b>Optional</b> <i>//Total marks for this attempt.</i></span><br/>} <br/><b>warnings</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//list of warnings</i></span><br/>list of ( <br/><span style="color:#2A33A6">  <i>//warning</i></span><br/>object {<br/><b>item</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//item</i></span><br/><b>itemid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//item id</i></span><br/><b>warningcode</b> string <span style="color:#2A33A6">  <i>//the warning code can be used by the client app to implement specific behaviour</i></span><br/><b>message</b> string <span style="color:#2A33A6">  <i>//untranslated english message to explain the warning</i></span><br/>} <br/>)} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [attempt] =&gt;
+            Array 
+                (
+                [id] =&gt; int                
+                [quiz] =&gt; int                
+                [userid] =&gt; int                
+                [attempt] =&gt; int                
+                [uniqueid] =&gt; int                
+                [layout] =&gt; string                
+                [currentpage] =&gt; int                
+                [preview] =&gt; int                
+                [state] =&gt; string                
+                [timestart] =&gt; int                
+                [timefinish] =&gt; int                
+                [timemodified] =&gt; int                
+                [timecheckstate] =&gt; int                
+                [sumgrades] =&gt; double                
+                )        
+        [warnings] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [item] =&gt; string                        
+                        [itemid] =&gt; int                        
+                        [warningcode] =&gt; string                        
+                        [message] =&gt; string                        
+                        )
+                )        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="attempt"&gt;
+            &lt;SINGLE&gt;
+                &lt;KEY name="id"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="quiz"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="userid"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="attempt"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="uniqueid"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="layout"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="currentpage"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="preview"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="state"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="timestart"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="timefinish"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="timemodified"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="timecheckstate"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="sumgrades"&gt;
+                    &lt;VALUE&gt;double&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+            &lt;/SINGLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="warnings"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="item"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="itemid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="warningcode"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="message"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

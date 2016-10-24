@@ -1,0 +1,267 @@
+<div class="collapsibleregioninner" id="aera_mod_assign_get_participant_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Get a participant for an assignment, with some summary info about their submissions.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>assignid</b> (Required)<br/>        assign instance id<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//assign instance id</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[assignid] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+assignid= int
+
+</pre></div></div></span><span style="font-size:80%"><b>userid</b> (Required)<br/>        user id<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//user id</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[userid] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+userid= int
+
+</pre></div></div></span><span style="font-size:80%"><b>embeduser</b> (Default to "")<br/>        user id<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6"> <b>Default to ""</b> <i>//user id</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[embeduser] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+embeduser= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//ID of the user</i></span><br/><b>fullname</b> string <span style="color:#2A33A6">  <i>//The fullname of the user</i></span><br/><b>submitted</b> int <span style="color:#2A33A6">  <i>//have they submitted their assignment</i></span><br/><b>requiregrading</b> int <span style="color:#2A33A6">  <i>//is their submission waiting for grading</i></span><br/><b>blindmarking</b> int <span style="color:#2A33A6">  <i>//is blind marking enabled for this assignment</i></span><br/><b>groupid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//for group assignments this is the group id</i></span><br/><b>groupname</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//for group assignments this is the group name</i></span><br/><b>user</b> object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//ID of the user</i></span><br/><b>username</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//The username</i></span><br/><b>firstname</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//The first name(s) of the user</i></span><br/><b>lastname</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//The family name of the user</i></span><br/><b>fullname</b> string <span style="color:#2A33A6">  <i>//The fullname of the user</i></span><br/><b>email</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//An email address - allow email as root@localhost</i></span><br/><b>address</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Postal address</i></span><br/><b>phone1</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Phone 1</i></span><br/><b>phone2</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Phone 2</i></span><br/><b>icq</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//icq number</i></span><br/><b>skype</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//skype id</i></span><br/><b>yahoo</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//yahoo id</i></span><br/><b>aim</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//aim id</i></span><br/><b>msn</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//msn number</i></span><br/><b>department</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//department</i></span><br/><b>institution</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//institution</i></span><br/><b>idnumber</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//An arbitrary ID code number perhaps from the institution</i></span><br/><b>interests</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//user interests (separated by commas)</i></span><br/><b>firstaccess</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//first access to the site (0 if never)</i></span><br/><b>lastaccess</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//last access to the site (0 if never)</i></span><br/><b>auth</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Auth plugins include manual, ldap, imap, etc</i></span><br/><b>confirmed</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Active user: 1 if confirmed, 0 otherwise</i></span><br/><b>lang</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Language code such as "en", must exist on server</i></span><br/><b>calendartype</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Calendar type such as "gregorian", must exist on server</i></span><br/><b>theme</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Theme name such as "standard", must exist on server</i></span><br/><b>timezone</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Timezone code such as Australia/Perth, or 99 for default</i></span><br/><b>mailformat</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Mail format code is 0 for plain text, 1 for HTML etc</i></span><br/><b>description</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//User profile description</i></span><br/><b>descriptionformat</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//int format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>city</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Home city of the user</i></span><br/><b>url</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//URL of the user</i></span><br/><b>country</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Home country code of the user, such as AU or CZ</i></span><br/><b>profileimageurlsmall</b> string <span style="color:#2A33A6">  <i>//User image profile URL - small version</i></span><br/><b>profileimageurl</b> string <span style="color:#2A33A6">  <i>//User image profile URL - big version</i></span><br/><b>customfields</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//User custom fields (also known as user profile fields)</i></span><br/>list of ( <br/>object {<br/><b>type</b> string <span style="color:#2A33A6">  <i>//The type of the custom field - text field, checkbox...</i></span><br/><b>value</b> string <span style="color:#2A33A6">  <i>//The value of the custom field</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//The name of the custom field</i></span><br/><b>shortname</b> string <span style="color:#2A33A6">  <i>//The shortname of the custom field - to be able to build the field class in the code</i></span><br/>} <br/>)<b>preferences</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//Users preferences</i></span><br/>list of ( <br/>object {<br/><b>name</b> string <span style="color:#2A33A6">  <i>//The name of the preferences</i></span><br/><b>value</b> string <span style="color:#2A33A6">  <i>//The value of the custom field</i></span><br/>} <br/>)} <br/>} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [id] =&gt; int        
+        [fullname] =&gt; string        
+        [submitted] =&gt; int        
+        [requiregrading] =&gt; int        
+        [blindmarking] =&gt; int        
+        [groupid] =&gt; int        
+        [groupname] =&gt; string        
+        [user] =&gt;
+            Array 
+                (
+                [id] =&gt; int                
+                [username] =&gt; string                
+                [firstname] =&gt; string                
+                [lastname] =&gt; string                
+                [fullname] =&gt; string                
+                [email] =&gt; string                
+                [address] =&gt; string                
+                [phone1] =&gt; string                
+                [phone2] =&gt; string                
+                [icq] =&gt; string                
+                [skype] =&gt; string                
+                [yahoo] =&gt; string                
+                [aim] =&gt; string                
+                [msn] =&gt; string                
+                [department] =&gt; string                
+                [institution] =&gt; string                
+                [idnumber] =&gt; string                
+                [interests] =&gt; string                
+                [firstaccess] =&gt; int                
+                [lastaccess] =&gt; int                
+                [auth] =&gt; string                
+                [confirmed] =&gt; int                
+                [lang] =&gt; string                
+                [calendartype] =&gt; string                
+                [theme] =&gt; string                
+                [timezone] =&gt; string                
+                [mailformat] =&gt; int                
+                [description] =&gt; string                
+                [descriptionformat] =&gt; int                
+                [city] =&gt; string                
+                [url] =&gt; string                
+                [country] =&gt; string                
+                [profileimageurlsmall] =&gt; string                
+                [profileimageurl] =&gt; string                
+                [customfields] =&gt;
+                    Array 
+                        (
+                        [0] =&gt;
+                            Array 
+                                (
+                                [type] =&gt; string                                
+                                [value] =&gt; string                                
+                                [name] =&gt; string                                
+                                [shortname] =&gt; string                                
+                                )
+                        )                
+                [preferences] =&gt;
+                    Array 
+                        (
+                        [0] =&gt;
+                            Array 
+                                (
+                                [name] =&gt; string                                
+                                [value] =&gt; string                                
+                                )
+                        )                
+                )        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="id"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="fullname"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="submitted"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="requiregrading"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="blindmarking"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="groupid"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="groupname"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="user"&gt;
+            &lt;SINGLE&gt;
+                &lt;KEY name="id"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="username"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="firstname"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="lastname"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="fullname"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="email"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="address"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="phone1"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="phone2"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="icq"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="skype"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="yahoo"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="aim"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="msn"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="department"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="institution"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="idnumber"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="interests"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="firstaccess"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="lastaccess"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="auth"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="confirmed"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="lang"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="calendartype"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="theme"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="timezone"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="mailformat"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="description"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="descriptionformat"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="city"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="url"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="country"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="profileimageurlsmall"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="profileimageurl"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="customfields"&gt;
+                    &lt;MULTIPLE&gt;
+                        &lt;SINGLE&gt;
+                            &lt;KEY name="type"&gt;
+                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="value"&gt;
+                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="name"&gt;
+                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="shortname"&gt;
+                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                        &lt;/SINGLE&gt;
+                    &lt;/MULTIPLE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="preferences"&gt;
+                    &lt;MULTIPLE&gt;
+                        &lt;SINGLE&gt;
+                            &lt;KEY name="name"&gt;
+                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                            &lt;KEY name="value"&gt;
+                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                            &lt;/KEY&gt;
+                        &lt;/SINGLE&gt;
+                    &lt;/MULTIPLE&gt;
+                &lt;/KEY&gt;
+            &lt;/SINGLE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>Yes<br/><br/></div>

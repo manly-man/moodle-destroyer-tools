@@ -1,0 +1,115 @@
+<div class="collapsibleregioninner" id="aera_core_grades_update_grades_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Update a grade item and associated student grades.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>source</b> (Required)<br/>        The source of the grade update<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+string <span style="color:#2A33A6">  <i>//The source of the grade update</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[source] =&gt; string
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+source= string
+
+</pre></div></div></span><span style="font-size:80%"><b>courseid</b> (Required)<br/>        id of course<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//id of course</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[courseid] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+courseid= int
+
+</pre></div></div></span><span style="font-size:80%"><b>component</b> (Required)<br/>        A component, for example mod_forum or mod_quiz<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+string <span style="color:#2A33A6">  <i>//A component, for example mod_forum or mod_quiz</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[component] =&gt; string
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+component= string
+
+</pre></div></div></span><span style="font-size:80%"><b>activityid</b> (Required)<br/>        The activity ID<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//The activity ID</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[activityid] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+activityid= int
+
+</pre></div></div></span><span style="font-size:80%"><b>itemnumber</b> (Required)<br/>        grade item ID number for modules that have multiple grades. Typically this is 0.<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//grade item ID number for modules that have multiple grades. Typically this is 0.</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[itemnumber] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+itemnumber= int
+
+</pre></div></div></span><span style="font-size:80%"><b>grades</b> (Default to "Array
+(
+)
+")<br/>        Any student grades to alter<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+<span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//Any student grades to alter</i></span><br/>list of ( <br/>object {<br/><b>studentid</b> int <span style="color:#2A33A6">  <i>//Student ID</i></span><br/><b>grade</b> double <span style="color:#2A33A6">  <i>//Student grade</i></span><br/><b>str_feedback</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//A string representation of the feedback from the grader</i></span><br/>} <br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[grades] =&gt;
+    Array 
+        (
+        [0] =&gt;
+            Array 
+                (
+                [studentid] =&gt; int                
+                [grade] =&gt; double                
+                [str_feedback] =&gt; string                
+                )
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+grades[0][studentid]= int
+grades[0][grade]= double
+grades[0][str_feedback]= string
+
+</pre></div></div></span><span style="font-size:80%"><b>itemdetails</b> (Default to "Array
+(
+)
+")<br/>        Any grade item settings to alter<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+<span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//Any grade item settings to alter</i></span><br/>object {<br/><b>itemname</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//The grade item name</i></span><br/><b>idnumber</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Arbitrary ID provided by the module responsible for the grade item</i></span><br/><b>gradetype</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//The type of grade (0 = none, 1 = value, 2 = scale, 3 = text)</i></span><br/><b>grademax</b> double <span style="color:#2A33A6"> <b>Optional</b> <i>//Maximum grade allowed</i></span><br/><b>grademin</b> double <span style="color:#2A33A6"> <b>Optional</b> <i>//Minimum grade allowed</i></span><br/><b>scaleid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//The ID of the custom scale being is used</i></span><br/><b>multfactor</b> double <span style="color:#2A33A6"> <b>Optional</b> <i>//Multiply all grades by this number</i></span><br/><b>plusfactor</b> double <span style="color:#2A33A6"> <b>Optional</b> <i>//Add this to all grades</i></span><br/><b>deleted</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//True if the grade item should be deleted</i></span><br/><b>hidden</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//True if the grade item is hidden</i></span><br/>} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[itemdetails] =&gt;
+    Array 
+        (
+        [itemname] =&gt; string        
+        [idnumber] =&gt; int        
+        [gradetype] =&gt; int        
+        [grademax] =&gt; double        
+        [grademin] =&gt; double        
+        [scaleid] =&gt; int        
+        [multfactor] =&gt; double        
+        [plusfactor] =&gt; double        
+        [deleted] =&gt; int        
+        [hidden] =&gt; int        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+itemdetails[itemname]= string
+itemdetails[idnumber]= int
+itemdetails[gradetype]= int
+itemdetails[grademax]= double
+itemdetails[grademin]= double
+itemdetails[scaleid]= int
+itemdetails[multfactor]= double
+itemdetails[plusfactor]= double
+itemdetails[deleted]= int
+itemdetails[hidden]= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%">A value like 0 =&gt; OK, 1 =&gt; FAILED
+            as defined in lib/grade/constants.php<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//A value like 0 =&gt; OK, 1 =&gt; FAILED
+            as defined in lib/grade/constants.php</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+ int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;VALUE&gt;int&lt;/VALUE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

@@ -1,0 +1,79 @@
+<div class="collapsibleregioninner" id="aera_core_get_strings_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Return some translated strings - like several core get_string(), calls</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>strings</b> (Required)<br/>        <br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+list of ( <br/>object {<br/><b>stringid</b> string <span style="color:#2A33A6">  <i>//string identifier</i></span><br/><b>component</b> string <span style="color:#2A33A6"> <b>Default to "moodle"</b> <i>//component</i></span><br/><b>lang</b> string <span style="color:#2A33A6"> <b>Default to "null"</b> <i>//lang</i></span><br/><b>stringparams</b> <span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//the definition of a string param (i.e. {$a-&gt;name})</i></span><br/>list of ( <br/>object {<br/><b>name</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//param name
+                                    - if the string expect only one $a parameter then don't send this field, just send the value.</i></span><br/><b>value</b> string <span style="color:#2A33A6">  <i>//param value</i></span><br/>} <br/>)} <br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[strings] =&gt;
+    Array 
+        (
+        [0] =&gt;
+            Array 
+                (
+                [stringid] =&gt; string                
+                [component] =&gt; string                
+                [lang] =&gt; string                
+                [stringparams] =&gt;
+                    Array 
+                        (
+                        [0] =&gt;
+                            Array 
+                                (
+                                [name] =&gt; string                                
+                                [value] =&gt; string                                
+                                )
+                        )                
+                )
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+strings[0][stringid]= string
+strings[0][component]= string
+strings[0][lang]= string
+strings[0][stringparams][0][name]= string
+strings[0][stringparams][0][value]= string
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+list of ( <br/>object {<br/><b>stringid</b> string <span style="color:#2A33A6">  <i>//string id</i></span><br/><b>component</b> string <span style="color:#2A33A6">  <i>//string component</i></span><br/><b>lang</b> string <span style="color:#2A33A6">  <i>//lang</i></span><br/><b>string</b> string <span style="color:#2A33A6">  <i>//translated string</i></span><br/>} <br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [0] =&gt;
+            Array 
+                (
+                [stringid] =&gt; string                
+                [component] =&gt; string                
+                [lang] =&gt; string                
+                [string] =&gt; string                
+                )
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;MULTIPLE&gt;
+        &lt;SINGLE&gt;
+            &lt;KEY name="stringid"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="component"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="lang"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="string"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+        &lt;/SINGLE&gt;
+    &lt;/MULTIPLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>No<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>Yes<br/><br/></div>

@@ -1,0 +1,61 @@
+<div class="collapsibleregioninner" id="aera_core_message_send_instant_messages_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Send instant messages</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>messages</b> (Required)<br/>        <br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+list of ( <br/>object {<br/><b>touserid</b> int <span style="color:#2A33A6">  <i>//id of the user to send the private message</i></span><br/><b>text</b> string <span style="color:#2A33A6">  <i>//the text of the message</i></span><br/><b>textformat</b> int <span style="color:#2A33A6"> <b>Default to "1"</b> <i>//text format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>clientmsgid</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//your own client id for the message. If this id is provided, the fail message id will be returned to you</i></span><br/>} <br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[messages] =&gt;
+    Array 
+        (
+        [0] =&gt;
+            Array 
+                (
+                [touserid] =&gt; int                
+                [text] =&gt; string                
+                [textformat] =&gt; int                
+                [clientmsgid] =&gt; string                
+                )
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+messages[0][touserid]= int
+messages[0][text]= string
+messages[0][textformat]= int
+messages[0][clientmsgid]= string
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+list of ( <br/>object {<br/><b>msgid</b> int <span style="color:#2A33A6">  <i>//test this to know if it succeeds:  id of the created message if it succeeded, -1 when failed</i></span><br/><b>clientmsgid</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//your own id for the message</i></span><br/><b>errormessage</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//error message - if it failed</i></span><br/>} <br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [0] =&gt;
+            Array 
+                (
+                [msgid] =&gt; int                
+                [clientmsgid] =&gt; string                
+                [errormessage] =&gt; string                
+                )
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;MULTIPLE&gt;
+        &lt;SINGLE&gt;
+            &lt;KEY name="msgid"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="clientmsgid"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="errormessage"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+        &lt;/SINGLE&gt;
+    &lt;/MULTIPLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

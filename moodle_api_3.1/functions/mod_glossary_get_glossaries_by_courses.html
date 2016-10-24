@@ -1,0 +1,225 @@
+<div class="collapsibleregioninner" id="aera_mod_glossary_get_glossaries_by_courses_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Retrieve a list of glossaries from several courses.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>courseids</b> (Default to "Array
+(
+)
+")<br/>        Array of course IDs<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+<span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//Array of course IDs</i></span><br/>list of ( <br/>int <span style="color:#2A33A6">  <i>//course id</i></span><br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[courseids] =&gt;
+    Array 
+        (
+        [0] =&gt; int
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+courseids[0]= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>glossaries</b> list of ( <br/><span style="color:#2A33A6">  <i>//Glossaries</i></span><br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//Glossary id</i></span><br/><b>coursemodule</b> int <span style="color:#2A33A6">  <i>//Course module id</i></span><br/><b>course</b> int <span style="color:#2A33A6">  <i>//Course id</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//Glossary name</i></span><br/><b>intro</b> string <span style="color:#2A33A6">  <i>//The Glossary intro</i></span><br/><b>introformat</b> int <span style="color:#2A33A6">  <i>//intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>allowduplicatedentries</b> int <span style="color:#2A33A6">  <i>//If enabled, multiple entries can have the same concept name</i></span><br/><b>displayformat</b> string <span style="color:#2A33A6">  <i>//Display format type</i></span><br/><b>mainglossary</b> int <span style="color:#2A33A6">  <i>//If enabled this glossary is a main glossary.</i></span><br/><b>showspecial</b> int <span style="color:#2A33A6">  <i>//If enabled, participants can browse the glossary by special characters, such as @ and #</i></span><br/><b>showalphabet</b> int <span style="color:#2A33A6">  <i>//If enabled, participants can browse the glossary by letters of the alphabet</i></span><br/><b>showall</b> int <span style="color:#2A33A6">  <i>//If enabled, participants can browse all entries at once</i></span><br/><b>allowcomments</b> int <span style="color:#2A33A6">  <i>//If enabled, all participants with permission to create comments will be able to add comments to glossary entries</i></span><br/><b>allowprintview</b> int <span style="color:#2A33A6">  <i>//If enabled, students are provided with a link to a printer-friendly version of the glossary. The link is always available to teachers</i></span><br/><b>usedynalink</b> int <span style="color:#2A33A6">  <i>//If site-wide glossary auto-linking has been enabled by an administrator and this checkbox is ticked, the entry will be automatically linked wherever the concept words and phrases appear throughout the rest of the course.</i></span><br/><b>defaultapproval</b> int <span style="color:#2A33A6">  <i>//If set to no, entries require approving by a teacher before they are viewable by everyone.</i></span><br/><b>approvaldisplayformat</b> string <span style="color:#2A33A6">  <i>//When approving glossary items you may wish to use a different display format</i></span><br/><b>globalglossary</b> int <b>entbypage</b> int <span style="color:#2A33A6">  <i>//Entries shown per page</i></span><br/><b>editalways</b> int <span style="color:#2A33A6">  <i>//Always allow editing</i></span><br/><b>rsstype</b> int <span style="color:#2A33A6">  <i>//To enable the RSS feed for this activity, select either concepts with author or concepts without author to be included in the feed</i></span><br/><b>rssarticles</b> int <span style="color:#2A33A6">  <i>//This setting specifies the number of glossary entry concepts to include in the RSS feed. Between 5 and 20 generally acceptable</i></span><br/><b>assessed</b> int <span style="color:#2A33A6">  <i>//Aggregate type</i></span><br/><b>assesstimestart</b> int <span style="color:#2A33A6">  <i>//Restrict rating to items created after this</i></span><br/><b>assesstimefinish</b> int <span style="color:#2A33A6">  <i>//Restrict rating to items created before this</i></span><br/><b>scale</b> int <span style="color:#2A33A6">  <i>//Scale ID</i></span><br/><b>timecreated</b> int <span style="color:#2A33A6">  <i>//Time created</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6">  <i>//Time modified</i></span><br/><b>completionentries</b> int <span style="color:#2A33A6">  <i>//Number of entries to complete</i></span><br/><b>section</b> int <span style="color:#2A33A6">  <i>//Section</i></span><br/><b>visible</b> int <span style="color:#2A33A6">  <i>//Visible</i></span><br/><b>groupmode</b> int <span style="color:#2A33A6">  <i>//Group mode</i></span><br/><b>groupingid</b> int <span style="color:#2A33A6">  <i>//Grouping ID</i></span><br/><b>browsemodes</b> list of ( <br/>string <span style="color:#2A33A6">  <i>//Modes of browsing allowed</i></span><br/>)} <br/>)<b>warnings</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//list of warnings</i></span><br/>list of ( <br/><span style="color:#2A33A6">  <i>//warning</i></span><br/>object {<br/><b>item</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//item</i></span><br/><b>itemid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//item id</i></span><br/><b>warningcode</b> string <span style="color:#2A33A6">  <i>//the warning code can be used by the client app to implement specific behaviour</i></span><br/><b>message</b> string <span style="color:#2A33A6">  <i>//untranslated english message to explain the warning</i></span><br/>} <br/>)} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [glossaries] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [id] =&gt; int                        
+                        [coursemodule] =&gt; int                        
+                        [course] =&gt; int                        
+                        [name] =&gt; string                        
+                        [intro] =&gt; string                        
+                        [introformat] =&gt; int                        
+                        [allowduplicatedentries] =&gt; int                        
+                        [displayformat] =&gt; string                        
+                        [mainglossary] =&gt; int                        
+                        [showspecial] =&gt; int                        
+                        [showalphabet] =&gt; int                        
+                        [showall] =&gt; int                        
+                        [allowcomments] =&gt; int                        
+                        [allowprintview] =&gt; int                        
+                        [usedynalink] =&gt; int                        
+                        [defaultapproval] =&gt; int                        
+                        [approvaldisplayformat] =&gt; string                        
+                        [globalglossary] =&gt; int                        
+                        [entbypage] =&gt; int                        
+                        [editalways] =&gt; int                        
+                        [rsstype] =&gt; int                        
+                        [rssarticles] =&gt; int                        
+                        [assessed] =&gt; int                        
+                        [assesstimestart] =&gt; int                        
+                        [assesstimefinish] =&gt; int                        
+                        [scale] =&gt; int                        
+                        [timecreated] =&gt; int                        
+                        [timemodified] =&gt; int                        
+                        [completionentries] =&gt; int                        
+                        [section] =&gt; int                        
+                        [visible] =&gt; int                        
+                        [groupmode] =&gt; int                        
+                        [groupingid] =&gt; int                        
+                        [browsemodes] =&gt;
+                            Array 
+                                (
+                                [0] =&gt; string
+                                )                        
+                        )
+                )        
+        [warnings] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [item] =&gt; string                        
+                        [itemid] =&gt; int                        
+                        [warningcode] =&gt; string                        
+                        [message] =&gt; string                        
+                        )
+                )        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="glossaries"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="id"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="coursemodule"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="course"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="name"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="intro"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="introformat"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="allowduplicatedentries"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="displayformat"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="mainglossary"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="showspecial"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="showalphabet"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="showall"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="allowcomments"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="allowprintview"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="usedynalink"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="defaultapproval"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="approvaldisplayformat"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="globalglossary"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="entbypage"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="editalways"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="rsstype"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="rssarticles"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="assessed"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="assesstimestart"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="assesstimefinish"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="scale"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="timecreated"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="timemodified"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="completionentries"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="section"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="visible"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="groupmode"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="groupingid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="browsemodes"&gt;
+                        &lt;MULTIPLE&gt;
+                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                        &lt;/MULTIPLE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="warnings"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="item"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="itemid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="warningcode"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="message"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

@@ -1,0 +1,461 @@
+<div class="collapsibleregioninner" id="aera_tool_lp_data_for_user_evidence_list_page_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Load the data for the user evidence list page template</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>userid</b> (Required)<br/>        The user ID<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//The user ID</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[userid] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+userid= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>canmanage</b> int <span style="color:#2A33A6">  <i>//Can the current user manage the user's evidence</i></span><br/><b>userid</b> int <span style="color:#2A33A6">  <i>//The user ID</i></span><br/><b>pluginbaseurl</b> string <span style="color:#2A33A6">  <i>//Url to the tool_lp plugin folder on this Moodle site</i></span><br/><b>evidence</b> list of ( <br/>object {<br/><b>userid</b> int <span style="color:#2A33A6">  <i>//userid</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//name</i></span><br/><b>description</b> string <span style="color:#2A33A6">  <i>//description</i></span><br/><b>descriptionformat</b> int <span style="color:#2A33A6"> <b>Default to "1"</b> <i>//description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>url</b> string <span style="color:#2A33A6">  <i>//url</i></span><br/><b>id</b> int <span style="color:#2A33A6">  <i>//id</i></span><br/><b>timecreated</b> int <span style="color:#2A33A6">  <i>//timecreated</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6">  <i>//timemodified</i></span><br/><b>usermodified</b> int <span style="color:#2A33A6">  <i>//usermodified</i></span><br/><b>canmanage</b> int <span style="color:#2A33A6">  <i>//canmanage</i></span><br/><b>filecount</b> int <span style="color:#2A33A6">  <i>//filecount</i></span><br/><b>files</b> list of ( <br/>object {<br/><b>contextid</b> int <span style="color:#2A33A6">  <i>//contextid</i></span><br/><b>component</b> string <span style="color:#2A33A6">  <i>//component</i></span><br/><b>filearea</b> string <span style="color:#2A33A6">  <i>//filearea</i></span><br/><b>itemid</b> int <span style="color:#2A33A6">  <i>//itemid</i></span><br/><b>filepath</b> string <span style="color:#2A33A6">  <i>//filepath</i></span><br/><b>filename</b> string <span style="color:#2A33A6">  <i>//filename</i></span><br/><b>isdir</b> int <span style="color:#2A33A6">  <i>//isdir</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6">  <i>//timemodified</i></span><br/><b>timecreated</b> int <span style="color:#2A33A6">  <i>//timecreated</i></span><br/><b>filesize</b> int <span style="color:#2A33A6">  <i>//filesize</i></span><br/><b>author</b> string <span style="color:#2A33A6">  <i>//author</i></span><br/><b>license</b> string <span style="color:#2A33A6">  <i>//license</i></span><br/><b>filenameshort</b> string <span style="color:#2A33A6">  <i>//filenameshort</i></span><br/><b>filesizeformatted</b> string <span style="color:#2A33A6">  <i>//filesizeformatted</i></span><br/><b>icon</b> string <span style="color:#2A33A6">  <i>//icon</i></span><br/><b>iconurl</b> string <span style="color:#2A33A6">  <i>//iconurl</i></span><br/><b>timecreatedformatted</b> string <span style="color:#2A33A6">  <i>//timecreatedformatted</i></span><br/><b>timemodifiedformatted</b> string <span style="color:#2A33A6">  <i>//timemodifiedformatted</i></span><br/><b>url</b> string <span style="color:#2A33A6">  <i>//url</i></span><br/>} <br/>)<b>hasurlorfiles</b> int <span style="color:#2A33A6">  <i>//hasurlorfiles</i></span><br/><b>urlshort</b> string <span style="color:#2A33A6">  <i>//urlshort</i></span><br/><b>competencycount</b> int <span style="color:#2A33A6">  <i>//competencycount</i></span><br/><b>usercompetencies</b> list of ( <br/>object {<br/><b>competency</b> object {<br/><b>shortname</b> string <span style="color:#2A33A6">  <i>//shortname</i></span><br/><b>idnumber</b> string <span style="color:#2A33A6">  <i>//idnumber</i></span><br/><b>description</b> string <span style="color:#2A33A6">  <i>//description</i></span><br/><b>descriptionformat</b> int <span style="color:#2A33A6"> <b>Default to "1"</b> <i>//description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>sortorder</b> int <span style="color:#2A33A6">  <i>//sortorder</i></span><br/><b>parentid</b> int <span style="color:#2A33A6">  <i>//parentid</i></span><br/><b>path</b> string <span style="color:#2A33A6">  <i>//path</i></span><br/><b>ruleoutcome</b> int <span style="color:#2A33A6">  <i>//ruleoutcome</i></span><br/><b>ruletype</b> string <span style="color:#2A33A6">  <i>//ruletype</i></span><br/><b>ruleconfig</b> string <span style="color:#2A33A6">  <i>//ruleconfig</i></span><br/><b>scaleid</b> int <span style="color:#2A33A6">  <i>//scaleid</i></span><br/><b>scaleconfiguration</b> string <span style="color:#2A33A6">  <i>//scaleconfiguration</i></span><br/><b>competencyframeworkid</b> int <span style="color:#2A33A6">  <i>//competencyframeworkid</i></span><br/><b>id</b> int <span style="color:#2A33A6">  <i>//id</i></span><br/><b>timecreated</b> int <span style="color:#2A33A6">  <i>//timecreated</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6">  <i>//timemodified</i></span><br/><b>usermodified</b> int <span style="color:#2A33A6">  <i>//usermodified</i></span><br/>} <br/><b>usercompetency</b> object {<br/><b>userid</b> int <span style="color:#2A33A6">  <i>//userid</i></span><br/><b>competencyid</b> int <span style="color:#2A33A6">  <i>//competencyid</i></span><br/><b>status</b> int <span style="color:#2A33A6">  <i>//status</i></span><br/><b>reviewerid</b> int <span style="color:#2A33A6">  <i>//reviewerid</i></span><br/><b>proficiency</b> int <span style="color:#2A33A6">  <i>//proficiency</i></span><br/><b>grade</b> int <span style="color:#2A33A6">  <i>//grade</i></span><br/><b>id</b> int <span style="color:#2A33A6">  <i>//id</i></span><br/><b>timecreated</b> int <span style="color:#2A33A6">  <i>//timecreated</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6">  <i>//timemodified</i></span><br/><b>usermodified</b> int <span style="color:#2A33A6">  <i>//usermodified</i></span><br/><b>canrequestreview</b> int <span style="color:#2A33A6">  <i>//canrequestreview</i></span><br/><b>canreview</b> int <span style="color:#2A33A6">  <i>//canreview</i></span><br/><b>gradename</b> string <span style="color:#2A33A6">  <i>//gradename</i></span><br/><b>isrequestreviewallowed</b> int <span style="color:#2A33A6">  <i>//isrequestreviewallowed</i></span><br/><b>iscancelreviewrequestallowed</b> int <span style="color:#2A33A6">  <i>//iscancelreviewrequestallowed</i></span><br/><b>isstartreviewallowed</b> int <span style="color:#2A33A6">  <i>//isstartreviewallowed</i></span><br/><b>isstopreviewallowed</b> int <span style="color:#2A33A6">  <i>//isstopreviewallowed</i></span><br/><b>isstatusidle</b> int <span style="color:#2A33A6">  <i>//isstatusidle</i></span><br/><b>isstatusinreview</b> int <span style="color:#2A33A6">  <i>//isstatusinreview</i></span><br/><b>isstatuswaitingforreview</b> int <span style="color:#2A33A6">  <i>//isstatuswaitingforreview</i></span><br/><b>proficiencyname</b> string <span style="color:#2A33A6">  <i>//proficiencyname</i></span><br/><b>reviewer</b> object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//id</i></span><br/><b>email</b> string <span style="color:#2A33A6">  <i>//email</i></span><br/><b>idnumber</b> string <span style="color:#2A33A6">  <i>//idnumber</i></span><br/><b>phone1</b> string <span style="color:#2A33A6">  <i>//phone1</i></span><br/><b>phone2</b> string <span style="color:#2A33A6">  <i>//phone2</i></span><br/><b>department</b> string <span style="color:#2A33A6">  <i>//department</i></span><br/><b>institution</b> string <span style="color:#2A33A6">  <i>//institution</i></span><br/><b>fullname</b> string <span style="color:#2A33A6">  <i>//fullname</i></span><br/><b>identity</b> string <span style="color:#2A33A6">  <i>//identity</i></span><br/><b>profileurl</b> string <span style="color:#2A33A6">  <i>//profileurl</i></span><br/><b>profileimageurl</b> string <span style="color:#2A33A6">  <i>//profileimageurl</i></span><br/><b>profileimageurlsmall</b> string <span style="color:#2A33A6">  <i>//profileimageurlsmall</i></span><br/>} <br/><b>statusname</b> string <span style="color:#2A33A6">  <i>//statusname</i></span><br/><b>url</b> string <span style="color:#2A33A6">  <i>//url</i></span><br/>} <br/>} <br/>)<b>userhasplan</b> int <span style="color:#2A33A6">  <i>//userhasplan</i></span><br/>} <br/>)<b>navigation</b> list of ( <br/>string <span style="color:#2A33A6">  <i>//HTML for a navigation item that should be on this page</i></span><br/>)} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [canmanage] =&gt; int        
+        [userid] =&gt; int        
+        [pluginbaseurl] =&gt; string        
+        [evidence] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [userid] =&gt; int                        
+                        [name] =&gt; string                        
+                        [description] =&gt; string                        
+                        [descriptionformat] =&gt; int                        
+                        [url] =&gt; string                        
+                        [id] =&gt; int                        
+                        [timecreated] =&gt; int                        
+                        [timemodified] =&gt; int                        
+                        [usermodified] =&gt; int                        
+                        [canmanage] =&gt; int                        
+                        [filecount] =&gt; int                        
+                        [files] =&gt;
+                            Array 
+                                (
+                                [0] =&gt;
+                                    Array 
+                                        (
+                                        [contextid] =&gt; int                                        
+                                        [component] =&gt; string                                        
+                                        [filearea] =&gt; string                                        
+                                        [itemid] =&gt; int                                        
+                                        [filepath] =&gt; string                                        
+                                        [filename] =&gt; string                                        
+                                        [isdir] =&gt; int                                        
+                                        [timemodified] =&gt; int                                        
+                                        [timecreated] =&gt; int                                        
+                                        [filesize] =&gt; int                                        
+                                        [author] =&gt; string                                        
+                                        [license] =&gt; string                                        
+                                        [filenameshort] =&gt; string                                        
+                                        [filesizeformatted] =&gt; string                                        
+                                        [icon] =&gt; string                                        
+                                        [iconurl] =&gt; string                                        
+                                        [timecreatedformatted] =&gt; string                                        
+                                        [timemodifiedformatted] =&gt; string                                        
+                                        [url] =&gt; string                                        
+                                        )
+                                )                        
+                        [hasurlorfiles] =&gt; int                        
+                        [urlshort] =&gt; string                        
+                        [competencycount] =&gt; int                        
+                        [usercompetencies] =&gt;
+                            Array 
+                                (
+                                [0] =&gt;
+                                    Array 
+                                        (
+                                        [competency] =&gt;
+                                            Array 
+                                                (
+                                                [shortname] =&gt; string                                                
+                                                [idnumber] =&gt; string                                                
+                                                [description] =&gt; string                                                
+                                                [descriptionformat] =&gt; int                                                
+                                                [sortorder] =&gt; int                                                
+                                                [parentid] =&gt; int                                                
+                                                [path] =&gt; string                                                
+                                                [ruleoutcome] =&gt; int                                                
+                                                [ruletype] =&gt; string                                                
+                                                [ruleconfig] =&gt; string                                                
+                                                [scaleid] =&gt; int                                                
+                                                [scaleconfiguration] =&gt; string                                                
+                                                [competencyframeworkid] =&gt; int                                                
+                                                [id] =&gt; int                                                
+                                                [timecreated] =&gt; int                                                
+                                                [timemodified] =&gt; int                                                
+                                                [usermodified] =&gt; int                                                
+                                                )                                        
+                                        [usercompetency] =&gt;
+                                            Array 
+                                                (
+                                                [userid] =&gt; int                                                
+                                                [competencyid] =&gt; int                                                
+                                                [status] =&gt; int                                                
+                                                [reviewerid] =&gt; int                                                
+                                                [proficiency] =&gt; int                                                
+                                                [grade] =&gt; int                                                
+                                                [id] =&gt; int                                                
+                                                [timecreated] =&gt; int                                                
+                                                [timemodified] =&gt; int                                                
+                                                [usermodified] =&gt; int                                                
+                                                [canrequestreview] =&gt; int                                                
+                                                [canreview] =&gt; int                                                
+                                                [gradename] =&gt; string                                                
+                                                [isrequestreviewallowed] =&gt; int                                                
+                                                [iscancelreviewrequestallowed] =&gt; int                                                
+                                                [isstartreviewallowed] =&gt; int                                                
+                                                [isstopreviewallowed] =&gt; int                                                
+                                                [isstatusidle] =&gt; int                                                
+                                                [isstatusinreview] =&gt; int                                                
+                                                [isstatuswaitingforreview] =&gt; int                                                
+                                                [proficiencyname] =&gt; string                                                
+                                                [reviewer] =&gt;
+                                                    Array 
+                                                        (
+                                                        [id] =&gt; int                                                        
+                                                        [email] =&gt; string                                                        
+                                                        [idnumber] =&gt; string                                                        
+                                                        [phone1] =&gt; string                                                        
+                                                        [phone2] =&gt; string                                                        
+                                                        [department] =&gt; string                                                        
+                                                        [institution] =&gt; string                                                        
+                                                        [fullname] =&gt; string                                                        
+                                                        [identity] =&gt; string                                                        
+                                                        [profileurl] =&gt; string                                                        
+                                                        [profileimageurl] =&gt; string                                                        
+                                                        [profileimageurlsmall] =&gt; string                                                        
+                                                        )                                                
+                                                [statusname] =&gt; string                                                
+                                                [url] =&gt; string                                                
+                                                )                                        
+                                        )
+                                )                        
+                        [userhasplan] =&gt; int                        
+                        )
+                )        
+        [navigation] =&gt;
+            Array 
+                (
+                [0] =&gt; string
+                )        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="canmanage"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="userid"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="pluginbaseurl"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="evidence"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="userid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="name"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="description"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="descriptionformat"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="url"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="id"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="timecreated"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="timemodified"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="usermodified"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="canmanage"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="filecount"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="files"&gt;
+                        &lt;MULTIPLE&gt;
+                            &lt;SINGLE&gt;
+                                &lt;KEY name="contextid"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="component"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="filearea"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="itemid"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="filepath"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="filename"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="isdir"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="timemodified"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="timecreated"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="filesize"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="author"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="license"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="filenameshort"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="filesizeformatted"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="icon"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="iconurl"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="timecreatedformatted"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="timemodifiedformatted"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="url"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                            &lt;/SINGLE&gt;
+                        &lt;/MULTIPLE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="hasurlorfiles"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="urlshort"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="competencycount"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="usercompetencies"&gt;
+                        &lt;MULTIPLE&gt;
+                            &lt;SINGLE&gt;
+                                &lt;KEY name="competency"&gt;
+                                    &lt;SINGLE&gt;
+                                        &lt;KEY name="shortname"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="idnumber"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="description"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="descriptionformat"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="sortorder"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="parentid"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="path"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="ruleoutcome"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="ruletype"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="ruleconfig"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="scaleid"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="scaleconfiguration"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="competencyframeworkid"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="id"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="timecreated"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="timemodified"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="usermodified"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                    &lt;/SINGLE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="usercompetency"&gt;
+                                    &lt;SINGLE&gt;
+                                        &lt;KEY name="userid"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="competencyid"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="status"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="reviewerid"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="proficiency"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="grade"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="id"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="timecreated"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="timemodified"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="usermodified"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="canrequestreview"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="canreview"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="gradename"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="isrequestreviewallowed"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="iscancelreviewrequestallowed"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="isstartreviewallowed"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="isstopreviewallowed"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="isstatusidle"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="isstatusinreview"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="isstatuswaitingforreview"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="proficiencyname"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="reviewer"&gt;
+                                            &lt;SINGLE&gt;
+                                                &lt;KEY name="id"&gt;
+                                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                                &lt;/KEY&gt;
+                                                &lt;KEY name="email"&gt;
+                                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                                &lt;/KEY&gt;
+                                                &lt;KEY name="idnumber"&gt;
+                                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                                &lt;/KEY&gt;
+                                                &lt;KEY name="phone1"&gt;
+                                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                                &lt;/KEY&gt;
+                                                &lt;KEY name="phone2"&gt;
+                                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                                &lt;/KEY&gt;
+                                                &lt;KEY name="department"&gt;
+                                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                                &lt;/KEY&gt;
+                                                &lt;KEY name="institution"&gt;
+                                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                                &lt;/KEY&gt;
+                                                &lt;KEY name="fullname"&gt;
+                                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                                &lt;/KEY&gt;
+                                                &lt;KEY name="identity"&gt;
+                                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                                &lt;/KEY&gt;
+                                                &lt;KEY name="profileurl"&gt;
+                                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                                &lt;/KEY&gt;
+                                                &lt;KEY name="profileimageurl"&gt;
+                                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                                &lt;/KEY&gt;
+                                                &lt;KEY name="profileimageurlsmall"&gt;
+                                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                                &lt;/KEY&gt;
+                                            &lt;/SINGLE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="statusname"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="url"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                    &lt;/SINGLE&gt;
+                                &lt;/KEY&gt;
+                            &lt;/SINGLE&gt;
+                        &lt;/MULTIPLE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="userhasplan"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="navigation"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>Yes<br/><br/></div>

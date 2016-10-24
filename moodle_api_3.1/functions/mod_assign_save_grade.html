@@ -1,0 +1,159 @@
+<div class="collapsibleregioninner" id="aera_mod_assign_save_grade_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Save a grade update for a single student.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>assignmentid</b> (Required)<br/>        The assignment id to operate on<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//The assignment id to operate on</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[assignmentid] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+assignmentid= int
+
+</pre></div></div></span><span style="font-size:80%"><b>userid</b> (Required)<br/>        The student id to operate on<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//The student id to operate on</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[userid] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+userid= int
+
+</pre></div></div></span><span style="font-size:80%"><b>grade</b> (Required)<br/>        The new grade for this user. Ignored if advanced grading used<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+double <span style="color:#2A33A6">  <i>//The new grade for this user. Ignored if advanced grading used</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[grade] =&gt; double
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+grade= double
+
+</pre></div></div></span><span style="font-size:80%"><b>attemptnumber</b> (Required)<br/>        The attempt number (-1 means latest attempt)<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//The attempt number (-1 means latest attempt)</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[attemptnumber] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+attemptnumber= int
+
+</pre></div></div></span><span style="font-size:80%"><b>addattempt</b> (Required)<br/>        Allow another attempt if the attempt reopen method is manual<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//Allow another attempt if the attempt reopen method is manual</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[addattempt] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+addattempt= int
+
+</pre></div></div></span><span style="font-size:80%"><b>workflowstate</b> (Required)<br/>        The next marking workflow state<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+string <span style="color:#2A33A6">  <i>//The next marking workflow state</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[workflowstate] =&gt; string
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+workflowstate= string
+
+</pre></div></div></span><span style="font-size:80%"><b>applytoall</b> (Required)<br/>        If true, this grade will be applied to all members of the group (for group assignments).<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//If true, this grade will be applied to all members of the group (for group assignments).</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[applytoall] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+applytoall= int
+
+</pre></div></div></span><span style="font-size:80%"><b>plugindata</b> (Default to "Array
+(
+)
+")<br/>        plugin data<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+<span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//plugin data</i></span><br/>object {<br/><b>assignfeedbackcomments_editor</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//Editor structure</i></span><br/>object {<br/><b>text</b> string <span style="color:#2A33A6">  <i>//The text for this feedback.</i></span><br/><b>format</b> int <span style="color:#2A33A6">  <i>//The format for this feedback</i></span><br/>} <br/><b>files_filemanager</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//The id of a draft area containing files for this feedback.</i></span><br/>} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[plugindata] =&gt;
+    Array 
+        (
+        [assignfeedbackcomments_editor] =&gt;
+            Array 
+                (
+                [text] =&gt; string                
+                [format] =&gt; int                
+                )        
+        [files_filemanager] =&gt; int        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+plugindata[assignfeedbackcomments_editor][text]= string
+plugindata[assignfeedbackcomments_editor][format]= int
+plugindata[files_filemanager]= int
+
+</pre></div></div></span><span style="font-size:80%"><b>advancedgradingdata</b> (Default to "Array
+(
+)
+")<br/>        advanced grading data<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+<span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//advanced grading data</i></span><br/>object {<br/><b>guide</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//items</i></span><br/>object {<br/><b>criteria</b> list of ( <br/>object {<br/><b>criterionid</b> int <span style="color:#2A33A6">  <i>//criterion id</i></span><br/><b>fillings</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//filling</i></span><br/>list of ( <br/>object {<br/><b>criterionid</b> int <span style="color:#2A33A6">  <i>//criterion id</i></span><br/><b>levelid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//level id</i></span><br/><b>remark</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//remark</i></span><br/><b>remarkformat</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//remark format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>score</b> double <span style="color:#2A33A6">  <i>//maximum score</i></span><br/>} <br/>)} <br/>)} <br/><b>rubric</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//items</i></span><br/>object {<br/><b>criteria</b> list of ( <br/>object {<br/><b>criterionid</b> int <span style="color:#2A33A6">  <i>//criterion id</i></span><br/><b>fillings</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//filling</i></span><br/>list of ( <br/>object {<br/><b>criterionid</b> int <span style="color:#2A33A6">  <i>//criterion id</i></span><br/><b>levelid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//level id</i></span><br/><b>remark</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//remark</i></span><br/><b>remarkformat</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//remark format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/>} <br/>)} <br/>)} <br/>} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[advancedgradingdata] =&gt;
+    Array 
+        (
+        [guide] =&gt;
+            Array 
+                (
+                [criteria] =&gt;
+                    Array 
+                        (
+                        [0] =&gt;
+                            Array 
+                                (
+                                [criterionid] =&gt; int                                
+                                [fillings] =&gt;
+                                    Array 
+                                        (
+                                        [0] =&gt;
+                                            Array 
+                                                (
+                                                [criterionid] =&gt; int                                                
+                                                [levelid] =&gt; int                                                
+                                                [remark] =&gt; string                                                
+                                                [remarkformat] =&gt; int                                                
+                                                [score] =&gt; double                                                
+                                                )
+                                        )                                
+                                )
+                        )                
+                )        
+        [rubric] =&gt;
+            Array 
+                (
+                [criteria] =&gt;
+                    Array 
+                        (
+                        [0] =&gt;
+                            Array 
+                                (
+                                [criterionid] =&gt; int                                
+                                [fillings] =&gt;
+                                    Array 
+                                        (
+                                        [0] =&gt;
+                                            Array 
+                                                (
+                                                [criterionid] =&gt; int                                                
+                                                [levelid] =&gt; int                                                
+                                                [remark] =&gt; string                                                
+                                                [remarkformat] =&gt; int                                                
+                                                )
+                                        )                                
+                                )
+                        )                
+                )        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+advancedgradingdata[guide][criteria][0][criterionid]= int
+advancedgradingdata[guide][criteria][0][fillings][0][criterionid]= int
+advancedgradingdata[guide][criteria][0][fillings][0][levelid]= int
+advancedgradingdata[guide][criteria][0][fillings][0][remark]= string
+advancedgradingdata[guide][criteria][0][fillings][0][remarkformat]= int
+advancedgradingdata[guide][criteria][0][fillings][0][score]= double
+advancedgradingdata[rubric][criteria][0][criterionid]= int
+advancedgradingdata[rubric][criteria][0][fillings][0][criterionid]= int
+advancedgradingdata[rubric][criteria][0][fillings][0][levelid]= int
+advancedgradingdata[rubric][criteria][0][fillings][0][remark]= string
+advancedgradingdata[rubric][criteria][0][fillings][0][remarkformat]= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

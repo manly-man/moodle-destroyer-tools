@@ -1,0 +1,208 @@
+<div class="collapsibleregioninner" id="aera_mod_lti_get_ltis_by_courses_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Returns a list of external tool instances in a provided set of courses, if
+                            no courses are provided then all the external tool instances the user has access to will be returned.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>courseids</b> (Default to "Array
+(
+)
+")<br/>        Array of course ids<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+<span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//Array of course ids</i></span><br/>list of ( <br/>int <span style="color:#2A33A6">  <i>//course id</i></span><br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[courseids] =&gt;
+    Array 
+        (
+        [0] =&gt; int
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+courseids[0]= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>ltis</b> list of ( <br/><span style="color:#2A33A6">  <i>//Tool</i></span><br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//External tool id</i></span><br/><b>coursemodule</b> int <span style="color:#2A33A6">  <i>//Course module id</i></span><br/><b>course</b> int <span style="color:#2A33A6">  <i>//Course id</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//LTI name</i></span><br/><b>intro</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//The LTI intro</i></span><br/><b>introformat</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>timecreated</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Time of creation</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Time of last modification</i></span><br/><b>typeid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Type id</i></span><br/><b>toolurl</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Tool url</i></span><br/><b>securetoolurl</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Secure tool url</i></span><br/><b>instructorchoicesendname</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Instructor choice send name</i></span><br/><b>instructorchoicesendemailaddr</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//instructor choice send mail address</i></span><br/><b>instructorchoiceallowroster</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Instructor choice allow roster</i></span><br/><b>instructorchoiceallowsetting</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Instructor choice allow setting</i></span><br/><b>instructorcustomparameters</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//instructor custom parameters</i></span><br/><b>instructorchoiceacceptgrades</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//instructor choice accept grades</i></span><br/><b>grade</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Enable grades</i></span><br/><b>launchcontainer</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Launch container mode</i></span><br/><b>resourcekey</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Resource key</i></span><br/><b>password</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Shared secret</i></span><br/><b>debuglaunch</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Debug launch</i></span><br/><b>showtitlelaunch</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Show title launch</i></span><br/><b>showdescriptionlaunch</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Show description launch</i></span><br/><b>servicesalt</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Service salt</i></span><br/><b>icon</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Alternative icon URL</i></span><br/><b>secureicon</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Secure icon URL</i></span><br/><b>section</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//course section id</i></span><br/><b>visible</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//visible</i></span><br/><b>groupmode</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//group mode</i></span><br/><b>groupingid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//group id</i></span><br/>} <br/>)<b>warnings</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//list of warnings</i></span><br/>list of ( <br/><span style="color:#2A33A6">  <i>//warning</i></span><br/>object {<br/><b>item</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//item</i></span><br/><b>itemid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//item id</i></span><br/><b>warningcode</b> string <span style="color:#2A33A6">  <i>//the warning code can be used by the client app to implement specific behaviour</i></span><br/><b>message</b> string <span style="color:#2A33A6">  <i>//untranslated english message to explain the warning</i></span><br/>} <br/>)} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [ltis] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [id] =&gt; int                        
+                        [coursemodule] =&gt; int                        
+                        [course] =&gt; int                        
+                        [name] =&gt; string                        
+                        [intro] =&gt; string                        
+                        [introformat] =&gt; int                        
+                        [timecreated] =&gt; int                        
+                        [timemodified] =&gt; int                        
+                        [typeid] =&gt; int                        
+                        [toolurl] =&gt; string                        
+                        [securetoolurl] =&gt; string                        
+                        [instructorchoicesendname] =&gt; string                        
+                        [instructorchoicesendemailaddr] =&gt; int                        
+                        [instructorchoiceallowroster] =&gt; int                        
+                        [instructorchoiceallowsetting] =&gt; int                        
+                        [instructorcustomparameters] =&gt; string                        
+                        [instructorchoiceacceptgrades] =&gt; int                        
+                        [grade] =&gt; int                        
+                        [launchcontainer] =&gt; int                        
+                        [resourcekey] =&gt; string                        
+                        [password] =&gt; string                        
+                        [debuglaunch] =&gt; int                        
+                        [showtitlelaunch] =&gt; int                        
+                        [showdescriptionlaunch] =&gt; int                        
+                        [servicesalt] =&gt; string                        
+                        [icon] =&gt; string                        
+                        [secureicon] =&gt; string                        
+                        [section] =&gt; int                        
+                        [visible] =&gt; int                        
+                        [groupmode] =&gt; int                        
+                        [groupingid] =&gt; int                        
+                        )
+                )        
+        [warnings] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [item] =&gt; string                        
+                        [itemid] =&gt; int                        
+                        [warningcode] =&gt; string                        
+                        [message] =&gt; string                        
+                        )
+                )        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="ltis"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="id"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="coursemodule"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="course"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="name"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="intro"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="introformat"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="timecreated"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="timemodified"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="typeid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="toolurl"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="securetoolurl"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="instructorchoicesendname"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="instructorchoicesendemailaddr"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="instructorchoiceallowroster"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="instructorchoiceallowsetting"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="instructorcustomparameters"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="instructorchoiceacceptgrades"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="grade"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="launchcontainer"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="resourcekey"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="password"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="debuglaunch"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="showtitlelaunch"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="showdescriptionlaunch"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="servicesalt"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="icon"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="secureicon"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="section"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="visible"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="groupmode"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="groupingid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="warnings"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="item"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="itemid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="warningcode"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="message"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

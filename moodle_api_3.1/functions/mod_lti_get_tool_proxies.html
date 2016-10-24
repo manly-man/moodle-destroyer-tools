@@ -1,0 +1,133 @@
+<div class="collapsibleregioninner" id="aera_mod_lti_get_tool_proxies_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Get a list of the tool proxies</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>orphanedonly</b> (Default to "0")<br/>        Orphaned tool types only<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//Orphaned tool types only</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[orphanedonly] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+orphanedonly= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+list of ( <br/><span style="color:#2A33A6">  <i>//Tool</i></span><br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//Tool type id</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//Tool type name</i></span><br/><b>description</b> string <span style="color:#2A33A6">  <i>//Tool type description</i></span><br/><b>urls</b> object {<br/><b>icon</b> string <span style="color:#2A33A6">  <i>//Tool type icon URL</i></span><br/><b>edit</b> string <span style="color:#2A33A6">  <i>//Tool type edit URL</i></span><br/><b>course</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Tool type edit URL</i></span><br/>} <br/><b>state</b> object {<br/><b>text</b> string <span style="color:#2A33A6">  <i>//Tool type state name string</i></span><br/><b>pending</b> int <span style="color:#2A33A6">  <i>//Is the state pending</i></span><br/><b>configured</b> int <span style="color:#2A33A6">  <i>//Is the state configured</i></span><br/><b>rejected</b> int <span style="color:#2A33A6">  <i>//Is the state rejected</i></span><br/><b>unknown</b> int <span style="color:#2A33A6">  <i>//Is the state unknown</i></span><br/>} <br/><b>hascapabilitygroups</b> int <span style="color:#2A33A6">  <i>//Indicate if capabilitygroups is populated</i></span><br/><b>capabilitygroups</b> <span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//Array of capability groups</i></span><br/>list of ( <br/>string <span style="color:#2A33A6">  <i>//Tool type capability groups enabled</i></span><br/>)<b>courseid</b> int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//Tool type course</i></span><br/><b>instanceids</b> <span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//IDs for the LTI instances using this type</i></span><br/>list of ( <br/>int <span style="color:#2A33A6">  <i>//LTI instance ID</i></span><br/>)<b>instancecount</b> int <span style="color:#2A33A6">  <i>//The number of times this tool is being used</i></span><br/>} <br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [0] =&gt;
+            Array 
+                (
+                [id] =&gt; int                
+                [name] =&gt; string                
+                [description] =&gt; string                
+                [urls] =&gt;
+                    Array 
+                        (
+                        [icon] =&gt; string                        
+                        [edit] =&gt; string                        
+                        [course] =&gt; string                        
+                        )                
+                [state] =&gt;
+                    Array 
+                        (
+                        [text] =&gt; string                        
+                        [pending] =&gt; int                        
+                        [configured] =&gt; int                        
+                        [rejected] =&gt; int                        
+                        [unknown] =&gt; int                        
+                        )                
+                [hascapabilitygroups] =&gt; int                
+                [capabilitygroups] =&gt;
+                    Array 
+                        (
+                        [0] =&gt; string
+                        )                
+                [courseid] =&gt; int                
+                [instanceids] =&gt;
+                    Array 
+                        (
+                        [0] =&gt; int
+                        )                
+                [instancecount] =&gt; int                
+                )
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;MULTIPLE&gt;
+        &lt;SINGLE&gt;
+            &lt;KEY name="id"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="name"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="description"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="urls"&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="icon"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="edit"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="course"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="state"&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="text"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="pending"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="configured"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="rejected"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="unknown"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="hascapabilitygroups"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="capabilitygroups"&gt;
+                &lt;MULTIPLE&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/MULTIPLE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="courseid"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="instanceids"&gt;
+                &lt;MULTIPLE&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/MULTIPLE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="instancecount"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+        &lt;/SINGLE&gt;
+    &lt;/MULTIPLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>Yes<br/><br/></div>

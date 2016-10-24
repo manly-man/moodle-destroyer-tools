@@ -1,0 +1,200 @@
+<div class="collapsibleregioninner" id="aera_core_grading_get_gradingform_instances_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Get grading form instances</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>definitionid</b> (Required)<br/>        definition id<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//definition id</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[definitionid] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+definitionid= int
+
+</pre></div></div></span><span style="font-size:80%"><b>since</b> (Default to "0")<br/>        submitted since<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//submitted since</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[since] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+since= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>instances</b> <span style="color:#2A33A6">  <i>//list of grading instances</i></span><br/>list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//instance id</i></span><br/><b>raterid</b> int <span style="color:#2A33A6">  <i>//rater id</i></span><br/><b>itemid</b> int <span style="color:#2A33A6">  <i>//item id</i></span><br/><b>rawgrade</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//raw grade</i></span><br/><b>status</b> int <span style="color:#2A33A6">  <i>//status</i></span><br/><b>feedback</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//feedback</i></span><br/><b>feedbackformat</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//feedback format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6">  <i>//modified time</i></span><br/><b>guide</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//items</i></span><br/>object {<br/><b>criteria</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//filling</i></span><br/>list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//filling id</i></span><br/><b>criterionid</b> int <span style="color:#2A33A6">  <i>//criterion id</i></span><br/><b>levelid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//level id</i></span><br/><b>remark</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//remark</i></span><br/><b>remarkformat</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//remark format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>score</b> double <span style="color:#2A33A6">  <i>//maximum score</i></span><br/>} <br/>)} <br/><b>rubric</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//items</i></span><br/>object {<br/><b>criteria</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//filling</i></span><br/>list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//filling id</i></span><br/><b>criterionid</b> int <span style="color:#2A33A6">  <i>//criterion id</i></span><br/><b>levelid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//level id</i></span><br/><b>remark</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//remark</i></span><br/><b>remarkformat</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//remark format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/>} <br/>)} <br/>} <br/>)<b>warnings</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//list of warnings</i></span><br/>list of ( <br/><span style="color:#2A33A6">  <i>//warning</i></span><br/>object {<br/><b>item</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//item</i></span><br/><b>itemid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//item id</i></span><br/><b>warningcode</b> string <span style="color:#2A33A6">  <i>//the warning code can be used by the client app to implement specific behaviour</i></span><br/><b>message</b> string <span style="color:#2A33A6">  <i>//untranslated english message to explain the warning</i></span><br/>} <br/>)} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [instances] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [id] =&gt; int                        
+                        [raterid] =&gt; int                        
+                        [itemid] =&gt; int                        
+                        [rawgrade] =&gt; string                        
+                        [status] =&gt; int                        
+                        [feedback] =&gt; string                        
+                        [feedbackformat] =&gt; int                        
+                        [timemodified] =&gt; int                        
+                        [guide] =&gt;
+                            Array 
+                                (
+                                [criteria] =&gt;
+                                    Array 
+                                        (
+                                        [0] =&gt;
+                                            Array 
+                                                (
+                                                [id] =&gt; int                                                
+                                                [criterionid] =&gt; int                                                
+                                                [levelid] =&gt; int                                                
+                                                [remark] =&gt; string                                                
+                                                [remarkformat] =&gt; int                                                
+                                                [score] =&gt; double                                                
+                                                )
+                                        )                                
+                                )                        
+                        [rubric] =&gt;
+                            Array 
+                                (
+                                [criteria] =&gt;
+                                    Array 
+                                        (
+                                        [0] =&gt;
+                                            Array 
+                                                (
+                                                [id] =&gt; int                                                
+                                                [criterionid] =&gt; int                                                
+                                                [levelid] =&gt; int                                                
+                                                [remark] =&gt; string                                                
+                                                [remarkformat] =&gt; int                                                
+                                                )
+                                        )                                
+                                )                        
+                        )
+                )        
+        [warnings] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [item] =&gt; string                        
+                        [itemid] =&gt; int                        
+                        [warningcode] =&gt; string                        
+                        [message] =&gt; string                        
+                        )
+                )        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="instances"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="id"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="raterid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="itemid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="rawgrade"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="status"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="feedback"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="feedbackformat"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="timemodified"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="guide"&gt;
+                        &lt;SINGLE&gt;
+                            &lt;KEY name="criteria"&gt;
+                                &lt;MULTIPLE&gt;
+                                    &lt;SINGLE&gt;
+                                        &lt;KEY name="id"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="criterionid"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="levelid"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="remark"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="remarkformat"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="score"&gt;
+                                            &lt;VALUE&gt;double&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                    &lt;/SINGLE&gt;
+                                &lt;/MULTIPLE&gt;
+                            &lt;/KEY&gt;
+                        &lt;/SINGLE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="rubric"&gt;
+                        &lt;SINGLE&gt;
+                            &lt;KEY name="criteria"&gt;
+                                &lt;MULTIPLE&gt;
+                                    &lt;SINGLE&gt;
+                                        &lt;KEY name="id"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="criterionid"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="levelid"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="remark"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="remarkformat"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                    &lt;/SINGLE&gt;
+                                &lt;/MULTIPLE&gt;
+                            &lt;/KEY&gt;
+                        &lt;/SINGLE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="warnings"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="item"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="itemid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="warningcode"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="message"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

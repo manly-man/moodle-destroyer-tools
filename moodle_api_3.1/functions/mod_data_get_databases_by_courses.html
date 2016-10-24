@@ -1,0 +1,228 @@
+<div class="collapsibleregioninner" id="aera_mod_data_get_databases_by_courses_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Returns a list of database instances in a provided set of courses, if
+            no courses are provided then all the database instances the user has access to will be returned.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>courseids</b> (Default to "Array
+(
+)
+")<br/>        Array of course ids<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+<span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//Array of course ids</i></span><br/>list of ( <br/>int <span style="color:#2A33A6">  <i>//course id</i></span><br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[courseids] =&gt;
+    Array 
+        (
+        [0] =&gt; int
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+courseids[0]= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>databases</b> list of ( <br/><span style="color:#2A33A6">  <i>//Database</i></span><br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//Database id</i></span><br/><b>coursemodule</b> int <span style="color:#2A33A6">  <i>//Course module id</i></span><br/><b>course</b> int <span style="color:#2A33A6">  <i>//Course id</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//Database name</i></span><br/><b>intro</b> string <span style="color:#2A33A6">  <i>//The Database intro</i></span><br/><b>introformat</b> int <span style="color:#2A33A6">  <i>//intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>comments</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//comments enabled</i></span><br/><b>timeavailablefrom</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//timeavailablefrom field</i></span><br/><b>timeavailableto</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//timeavailableto field</i></span><br/><b>timeviewfrom</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//timeviewfrom field</i></span><br/><b>timeviewto</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//timeviewto field</i></span><br/><b>requiredentries</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//requiredentries field</i></span><br/><b>requiredentriestoview</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//requiredentriestoview field</i></span><br/><b>maxentries</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//maxentries field</i></span><br/><b>rssarticles</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//rssarticles field</i></span><br/><b>singletemplate</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//singletemplate field</i></span><br/><b>listtemplate</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//listtemplate field</i></span><br/><b>listtemplateheader</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//listtemplateheader field</i></span><br/><b>listtemplatefooter</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//listtemplatefooter field</i></span><br/><b>addtemplate</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//addtemplate field</i></span><br/><b>rsstemplate</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//rsstemplate field</i></span><br/><b>rsstitletemplate</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//rsstitletemplate field</i></span><br/><b>csstemplate</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//csstemplate field</i></span><br/><b>jstemplate</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//jstemplate field</i></span><br/><b>asearchtemplate</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//asearchtemplate field</i></span><br/><b>approval</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//approval field</i></span><br/><b>manageapproved</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//manageapproved field</i></span><br/><b>scale</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//scale field</i></span><br/><b>assessed</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//assessed field</i></span><br/><b>assesstimestart</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//assesstimestart field</i></span><br/><b>assesstimefinish</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//assesstimefinish field</i></span><br/><b>defaultsort</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//defaultsort field</i></span><br/><b>defaultsortdir</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//defaultsortdir field</i></span><br/><b>editany</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//editany field</i></span><br/><b>notification</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//notification field</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Time modified</i></span><br/>} <br/>)<b>warnings</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//list of warnings</i></span><br/>list of ( <br/><span style="color:#2A33A6">  <i>//warning</i></span><br/>object {<br/><b>item</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//item</i></span><br/><b>itemid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//item id</i></span><br/><b>warningcode</b> string <span style="color:#2A33A6">  <i>//the warning code can be used by the client app to implement specific behaviour</i></span><br/><b>message</b> string <span style="color:#2A33A6">  <i>//untranslated english message to explain the warning</i></span><br/>} <br/>)} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [databases] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [id] =&gt; int                        
+                        [coursemodule] =&gt; int                        
+                        [course] =&gt; int                        
+                        [name] =&gt; string                        
+                        [intro] =&gt; string                        
+                        [introformat] =&gt; int                        
+                        [comments] =&gt; int                        
+                        [timeavailablefrom] =&gt; int                        
+                        [timeavailableto] =&gt; int                        
+                        [timeviewfrom] =&gt; int                        
+                        [timeviewto] =&gt; int                        
+                        [requiredentries] =&gt; int                        
+                        [requiredentriestoview] =&gt; int                        
+                        [maxentries] =&gt; int                        
+                        [rssarticles] =&gt; int                        
+                        [singletemplate] =&gt; string                        
+                        [listtemplate] =&gt; string                        
+                        [listtemplateheader] =&gt; string                        
+                        [listtemplatefooter] =&gt; string                        
+                        [addtemplate] =&gt; string                        
+                        [rsstemplate] =&gt; string                        
+                        [rsstitletemplate] =&gt; string                        
+                        [csstemplate] =&gt; string                        
+                        [jstemplate] =&gt; string                        
+                        [asearchtemplate] =&gt; string                        
+                        [approval] =&gt; int                        
+                        [manageapproved] =&gt; int                        
+                        [scale] =&gt; int                        
+                        [assessed] =&gt; int                        
+                        [assesstimestart] =&gt; int                        
+                        [assesstimefinish] =&gt; int                        
+                        [defaultsort] =&gt; int                        
+                        [defaultsortdir] =&gt; int                        
+                        [editany] =&gt; int                        
+                        [notification] =&gt; int                        
+                        [timemodified] =&gt; int                        
+                        )
+                )        
+        [warnings] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [item] =&gt; string                        
+                        [itemid] =&gt; int                        
+                        [warningcode] =&gt; string                        
+                        [message] =&gt; string                        
+                        )
+                )        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="databases"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="id"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="coursemodule"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="course"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="name"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="intro"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="introformat"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="comments"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="timeavailablefrom"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="timeavailableto"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="timeviewfrom"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="timeviewto"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="requiredentries"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="requiredentriestoview"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="maxentries"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="rssarticles"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="singletemplate"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="listtemplate"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="listtemplateheader"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="listtemplatefooter"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="addtemplate"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="rsstemplate"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="rsstitletemplate"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="csstemplate"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="jstemplate"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="asearchtemplate"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="approval"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="manageapproved"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="scale"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="assessed"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="assesstimestart"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="assesstimefinish"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="defaultsort"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="defaultsortdir"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="editany"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="notification"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="timemodified"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="warnings"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="item"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="itemid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="warningcode"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="message"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

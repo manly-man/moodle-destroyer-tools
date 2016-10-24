@@ -1,0 +1,65 @@
+<div class="collapsibleregioninner" id="aera_core_notes_create_notes_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Create notes</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>notes</b> (Required)<br/>        <br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+list of ( <br/>object {<br/><b>userid</b> int <span style="color:#2A33A6">  <i>//id of the user the note is about</i></span><br/><b>publishstate</b> string <span style="color:#2A33A6">  <i>//'personal', 'course' or 'site'</i></span><br/><b>courseid</b> int <span style="color:#2A33A6">  <i>//course id of the note (in Moodle a note can only be created into a course, even for site and personal notes)</i></span><br/><b>text</b> string <span style="color:#2A33A6">  <i>//the text of the message - text or HTML</i></span><br/><b>format</b> int <span style="color:#2A33A6"> <b>Default to "1"</b> <i>//text format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>clientnoteid</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//your own client id for the note. If this id is provided, the fail message id will be returned to you</i></span><br/>} <br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[notes] =&gt;
+    Array 
+        (
+        [0] =&gt;
+            Array 
+                (
+                [userid] =&gt; int                
+                [publishstate] =&gt; string                
+                [courseid] =&gt; int                
+                [text] =&gt; string                
+                [format] =&gt; int                
+                [clientnoteid] =&gt; string                
+                )
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+notes[0][userid]= int
+notes[0][publishstate]= string
+notes[0][courseid]= int
+notes[0][text]= string
+notes[0][format]= int
+notes[0][clientnoteid]= string
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+list of ( <br/>object {<br/><b>clientnoteid</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//your own id for the note</i></span><br/><b>noteid</b> int <span style="color:#2A33A6">  <i>//ID of the created note when successful, -1 when failed</i></span><br/><b>errormessage</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//error message - if failed</i></span><br/>} <br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [0] =&gt;
+            Array 
+                (
+                [clientnoteid] =&gt; string                
+                [noteid] =&gt; int                
+                [errormessage] =&gt; string                
+                )
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;MULTIPLE&gt;
+        &lt;SINGLE&gt;
+            &lt;KEY name="clientnoteid"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="noteid"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="errormessage"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+        &lt;/SINGLE&gt;
+    &lt;/MULTIPLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

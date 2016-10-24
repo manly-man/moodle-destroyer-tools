@@ -1,0 +1,97 @@
+<div class="collapsibleregioninner" id="aera_core_competency_duplicate_template_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Duplicate learning plan template.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>id</b> (Required)<br/>        The template id<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//The template id</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[id] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+id= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>shortname</b> string <span style="color:#2A33A6">  <i>//shortname</i></span><br/><b>description</b> string <span style="color:#2A33A6">  <i>//description</i></span><br/><b>descriptionformat</b> int <span style="color:#2A33A6"> <b>Default to "1"</b> <i>//description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>duedate</b> int <span style="color:#2A33A6">  <i>//duedate</i></span><br/><b>visible</b> int <span style="color:#2A33A6">  <i>//visible</i></span><br/><b>contextid</b> int <span style="color:#2A33A6">  <i>//contextid</i></span><br/><b>id</b> int <span style="color:#2A33A6">  <i>//id</i></span><br/><b>timecreated</b> int <span style="color:#2A33A6">  <i>//timecreated</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6">  <i>//timemodified</i></span><br/><b>usermodified</b> int <span style="color:#2A33A6">  <i>//usermodified</i></span><br/><b>duedateformatted</b> string <span style="color:#2A33A6">  <i>//duedateformatted</i></span><br/><b>cohortscount</b> int <span style="color:#2A33A6">  <i>//cohortscount</i></span><br/><b>planscount</b> int <span style="color:#2A33A6">  <i>//planscount</i></span><br/><b>canmanage</b> int <span style="color:#2A33A6">  <i>//canmanage</i></span><br/><b>canread</b> int <span style="color:#2A33A6">  <i>//canread</i></span><br/><b>contextname</b> string <span style="color:#2A33A6">  <i>//contextname</i></span><br/><b>contextnamenoprefix</b> string <span style="color:#2A33A6">  <i>//contextnamenoprefix</i></span><br/>} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [shortname] =&gt; string        
+        [description] =&gt; string        
+        [descriptionformat] =&gt; int        
+        [duedate] =&gt; int        
+        [visible] =&gt; int        
+        [contextid] =&gt; int        
+        [id] =&gt; int        
+        [timecreated] =&gt; int        
+        [timemodified] =&gt; int        
+        [usermodified] =&gt; int        
+        [duedateformatted] =&gt; string        
+        [cohortscount] =&gt; int        
+        [planscount] =&gt; int        
+        [canmanage] =&gt; int        
+        [canread] =&gt; int        
+        [contextname] =&gt; string        
+        [contextnamenoprefix] =&gt; string        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="shortname"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="description"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="descriptionformat"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="duedate"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="visible"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="contextid"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="id"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="timecreated"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="timemodified"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="usermodified"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="duedateformatted"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="cohortscount"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="planscount"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="canmanage"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="canread"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="contextname"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="contextnamenoprefix"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>Yes<br/><br/></div>

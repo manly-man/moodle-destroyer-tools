@@ -1,0 +1,205 @@
+<div class="collapsibleregioninner" id="aera_core_calendar_get_calendar_events_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Get calendar events</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>events</b> (Default to "Array
+(
+)
+")<br/>        Event details<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+<span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//Event details</i></span><br/>object {<br/><b>eventids</b> <span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//List of event ids</i></span><br/>list of ( <br/>int <span style="color:#2A33A6">  <i>//event ids</i></span><br/>)<b>courseids</b> <span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//List of course ids for which events will be returned</i></span><br/>list of ( <br/>int <span style="color:#2A33A6">  <i>//course ids</i></span><br/>)<b>groupids</b> <span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//List of group ids for which events should be returned</i></span><br/>list of ( <br/>int <span style="color:#2A33A6">  <i>//group ids</i></span><br/>)} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[events] =&gt;
+    Array 
+        (
+        [eventids] =&gt;
+            Array 
+                (
+                [0] =&gt; int
+                )        
+        [courseids] =&gt;
+            Array 
+                (
+                [0] =&gt; int
+                )        
+        [groupids] =&gt;
+            Array 
+                (
+                [0] =&gt; int
+                )        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+events[eventids][0]= int
+events[courseids][0]= int
+events[groupids][0]= int
+
+</pre></div></div></span><span style="font-size:80%"><b>options</b> (Default to "Array
+(
+)
+")<br/>        Options<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+<span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//Options</i></span><br/>object {<br/><b>userevents</b> int <span style="color:#2A33A6"> <b>Default to "1"</b> <i>//Set to true to return current user's user events</i></span><br/><b>siteevents</b> int <span style="color:#2A33A6"> <b>Default to "1"</b> <i>//Set to true to return global events</i></span><br/><b>timestart</b> int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//Time from which events should be returned</i></span><br/><b>timeend</b> int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//Time to which the events should be returned. We treat 0 and null as no end</i></span><br/><b>ignorehidden</b> int <span style="color:#2A33A6"> <b>Default to "1"</b> <i>//Ignore hidden events or not</i></span><br/>} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[options] =&gt;
+    Array 
+        (
+        [userevents] =&gt; int        
+        [siteevents] =&gt; int        
+        [timestart] =&gt; int        
+        [timeend] =&gt; int        
+        [ignorehidden] =&gt; int        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+options[userevents]= int
+options[siteevents]= int
+options[timestart]= int
+options[timeend]= int
+options[ignorehidden]= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>events</b> list of ( <br/><span style="color:#2A33A6">  <i>//event</i></span><br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//event id</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//event name</i></span><br/><b>description</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Description</i></span><br/><b>format</b> int <span style="color:#2A33A6">  <i>//description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>courseid</b> int <span style="color:#2A33A6">  <i>//course id</i></span><br/><b>groupid</b> int <span style="color:#2A33A6">  <i>//group id</i></span><br/><b>userid</b> int <span style="color:#2A33A6">  <i>//user id</i></span><br/><b>repeatid</b> int <span style="color:#2A33A6">  <i>//repeat id</i></span><br/><b>modulename</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//module name</i></span><br/><b>instance</b> int <span style="color:#2A33A6">  <i>//instance id</i></span><br/><b>eventtype</b> string <span style="color:#2A33A6">  <i>//Event type</i></span><br/><b>timestart</b> int <span style="color:#2A33A6">  <i>//timestart</i></span><br/><b>timeduration</b> int <span style="color:#2A33A6">  <i>//time duration</i></span><br/><b>visible</b> int <span style="color:#2A33A6">  <i>//visible</i></span><br/><b>uuid</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//unique id of ical events</i></span><br/><b>sequence</b> int <span style="color:#2A33A6">  <i>//sequence</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6">  <i>//time modified</i></span><br/><b>subscriptionid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Subscription id</i></span><br/>} <br/>)<b>warnings</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//list of warnings</i></span><br/>list of ( <br/><span style="color:#2A33A6">  <i>//warning</i></span><br/>object {<br/><b>item</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//item</i></span><br/><b>itemid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//item id</i></span><br/><b>warningcode</b> string <span style="color:#2A33A6">  <i>//the warning code can be used by the client app to implement specific behaviour</i></span><br/><b>message</b> string <span style="color:#2A33A6">  <i>//untranslated english message to explain the warning</i></span><br/>} <br/>)} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [events] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [id] =&gt; int                        
+                        [name] =&gt; string                        
+                        [description] =&gt; string                        
+                        [format] =&gt; int                        
+                        [courseid] =&gt; int                        
+                        [groupid] =&gt; int                        
+                        [userid] =&gt; int                        
+                        [repeatid] =&gt; int                        
+                        [modulename] =&gt; string                        
+                        [instance] =&gt; int                        
+                        [eventtype] =&gt; string                        
+                        [timestart] =&gt; int                        
+                        [timeduration] =&gt; int                        
+                        [visible] =&gt; int                        
+                        [uuid] =&gt; string                        
+                        [sequence] =&gt; int                        
+                        [timemodified] =&gt; int                        
+                        [subscriptionid] =&gt; int                        
+                        )
+                )        
+        [warnings] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [item] =&gt; string                        
+                        [itemid] =&gt; int                        
+                        [warningcode] =&gt; string                        
+                        [message] =&gt; string                        
+                        )
+                )        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="events"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="id"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="name"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="description"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="format"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="courseid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="groupid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="userid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="repeatid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="modulename"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="instance"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="eventtype"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="timestart"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="timeduration"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="visible"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="uuid"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="sequence"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="timemodified"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="subscriptionid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="warnings"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="item"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="itemid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="warningcode"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="message"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

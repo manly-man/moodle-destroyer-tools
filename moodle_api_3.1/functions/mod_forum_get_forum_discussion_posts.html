@@ -1,0 +1,195 @@
+<div class="collapsibleregioninner" id="aera_mod_forum_get_forum_discussion_posts_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Returns a list of forum posts for a discussion.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>discussionid</b> (Required)<br/>        discussion ID<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//discussion ID</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[discussionid] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+discussionid= int
+
+</pre></div></div></span><span style="font-size:80%"><b>sortby</b> (Default to "created")<br/>        sort by this element: id, created or modified<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+string <span style="color:#2A33A6"> <b>Default to "created"</b> <i>//sort by this element: id, created or modified</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[sortby] =&gt; string
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+sortby= string
+
+</pre></div></div></span><span style="font-size:80%"><b>sortdirection</b> (Default to "DESC")<br/>        sort direction: ASC or DESC<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+string <span style="color:#2A33A6"> <b>Default to "DESC"</b> <i>//sort direction: ASC or DESC</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[sortdirection] =&gt; string
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+sortdirection= string
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>posts</b> list of ( <br/><span style="color:#2A33A6">  <i>//post</i></span><br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//Post id</i></span><br/><b>discussion</b> int <span style="color:#2A33A6">  <i>//Discussion id</i></span><br/><b>parent</b> int <span style="color:#2A33A6">  <i>//Parent id</i></span><br/><b>userid</b> int <span style="color:#2A33A6">  <i>//User id</i></span><br/><b>created</b> int <span style="color:#2A33A6">  <i>//Creation time</i></span><br/><b>modified</b> int <span style="color:#2A33A6">  <i>//Time modified</i></span><br/><b>mailed</b> int <span style="color:#2A33A6">  <i>//Mailed?</i></span><br/><b>subject</b> string <span style="color:#2A33A6">  <i>//The post subject</i></span><br/><b>message</b> string <span style="color:#2A33A6">  <i>//The post message</i></span><br/><b>messageformat</b> int <span style="color:#2A33A6">  <i>//message format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>messagetrust</b> int <span style="color:#2A33A6">  <i>//Can we trust?</i></span><br/><b>attachment</b> string <span style="color:#2A33A6">  <i>//Has attachments?</i></span><br/><b>attachments</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//attachments</i></span><br/>list of ( <br/>object {<br/><b>filename</b> string <span style="color:#2A33A6">  <i>//file name</i></span><br/><b>mimetype</b> string <span style="color:#2A33A6">  <i>//mime type</i></span><br/><b>fileurl</b> string <span style="color:#2A33A6">  <i>//file download url</i></span><br/>} <br/>)<b>totalscore</b> int <span style="color:#2A33A6">  <i>//The post message total score</i></span><br/><b>mailnow</b> int <span style="color:#2A33A6">  <i>//Mail now?</i></span><br/><b>children</b> list of ( <br/>int <span style="color:#2A33A6">  <i>//children post id</i></span><br/>)<b>canreply</b> int <span style="color:#2A33A6">  <i>//The user can reply to posts?</i></span><br/><b>postread</b> int <span style="color:#2A33A6">  <i>//The post was read</i></span><br/><b>userfullname</b> string <span style="color:#2A33A6">  <i>//Post author full name</i></span><br/><b>userpictureurl</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Post author picture.</i></span><br/>} <br/>)<b>warnings</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//list of warnings</i></span><br/>list of ( <br/><span style="color:#2A33A6">  <i>//warning</i></span><br/>object {<br/><b>item</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//item</i></span><br/><b>itemid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//item id</i></span><br/><b>warningcode</b> string <span style="color:#2A33A6">  <i>//the warning code can be used by the client app to implement specific behaviour</i></span><br/><b>message</b> string <span style="color:#2A33A6">  <i>//untranslated english message to explain the warning</i></span><br/>} <br/>)} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [posts] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [id] =&gt; int                        
+                        [discussion] =&gt; int                        
+                        [parent] =&gt; int                        
+                        [userid] =&gt; int                        
+                        [created] =&gt; int                        
+                        [modified] =&gt; int                        
+                        [mailed] =&gt; int                        
+                        [subject] =&gt; string                        
+                        [message] =&gt; string                        
+                        [messageformat] =&gt; int                        
+                        [messagetrust] =&gt; int                        
+                        [attachment] =&gt; string                        
+                        [attachments] =&gt;
+                            Array 
+                                (
+                                [0] =&gt;
+                                    Array 
+                                        (
+                                        [filename] =&gt; string                                        
+                                        [mimetype] =&gt; string                                        
+                                        [fileurl] =&gt; string                                        
+                                        )
+                                )                        
+                        [totalscore] =&gt; int                        
+                        [mailnow] =&gt; int                        
+                        [children] =&gt;
+                            Array 
+                                (
+                                [0] =&gt; int
+                                )                        
+                        [canreply] =&gt; int                        
+                        [postread] =&gt; int                        
+                        [userfullname] =&gt; string                        
+                        [userpictureurl] =&gt; string                        
+                        )
+                )        
+        [warnings] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [item] =&gt; string                        
+                        [itemid] =&gt; int                        
+                        [warningcode] =&gt; string                        
+                        [message] =&gt; string                        
+                        )
+                )        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="posts"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="id"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="discussion"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="parent"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="userid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="created"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="modified"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="mailed"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="subject"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="message"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="messageformat"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="messagetrust"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="attachment"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="attachments"&gt;
+                        &lt;MULTIPLE&gt;
+                            &lt;SINGLE&gt;
+                                &lt;KEY name="filename"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="mimetype"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="fileurl"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                            &lt;/SINGLE&gt;
+                        &lt;/MULTIPLE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="totalscore"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="mailnow"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="children"&gt;
+                        &lt;MULTIPLE&gt;
+                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                        &lt;/MULTIPLE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="canreply"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="postread"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="userfullname"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="userpictureurl"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="warnings"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="item"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="itemid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="warningcode"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="message"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

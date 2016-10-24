@@ -1,0 +1,91 @@
+<div class="collapsibleregioninner" id="aera_enrol_guest_get_instance_info_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Return guest enrolment instance information.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>instanceid</b> (Required)<br/>        Instance id of guest enrolment plugin.<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//Instance id of guest enrolment plugin.</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[instanceid] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+instanceid= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>instanceinfo</b> object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//Id of course enrolment instance</i></span><br/><b>courseid</b> int <span style="color:#2A33A6">  <i>//Id of course</i></span><br/><b>type</b> string <span style="color:#2A33A6">  <i>//Type of enrolment plugin</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//Name of enrolment plugin</i></span><br/><b>status</b> int <span style="color:#2A33A6">  <i>//Is the enrolment enabled?</i></span><br/><b>passwordrequired</b> int <span style="color:#2A33A6">  <i>//Is a password required?</i></span><br/>} <br/><b>warnings</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//list of warnings</i></span><br/>list of ( <br/><span style="color:#2A33A6">  <i>//warning</i></span><br/>object {<br/><b>item</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//item</i></span><br/><b>itemid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//item id</i></span><br/><b>warningcode</b> string <span style="color:#2A33A6">  <i>//the warning code can be used by the client app to implement specific behaviour</i></span><br/><b>message</b> string <span style="color:#2A33A6">  <i>//untranslated english message to explain the warning</i></span><br/>} <br/>)} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [instanceinfo] =&gt;
+            Array 
+                (
+                [id] =&gt; int                
+                [courseid] =&gt; int                
+                [type] =&gt; string                
+                [name] =&gt; string                
+                [status] =&gt; int                
+                [passwordrequired] =&gt; int                
+                )        
+        [warnings] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [item] =&gt; string                        
+                        [itemid] =&gt; int                        
+                        [warningcode] =&gt; string                        
+                        [message] =&gt; string                        
+                        )
+                )        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="instanceinfo"&gt;
+            &lt;SINGLE&gt;
+                &lt;KEY name="id"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="courseid"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="type"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="name"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="status"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="passwordrequired"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+            &lt;/SINGLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="warnings"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="item"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="itemid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="warningcode"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="message"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

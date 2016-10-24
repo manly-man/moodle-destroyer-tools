@@ -1,0 +1,125 @@
+<div class="collapsibleregioninner" id="aera_core_course_update_courses_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Update courses</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>courses</b> (Required)<br/>        courses to update<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+<span style="color:#2A33A6">  <i>//courses to update</i></span><br/>list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//ID of the course</i></span><br/><b>fullname</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//full name</i></span><br/><b>shortname</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//course short name</i></span><br/><b>categoryid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//category id</i></span><br/><b>idnumber</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//id number</i></span><br/><b>summary</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//summary</i></span><br/><b>summaryformat</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>format</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//course format: weeks, topics, social, site,..</i></span><br/><b>showgrades</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//1 if grades are shown, otherwise 0</i></span><br/><b>newsitems</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//number of recent items appearing on the course page</i></span><br/><b>startdate</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//timestamp when the course start</i></span><br/><b>numsections</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//(deprecated, use courseformatoptions) number of weeks/topics</i></span><br/><b>maxbytes</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//largest size of file that can be uploaded into the course</i></span><br/><b>showreports</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//are activity report shown (yes = 1, no =0)</i></span><br/><b>visible</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//1: available to student, 0:not available</i></span><br/><b>hiddensections</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//(deprecated, use courseformatoptions) How the hidden sections in the course are
+                                        displayed to students</i></span><br/><b>groupmode</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//no group, separate, visible</i></span><br/><b>groupmodeforce</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//1: yes, 0: no</i></span><br/><b>defaultgroupingid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//default grouping id</i></span><br/><b>enablecompletion</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Enabled, control via completion and activity settings. Disabled,
+                                        not shown in activity settings.</i></span><br/><b>completionnotify</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//1: yes 0: no</i></span><br/><b>lang</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//forced course language</i></span><br/><b>forcetheme</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//name of the force theme</i></span><br/><b>courseformatoptions</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//additional options for particular course format</i></span><br/>list of ( <br/>object {<br/><b>name</b> string <span style="color:#2A33A6">  <i>//course format option name</i></span><br/><b>value</b> string <span style="color:#2A33A6">  <i>//course format option value</i></span><br/>} <br/>)} <br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[courses] =&gt;
+    Array 
+        (
+        [0] =&gt;
+            Array 
+                (
+                [id] =&gt; int                
+                [fullname] =&gt; string                
+                [shortname] =&gt; string                
+                [categoryid] =&gt; int                
+                [idnumber] =&gt; string                
+                [summary] =&gt; string                
+                [summaryformat] =&gt; int                
+                [format] =&gt; string                
+                [showgrades] =&gt; int                
+                [newsitems] =&gt; int                
+                [startdate] =&gt; int                
+                [numsections] =&gt; int                
+                [maxbytes] =&gt; int                
+                [showreports] =&gt; int                
+                [visible] =&gt; int                
+                [hiddensections] =&gt; int                
+                [groupmode] =&gt; int                
+                [groupmodeforce] =&gt; int                
+                [defaultgroupingid] =&gt; int                
+                [enablecompletion] =&gt; int                
+                [completionnotify] =&gt; int                
+                [lang] =&gt; string                
+                [forcetheme] =&gt; string                
+                [courseformatoptions] =&gt;
+                    Array 
+                        (
+                        [0] =&gt;
+                            Array 
+                                (
+                                [name] =&gt; string                                
+                                [value] =&gt; string                                
+                                )
+                        )                
+                )
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+courses[0][id]= int
+courses[0][fullname]= string
+courses[0][shortname]= string
+courses[0][categoryid]= int
+courses[0][idnumber]= string
+courses[0][summary]= string
+courses[0][summaryformat]= int
+courses[0][format]= string
+courses[0][showgrades]= int
+courses[0][newsitems]= int
+courses[0][startdate]= int
+courses[0][numsections]= int
+courses[0][maxbytes]= int
+courses[0][showreports]= int
+courses[0][visible]= int
+courses[0][hiddensections]= int
+courses[0][groupmode]= int
+courses[0][groupmodeforce]= int
+courses[0][defaultgroupingid]= int
+courses[0][enablecompletion]= int
+courses[0][completionnotify]= int
+courses[0][lang]= string
+courses[0][forcetheme]= string
+courses[0][courseformatoptions][0][name]= string
+courses[0][courseformatoptions][0][value]= string
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>warnings</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//list of warnings</i></span><br/>list of ( <br/><span style="color:#2A33A6">  <i>//warning</i></span><br/>object {<br/><b>item</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//item</i></span><br/><b>itemid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//item id</i></span><br/><b>warningcode</b> string <span style="color:#2A33A6">  <i>//the warning code can be used by the client app to implement specific behaviour</i></span><br/><b>message</b> string <span style="color:#2A33A6">  <i>//untranslated english message to explain the warning</i></span><br/>} <br/>)} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [warnings] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [item] =&gt; string                        
+                        [itemid] =&gt; int                        
+                        [warningcode] =&gt; string                        
+                        [message] =&gt; string                        
+                        )
+                )        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="warnings"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="item"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="itemid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="warningcode"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="message"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

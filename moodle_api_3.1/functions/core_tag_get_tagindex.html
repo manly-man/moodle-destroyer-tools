@@ -1,0 +1,95 @@
+<div class="collapsibleregioninner" id="aera_core_tag_get_tagindex_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Gets tag index page for one tag and one tag area</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>tagindex</b> (Required)<br/>        parameters<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+<span style="color:#2A33A6">  <i>//parameters</i></span><br/>object {<br/><b>tag</b> string <span style="color:#2A33A6">  <i>//tag name</i></span><br/><b>tc</b> int <span style="color:#2A33A6">  <i>//tag collection id</i></span><br/><b>ta</b> int <span style="color:#2A33A6">  <i>//tag area id</i></span><br/><b>excl</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//exlusive mode for this tag area</i></span><br/><b>from</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//context id where the link was displayed</i></span><br/><b>ctx</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//context id where to search for items</i></span><br/><b>rec</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//search in the context recursive</i></span><br/><b>page</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//page number (0-based)</i></span><br/>} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[tagindex] =&gt;
+    Array 
+        (
+        [tag] =&gt; string        
+        [tc] =&gt; int        
+        [ta] =&gt; int        
+        [excl] =&gt; int        
+        [from] =&gt; int        
+        [ctx] =&gt; int        
+        [rec] =&gt; int        
+        [page] =&gt; int        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+tagindex[tag]= string
+tagindex[tc]= int
+tagindex[ta]= int
+tagindex[excl]= int
+tagindex[from]= int
+tagindex[ctx]= int
+tagindex[rec]= int
+tagindex[page]= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%">tag index<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+<span style="color:#2A33A6">  <i>//tag index</i></span><br/>object {<br/><b>tagid</b> int <span style="color:#2A33A6">  <i>//tag id</i></span><br/><b>ta</b> int <span style="color:#2A33A6">  <i>//tag area id</i></span><br/><b>component</b> string <span style="color:#2A33A6">  <i>//component</i></span><br/><b>itemtype</b> string <span style="color:#2A33A6">  <i>//itemtype</i></span><br/><b>nextpageurl</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//URL for the next page</i></span><br/><b>prevpageurl</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//URL for the next page</i></span><br/><b>exclusiveurl</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//URL for exclusive link</i></span><br/><b>exclusivetext</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//text for exclusive link</i></span><br/><b>title</b> string <span style="color:#2A33A6">  <i>//title</i></span><br/><b>content</b> string <span style="color:#2A33A6">  <i>//title</i></span><br/><b>hascontent</b> int <span style="color:#2A33A6">  <i>//whether the content is present</i></span><br/><b>anchor</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//name of anchor</i></span><br/>} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [tagid] =&gt; int        
+        [ta] =&gt; int        
+        [component] =&gt; string        
+        [itemtype] =&gt; string        
+        [nextpageurl] =&gt; string        
+        [prevpageurl] =&gt; string        
+        [exclusiveurl] =&gt; string        
+        [exclusivetext] =&gt; string        
+        [title] =&gt; string        
+        [content] =&gt; string        
+        [hascontent] =&gt; int        
+        [anchor] =&gt; string        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="tagid"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="ta"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="component"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="itemtype"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="nextpageurl"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="prevpageurl"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="exclusiveurl"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="exclusivetext"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="title"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="content"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="hascontent"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="anchor"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>Yes<br/><br/></div>

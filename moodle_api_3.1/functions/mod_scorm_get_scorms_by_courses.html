@@ -1,0 +1,276 @@
+<div class="collapsibleregioninner" id="aera_mod_scorm_get_scorms_by_courses_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Returns a list of scorm instances in a provided set of courses, if
+                            no courses are provided then all the scorm instances the user has access to will be returned.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>courseids</b> (Default to "Array
+(
+)
+")<br/>        Array of course ids<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+<span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//Array of course ids</i></span><br/>list of ( <br/>int <span style="color:#2A33A6">  <i>//course id</i></span><br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[courseids] =&gt;
+    Array 
+        (
+        [0] =&gt; int
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+courseids[0]= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>scorms</b> list of ( <br/><span style="color:#2A33A6">  <i>//SCORM</i></span><br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//SCORM id</i></span><br/><b>coursemodule</b> int <span style="color:#2A33A6">  <i>//Course module id</i></span><br/><b>course</b> int <span style="color:#2A33A6">  <i>//Course id</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//SCORM name</i></span><br/><b>intro</b> string <span style="color:#2A33A6">  <i>//The SCORM intro</i></span><br/><b>introformat</b> int <span style="color:#2A33A6">  <i>//intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>packagesize</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//SCORM zip package size</i></span><br/><b>packageurl</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//SCORM zip package URL</i></span><br/><b>version</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//SCORM version (SCORM_12, SCORM_13, SCORM_AICC)</i></span><br/><b>maxgrade</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Max grade</i></span><br/><b>grademethod</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Grade method</i></span><br/><b>whatgrade</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//What grade</i></span><br/><b>maxattempt</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Maximum number of attemtps</i></span><br/><b>forcecompleted</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Status current attempt is forced to "completed"</i></span><br/><b>forcenewattempt</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Hides the "Start new attempt" checkbox</i></span><br/><b>lastattemptlock</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Prevents to launch new attempts once finished</i></span><br/><b>displayattemptstatus</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//How to display attempt status</i></span><br/><b>displaycoursestructure</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Display contents structure</i></span><br/><b>sha1hash</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Package content or ext path hash</i></span><br/><b>md5hash</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//MD5 Hash of package file</i></span><br/><b>revision</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Revison number</i></span><br/><b>launch</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//First content to launch</i></span><br/><b>skipview</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//How to skip the content structure page</i></span><br/><b>hidebrowse</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Disable preview mode?</i></span><br/><b>hidetoc</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//How to display the SCORM structure in player</i></span><br/><b>nav</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Show navigation buttons</i></span><br/><b>navpositionleft</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Navigation position left</i></span><br/><b>navpositiontop</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Navigation position top</i></span><br/><b>auto</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Auto continue?</i></span><br/><b>popup</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Display in current or new window</i></span><br/><b>width</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Frame width</i></span><br/><b>height</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Frame height</i></span><br/><b>timeopen</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Available from</i></span><br/><b>timeclose</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Available to</i></span><br/><b>displayactivityname</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Display the activity name above the player?</i></span><br/><b>scormtype</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//SCORM type</i></span><br/><b>reference</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Reference to the package</i></span><br/><b>protectpackagedownloads</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Protect package downloads?</i></span><br/><b>updatefreq</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Auto-update frequency for remote packages</i></span><br/><b>options</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Additional options</i></span><br/><b>completionstatusrequired</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Status passed/completed required?</i></span><br/><b>completionscorerequired</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Minimum score required</i></span><br/><b>autocommit</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Save track data automatically?</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Time of last modification</i></span><br/><b>section</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Course section id</i></span><br/><b>visible</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Visible</i></span><br/><b>groupmode</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Group mode</i></span><br/><b>groupingid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Group id</i></span><br/>} <br/>)<b>warnings</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//list of warnings</i></span><br/>list of ( <br/><span style="color:#2A33A6">  <i>//warning</i></span><br/>object {<br/><b>item</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//item</i></span><br/><b>itemid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//item id</i></span><br/><b>warningcode</b> string <span style="color:#2A33A6">  <i>//the warning code can be used by the client app to implement specific behaviour</i></span><br/><b>message</b> string <span style="color:#2A33A6">  <i>//untranslated english message to explain the warning</i></span><br/>} <br/>)} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [scorms] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [id] =&gt; int                        
+                        [coursemodule] =&gt; int                        
+                        [course] =&gt; int                        
+                        [name] =&gt; string                        
+                        [intro] =&gt; string                        
+                        [introformat] =&gt; int                        
+                        [packagesize] =&gt; int                        
+                        [packageurl] =&gt; string                        
+                        [version] =&gt; string                        
+                        [maxgrade] =&gt; int                        
+                        [grademethod] =&gt; int                        
+                        [whatgrade] =&gt; int                        
+                        [maxattempt] =&gt; int                        
+                        [forcecompleted] =&gt; int                        
+                        [forcenewattempt] =&gt; int                        
+                        [lastattemptlock] =&gt; int                        
+                        [displayattemptstatus] =&gt; int                        
+                        [displaycoursestructure] =&gt; int                        
+                        [sha1hash] =&gt; string                        
+                        [md5hash] =&gt; string                        
+                        [revision] =&gt; int                        
+                        [launch] =&gt; int                        
+                        [skipview] =&gt; int                        
+                        [hidebrowse] =&gt; int                        
+                        [hidetoc] =&gt; int                        
+                        [nav] =&gt; int                        
+                        [navpositionleft] =&gt; int                        
+                        [navpositiontop] =&gt; int                        
+                        [auto] =&gt; int                        
+                        [popup] =&gt; int                        
+                        [width] =&gt; int                        
+                        [height] =&gt; int                        
+                        [timeopen] =&gt; int                        
+                        [timeclose] =&gt; int                        
+                        [displayactivityname] =&gt; int                        
+                        [scormtype] =&gt; string                        
+                        [reference] =&gt; string                        
+                        [protectpackagedownloads] =&gt; int                        
+                        [updatefreq] =&gt; int                        
+                        [options] =&gt; string                        
+                        [completionstatusrequired] =&gt; int                        
+                        [completionscorerequired] =&gt; int                        
+                        [autocommit] =&gt; int                        
+                        [timemodified] =&gt; int                        
+                        [section] =&gt; int                        
+                        [visible] =&gt; int                        
+                        [groupmode] =&gt; int                        
+                        [groupingid] =&gt; int                        
+                        )
+                )        
+        [warnings] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [item] =&gt; string                        
+                        [itemid] =&gt; int                        
+                        [warningcode] =&gt; string                        
+                        [message] =&gt; string                        
+                        )
+                )        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="scorms"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="id"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="coursemodule"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="course"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="name"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="intro"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="introformat"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="packagesize"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="packageurl"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="version"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="maxgrade"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="grademethod"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="whatgrade"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="maxattempt"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="forcecompleted"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="forcenewattempt"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="lastattemptlock"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="displayattemptstatus"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="displaycoursestructure"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="sha1hash"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="md5hash"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="revision"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="launch"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="skipview"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="hidebrowse"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="hidetoc"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="nav"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="navpositionleft"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="navpositiontop"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="auto"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="popup"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="width"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="height"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="timeopen"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="timeclose"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="displayactivityname"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="scormtype"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="reference"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="protectpackagedownloads"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="updatefreq"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="options"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="completionstatusrequired"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="completionscorerequired"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="autocommit"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="timemodified"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="section"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="visible"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="groupmode"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="groupingid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="warnings"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="item"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="itemid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="warningcode"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="message"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

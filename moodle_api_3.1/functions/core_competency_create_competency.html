@@ -1,0 +1,131 @@
+<div class="collapsibleregioninner" id="aera_core_competency_create_competency_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Creates new competencies.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>competency</b> (Required)<br/>        <br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>shortname</b> string <span style="color:#2A33A6">  <i>//shortname</i></span><br/><b>idnumber</b> string <span style="color:#2A33A6">  <i>//idnumber</i></span><br/><b>description</b> string <span style="color:#2A33A6"> <b>Default to ""</b> <i>//description</i></span><br/><b>descriptionformat</b> int <span style="color:#2A33A6"> <b>Default to "1"</b> <i>//description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>sortorder</b> int <span style="color:#2A33A6"> <b>Default to "null"</b> <i>//sortorder</i></span><br/><b>parentid</b> int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//parentid</i></span><br/><b>path</b> string <span style="color:#2A33A6"> <b>Default to "/0/"</b> <i>//path</i></span><br/><b>ruleoutcome</b> int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//ruleoutcome</i></span><br/><b>ruletype</b> string <span style="color:#2A33A6"> <b>Default to "null"</b> <i>//ruletype</i></span><br/><b>ruleconfig</b> string <span style="color:#2A33A6"> <b>Default to "null"</b> <i>//ruleconfig</i></span><br/><b>scaleid</b> int <span style="color:#2A33A6"> <b>Default to "null"</b> <i>//scaleid</i></span><br/><b>scaleconfiguration</b> string <span style="color:#2A33A6"> <b>Default to "null"</b> <i>//scaleconfiguration</i></span><br/><b>competencyframeworkid</b> int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//competencyframeworkid</i></span><br/><b>timecreated</b> int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//timecreated</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//timemodified</i></span><br/><b>usermodified</b> int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//usermodified</i></span><br/>} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[competency] =&gt;
+    Array 
+        (
+        [shortname] =&gt; string        
+        [idnumber] =&gt; string        
+        [description] =&gt; string        
+        [descriptionformat] =&gt; int        
+        [sortorder] =&gt; int        
+        [parentid] =&gt; int        
+        [path] =&gt; string        
+        [ruleoutcome] =&gt; int        
+        [ruletype] =&gt; string        
+        [ruleconfig] =&gt; string        
+        [scaleid] =&gt; int        
+        [scaleconfiguration] =&gt; string        
+        [competencyframeworkid] =&gt; int        
+        [timecreated] =&gt; int        
+        [timemodified] =&gt; int        
+        [usermodified] =&gt; int        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+competency[shortname]= string
+competency[idnumber]= string
+competency[description]= string
+competency[descriptionformat]= int
+competency[sortorder]= int
+competency[parentid]= int
+competency[path]= string
+competency[ruleoutcome]= int
+competency[ruletype]= string
+competency[ruleconfig]= string
+competency[scaleid]= int
+competency[scaleconfiguration]= string
+competency[competencyframeworkid]= int
+competency[timecreated]= int
+competency[timemodified]= int
+competency[usermodified]= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>shortname</b> string <span style="color:#2A33A6">  <i>//shortname</i></span><br/><b>idnumber</b> string <span style="color:#2A33A6">  <i>//idnumber</i></span><br/><b>description</b> string <span style="color:#2A33A6">  <i>//description</i></span><br/><b>descriptionformat</b> int <span style="color:#2A33A6"> <b>Default to "1"</b> <i>//description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>sortorder</b> int <span style="color:#2A33A6">  <i>//sortorder</i></span><br/><b>parentid</b> int <span style="color:#2A33A6">  <i>//parentid</i></span><br/><b>path</b> string <span style="color:#2A33A6">  <i>//path</i></span><br/><b>ruleoutcome</b> int <span style="color:#2A33A6">  <i>//ruleoutcome</i></span><br/><b>ruletype</b> string <span style="color:#2A33A6">  <i>//ruletype</i></span><br/><b>ruleconfig</b> string <span style="color:#2A33A6">  <i>//ruleconfig</i></span><br/><b>scaleid</b> int <span style="color:#2A33A6">  <i>//scaleid</i></span><br/><b>scaleconfiguration</b> string <span style="color:#2A33A6">  <i>//scaleconfiguration</i></span><br/><b>competencyframeworkid</b> int <span style="color:#2A33A6">  <i>//competencyframeworkid</i></span><br/><b>id</b> int <span style="color:#2A33A6">  <i>//id</i></span><br/><b>timecreated</b> int <span style="color:#2A33A6">  <i>//timecreated</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6">  <i>//timemodified</i></span><br/><b>usermodified</b> int <span style="color:#2A33A6">  <i>//usermodified</i></span><br/>} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [shortname] =&gt; string        
+        [idnumber] =&gt; string        
+        [description] =&gt; string        
+        [descriptionformat] =&gt; int        
+        [sortorder] =&gt; int        
+        [parentid] =&gt; int        
+        [path] =&gt; string        
+        [ruleoutcome] =&gt; int        
+        [ruletype] =&gt; string        
+        [ruleconfig] =&gt; string        
+        [scaleid] =&gt; int        
+        [scaleconfiguration] =&gt; string        
+        [competencyframeworkid] =&gt; int        
+        [id] =&gt; int        
+        [timecreated] =&gt; int        
+        [timemodified] =&gt; int        
+        [usermodified] =&gt; int        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="shortname"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="idnumber"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="description"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="descriptionformat"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="sortorder"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="parentid"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="path"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="ruleoutcome"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="ruletype"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="ruleconfig"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="scaleid"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="scaleconfiguration"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="competencyframeworkid"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="id"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="timecreated"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="timemodified"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="usermodified"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>Yes<br/><br/></div>
