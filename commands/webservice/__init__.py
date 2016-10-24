@@ -1,0 +1,1 @@
+print("WEBSERVICE __INIT__")
