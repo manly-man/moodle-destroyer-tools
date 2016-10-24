@@ -2,17 +2,14 @@ import mimetypes
 import os
 from abc import ABCMeta, abstractmethod
 
-
 import requests
 import requests.adapters
-
 
 import moodle.exceptions
 from moodle.fieldnames import text_format as moodle_text_format
 from moodle.fieldnames import JsonFieldNames as Jn
 from moodle.fieldnames import UrlPaths as Paths
 from moodle.parsers import strip_mlang
-import moodle.responses
 
 import logging
 
@@ -34,11 +31,13 @@ class MoodleApi(metaclass=ABCMeta):
         It is defines a set of functions activated for the service.
         use get_site_info() to retrieve the exported function set.
         Most Moodle platforms have the Moodle Mobile Service active, I think it is enabled by default.
+        'documented' at https://docs.moodle.org/dev/Creating_a_web_service_client#How_to_get_a_user_token
+        and https://github.com/moodle/moodle/blob/master/login/token.php
 
         :param user_name: the user name
         :param password: password
         :param service: defaults to 'moodle_mobile_app'
-        :return: a token.
+        :return: a token or one of many exceptions -.-
         """
         data = {
             Jn.user_name: user_name,
@@ -515,8 +514,8 @@ class MoodleAdapter(requests.adapters.HTTPAdapter):
             if Jn.ws_function in params:
                 called_function = params[Jn.ws_function]
                 log.debug('called function: {}'.format(called_function))
-        if isinstance(req, PreparedMoodleRequest):
-            print('prepared moodle req function: {}'.format(req.function))
+        # if isinstance(req, PreparedMoodleRequest):
+        #     print('prepared moodle req function: {}'.format(req.function))
         if called_function != '':
             if 'mod_assign_save_grade' and response.json() is None:
                 # success

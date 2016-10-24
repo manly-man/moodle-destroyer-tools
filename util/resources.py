@@ -18,7 +18,7 @@ class MetaDataFolder(dict):
     def _read_meta(self):
         filename = self._meta_filename
         try:
-            with open(filename, 'r') as file:
+            with open(filename) as file:
                 meta = json.load(file)
                 for k, v in meta.items():
                     setattr(self, k, v)
