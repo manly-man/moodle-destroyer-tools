@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
-import json
-import configargparse
 
-from moodle.fieldnames import JsonFieldNames as Jn, text_format
-from moodle.frontend.models import Course, Submission, Assignment, GradingFile
-from moodle.frontend.moodle import MoodleFrontend
-
-from util.worktree import WorkTree
-from util import interaction
-import shutil
-import logging
+# interesting things:
+# inspect.signature for plugins
+# multithreading https://docs.python.org/3/tutorial/stdlib2.html#multi-threading
+# also: multiprocessing http://python-3-patterns-idioms-test.readthedocs.io/en/latest/CoroutinesAndConcurrency.html
+# unittests https://docs.python.org/3/library/unittest.html
+import argparse
 import getpass
+import json
+import logging
+import shutil
+
+from frontend import MoodleFrontend
+from frontend.models import Course, Assignment
+from moodle.fieldnames import JsonFieldNames as Jn, text_format
+from persistence.worktree import WorkTree
+from util import interaction
 
 log = logging.getLogger('wstools')
 
@@ -19,7 +24,8 @@ __all__ = ['auth', 'config', 'grade', 'init', 'pull', 'status', 'sync', 'upload'
 
 class ParserManager:
     def __init__(self):
-        self.parser = configargparse.ArgumentParser(default_config_files=WorkTree.get_config_file_list())
+        # self.parser = configargparse.ArgumentParser(default_config_files=WorkTree.get_config_file_list())
+        self.parser = argparse.ArgumentParser()
         self.subparsers = self.parser.add_subparsers(help="internal sub command help")
 
     def register(self, name, help_text):
@@ -33,6 +39,16 @@ def make_config_parser():
 
 
 def auth(url=None, ask=False, username=None, service='moodle_mobile_app'):
+    """
+    Retreives a Web Service Token for the given user and host and saves it to the global config.
+
+    :param url: the moodle host
+    :param ask: set this to true, to get asked for input of known values anyway.
+    :param username: the login for which you'd like to retrieve a token for.
+    :param service: the configured Web Service, you'd like the token for.
+    :return: nothing.
+    """
+
     _url = 'url'
     _user = 'user_name'
     _service = 'service'
@@ -210,48 +226,20 @@ def pull(assignment_ids=None, all=False):
     frontend.download_files(assignment_ids)
 
 _pull = _pm.register('pull', 'retrieve files for grading')
-_pull.add_argument('assignment_ids', nargs='+', type=int)
+_pull.add_argument('assignment_ids', nargs='*', type=int)
 _pull.add_argument('--all', help='pull all due submissions, even old ones', action='store_true')
 _pull.set_defaults(func=pull)
 
 
 def grade(grading_files):
-    wt = WorkTree()
-    upload_data = []
-    for file in grading_files:
-        # file_content = file.read()
-        wrapped = GradingFile(json.load(file))
-        assignment_id = wrapped.assignment_id
+    frontend = MoodleFrontend()
+    upload_data = frontend.parse_grade_files(grading_files)
 
-        assignment = Assignment(wt.assignments[assignment_id])
-        assignment.course = Course(wt.courses[assignment.course_id])
-
-        assignment.course.users = wt.users[str(assignment.course_id)]
-        assignment.submissions = wt.submissions[assignment_id]
-        upload_data.append(assignment.prepare_grade_upload_data(wrapped.grades.raw))
-
-    print('this will upload the following grades:')
-    grade_format = '  {:>20}:{:6d} {:5.1f} > {}'
-    for graded_assignment in upload_data:
-        print(' assignment {:5d}, team_submission: {}'.format(graded_assignment['assignment_id'],
-                                                              graded_assignment['team_submission']))
-        for gdata in graded_assignment['grade_data']:
-            print(grade_format.format(gdata['name'], gdata['user_id'], gdata['grade'], gdata['feedback'][:40]))
-    answer = input('does this look good? [Y/n]: ')
-
-    if 'n' == answer:
-        print('do it right, then')
-        return
-    elif not ('y' == answer or '' == answer):
-        print('wat')
-        return
-
-    frontend = MoodleFrontend(wt)
     frontend.upload_grades(upload_data)
 
 
-_grade = _pm.register('grade','upload grades from files')
-_grade.add_argument('grading_files', nargs='+', help='files containing grades', type=configargparse.FileType('r'))
+_grade = _pm.register('grade', 'upload grades from files')
+_grade.add_argument('grading_files', nargs='+', help='files containing grades', type=argparse.FileType('r'))
 _grade.set_defaults(func=grade)
 
 
@@ -261,7 +249,7 @@ def upload(files):
 
 
 _upload = _pm.register('upload', 'upload files to draft area')
-_upload.add_argument('files', nargs='+', help='files to upload', type=configargparse.FileType('rb'))
+_upload.add_argument('files', nargs='+', help='files to upload', type=argparse.FileType('rb'))
 _upload.set_defaults(func=upload)
 
 
@@ -384,13 +372,13 @@ _submit = _pm.register('submit', 'submit text or files to assignment for grading
 _submit.add_argument('-a', '--assignment_id', help='the assignment id to submit to.')
 
 _submit_online_group = _submit.add_argument_group('online', 'for online text submission')
-_submit_online_group.add_argument('-t', '--text', type=configargparse.FileType('r'),
+_submit_online_group.add_argument('-t', '--text', type=argparse.FileType('r'),
                                   help='the text file with content you want to submit (txt,md,html)')
-_submit_online_group.add_argument('-tf', '--textfiles', nargs='+', type=configargparse.FileType('rb'),
+_submit_online_group.add_argument('-tf', '--textfiles', nargs='+', type=argparse.FileType('rb'),
                                   help='files you want in the text. pictures in markdown?')
 
 _submit_file_group = _submit.add_argument_group('files', 'for file submission')
-_submit_file_group.add_argument('-f', '--files', nargs='+', type=configargparse.FileType('rb'),
+_submit_file_group.add_argument('-f', '--files', nargs='+', type=argparse.FileType('rb'),
                                 help='the files you want to sumbit.')
 
 _submit.set_defaults(func=submit)
@@ -399,7 +387,7 @@ _submit.set_defaults(func=submit)
 def config():
     parser = make_config_parser()
     parser.parse_known_args()
-    parser.print_values()
+    # parser.print_values()
 
 
 _config = _pm.register('config', 'shows config values, nothing else')
