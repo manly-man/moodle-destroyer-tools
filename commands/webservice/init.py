@@ -15,7 +15,7 @@ def init(url, token, user_id, force=False, course_ids=None):
 
     ms = MoodleSession(moodle_url=url, token=token)
 
-    wrapped = wrappers.CourseListResponse(ms.get_users_course_list(user_id))
+    wrapped = wrappers.CourseListResponse(ms.core_enrol_get_users_courses(user_id))
     courses = list(wrapped)
 
     courses.sort(key=lambda course: course.full_name)
