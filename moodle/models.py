@@ -1,14 +1,10 @@
-from moodle.fieldnames import JsonFieldNames as Jn
-from moodle.parsers import strip_mlang
-from _collections_abc import Mapping, Sequence, Sized
-from abc import ABCMeta, abstractmethod
-import moodle.exceptions
-import logging
-import json
-log = logging.getLogger('moodle.responses')
+from collections import Mapping, Sequence, Sized
 
-# todo: implement check_for_errors on all Response Implementations
-# todo: test response wrappers' ABC meta
+from moodle.fieldnames import JsonFieldNames as Jn
+
+import logging
+
+log = logging.getLogger('moodle.responses')
 
 
 class JsonWrapper(Sized):
@@ -20,37 +16,6 @@ class JsonWrapper(Sized):
 
     @property
     def raw(self): return self._data
-
-
-class ResponseWrapper(metaclass=ABCMeta):
-    @abstractmethod
-    def _check_for_errors(self): raise NotImplementedError('_check_for_errors')
-
-    @classmethod
-    def __subclasshook__(cls, C):
-        if cls is JsonResponseWrapper:
-            if any('_check_for_errors' in B.__dict__ for B in C.__mro__):
-                return True
-        return NotImplemented
-
-
-class JsonResponseWrapper(JsonWrapper, ResponseWrapper):
-    def __init__(self, response):
-        super().__init__(response.json())
-        self._response = response
-        self._check_for_errors()
-
-    @property
-    def response(self): return self._response
-
-    @property
-    def mlang_stripped_text(self): return strip_mlang(self.response.text)
-
-    @property
-    def mlang_stripped_json(self): return json.loads(self.mlang_stripped_text)
-
-    @abstractmethod
-    def _check_for_errors(self): raise NotImplementedError('check_for_errors')
 
 
 class JsonListWrapper(JsonWrapper, Sequence):
@@ -97,42 +62,7 @@ class JsonDictWrapper(JsonWrapper, Mapping):
                 return default
 
 
-class JsonDictResponseWrapper(JsonResponseWrapper, JsonDictWrapper):
-    @abstractmethod
-    def _check_for_errors(self):
-        pass
-
-    def __init__(self, response):
-        super().__init__(response)
-        if type(self._data) is not dict:
-            raise TypeError('received type {}, expected dict'.format(type(response)))
-
-
-class JsonListResponseWrapper(JsonResponseWrapper, JsonListWrapper):
-    @abstractmethod
-    def __iter__(self):
-        pass
-
-    def __init__(self, response):
-        super().__init__(response)
-        if type(self._data) is not list:
-            raise TypeError('received type {}, expected list'.format(type(response)))
-
-    def get(self, index):
-        try:
-            return self._data[index]
-        except Exception as e:
-            print(index)
-            raise e
-
-
-class CourseListResponse(JsonListResponseWrapper):
-    def _check_for_errors(self):
-        if len(self._data) == 0:
-            log.warn('Returned CourseList is empty, request might have failed')
-        elif Jn.exception in self._data:
-            raise moodle.exceptions.MoodleError(**self[Jn.exception])
-
+class CourseListResponse(JsonListWrapper):
     def __iter__(self):
         for course in self._data:
             yield self.Course(course)
@@ -171,7 +101,7 @@ class CourseListResponse(JsonListResponseWrapper):
         def __str__(self): return '{:40} id:{:5d} short: {}'.format(self.full_name[0:39], self.id, self.short_name)
 
 
-class EnrolledUsersListResponse(JsonListResponseWrapper):
+class EnrolledUsersListResponse(JsonListWrapper):
     """ optional, unimplemented object {
     username string  Optional //Username policy is defined in Moodle security config
     firstname string  Optional lastname string  Optional
@@ -207,10 +137,6 @@ class EnrolledUsersListResponse(JsonListResponseWrapper):
         id int   //Id of the course
         fullname string   //Fullname of the course
         shortname string   //Shortname of the course})}"""
-
-    def _check_for_errors(self):
-        if Jn.exception in self._data:
-            raise moodle.exceptions.MoodleError(**self[Jn.exception])
 
     def __iter__(self):
         for user in self._data:
@@ -266,11 +192,7 @@ class EnrolledUsersListResponse(JsonListResponseWrapper):
                 def sort_order(self): return self[Jn.sort_order]
 
 
-class CourseAssignmentResponse(JsonDictResponseWrapper):
-    def _check_for_errors(self):
-        if Jn.exception in self.raw:
-            raise moodle.exceptions.MoodleError(**self[Jn.exception])
-
+class CourseAssignmentResponse(JsonDictWrapper):
     @property
     def warnings(self): return self.WarningList(self[Jn.warnings])
 
@@ -361,6 +283,9 @@ class CourseAssignmentResponse(JsonDictResponseWrapper):
                     def course_id(self): return self[Jn.course]
 
                     @property
+                    def time_modified(self): return self[Jn.time_modified]
+
+                    @property
                     def is_team_submission(self): return 1 == self[Jn.team_submission]
 
                     @property
@@ -403,10 +328,8 @@ class CourseAssignmentResponse(JsonDictResponseWrapper):
                             def value(self): return self[Jn.value]
 
 
-class AssignmentSubmissionResponse(JsonDictResponseWrapper):
-    def _check_for_errors(self):
-        if Jn.exception in self._data:
-            raise moodle.exceptions.MoodleError(**self[Jn.exception])
+class AssignmentSubmissionResponse(JsonDictWrapper):
+    def print_warnings(self):
         for warning in self.warnings:
             if warning.warning_code == "3":
                 # no (new) submissions, can ignore
@@ -446,7 +369,8 @@ class AssignmentSubmissionResponse(JsonDictResponseWrapper):
 
         class Assignment(JsonDictWrapper):
             @property
-            def id(self): return self.id
+            def id(self):
+                return self[Jn.assignment_id]
 
             @property
             def submissions(self): return self.SubmissionList(self[Jn.submissions])
@@ -542,10 +466,8 @@ class AssignmentSubmissionResponse(JsonDictResponseWrapper):
                                     def fmt(self): return self[Jn.format]
 
 
-class AssignmentGradeResponse(JsonDictResponseWrapper):
-    def _check_for_errors(self):
-        if Jn.exception in self._data:
-            raise moodle.exceptions.MoodleError(**self[Jn.exception])
+class AssignmentGradeResponse(JsonDictWrapper):
+    def print_warnings(self):
         for warning in self.warnings:
             if warning.warning_code == "3":
                 # grades empty, no warning necessary
@@ -567,8 +489,9 @@ class AssignmentGradeResponse(JsonDictResponseWrapper):
 
         class Assignment(JsonDictWrapper):
             @property
-            def id(self): return self[Jn.id]
+            def id(self): return self[Jn.assignment_id]
 
+            @property
             def grades(self): return self.GradesList(self[Jn.grades])
 
             class GradesList(JsonListWrapper):
@@ -609,7 +532,8 @@ class AssignmentGradeResponse(JsonDictResponseWrapper):
         class Warning(JsonDictWrapper):
             """
             item string  Optional //item is always 'assignment'
-            itemid int  Optional //when errorcode is 3 then itemid is an assignment id. When errorcode is 1, itemid is a course module id
+            itemid int  Optional //when errorcode is 3 then itemid is an assignment id.
+                        When errorcode is 1, itemid is a course module id
             warningcode string   //errorcode can be 3 (no grades found) or 1 (no permission to get grades)
             message string   //untranslated english message to explain the warning"""
 
@@ -626,11 +550,7 @@ class AssignmentGradeResponse(JsonDictResponseWrapper):
             def item(self): return self.get(Jn.item, '')
 
 
-class FileMetaDataResponse(JsonDictResponseWrapper):
-    def _check_for_errors(self):
-        if Jn.exception in self._data:
-            raise moodle.exceptions.MoodleError(**self[Jn.exception])
-
+class FileMetaDataResponse(JsonDictWrapper):
     @property
     def parents(self): return self.ParentList(self[Jn.parents])
 
@@ -684,6 +604,7 @@ class FileMetaDataResponse(JsonDictResponseWrapper):
 
             @property
             def filename(self): return self[Jn.file_name]
+
             @property
             def isdir(self): return 1 == self[Jn.is_dir]
 
@@ -710,11 +631,12 @@ MoodleAssignment = CourseAssignmentResponse.CourseList.Course.AssignmentList.Ass
 MoodleCourse = CourseListResponse.Course
 MoodleUser = EnrolledUsersListResponse.User
 MoodleGroup = EnrolledUsersListResponse.User.GroupsList.Group
-MoodleSubmission = AssignmentSubmissionResponse.AssignmentList.Assignment.SubmissionList.Submission
+MoodleSubmissionList = AssignmentSubmissionResponse.AssignmentList.Assignment.SubmissionList
+MoodleSubmission = MoodleSubmissionList.Submission
 MoodlePlugin = MoodleSubmission.PluginList.Plugin
 MoodleFileArea = MoodlePlugin.FileAreaList.FileArea
 MoodleEditorField = MoodlePlugin.EditorFieldList.EditorField
 MoodleSubmissionFile = MoodleFileArea.FileList.File
-MoodleGrade = AssignmentGradeResponse.AssignmentList.Assignment.GradesList.Grade
+MoodleGradeList = AssignmentGradeResponse.AssignmentList.Assignment.GradesList
+MoodleGrade = MoodleGradeList.Grade
 MoodleFileMeta = FileMetaDataResponse.FileList.File
-
