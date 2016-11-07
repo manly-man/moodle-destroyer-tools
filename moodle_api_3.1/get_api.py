@@ -4,11 +4,14 @@ import requests
 from bs4 import BeautifulSoup as BS
 from bs4 import SoupStrainer as SS
 
+import code
+import ast
 
 url = 'https://demo.moodle.net'
 ws_api = '/admin/webservice/documentation.php'
 login = '/login/index.php'
-logindata = {'username': 'admin','password': 'sandbox'}
+logindata = {'username': 'admin', 'password': 'sandbox'}
+
 
 def main():
 
@@ -25,11 +28,12 @@ def main():
     return main_soup
 
 def parse_api(soup):
-    cmd_divs = soup.find_all(attrs={'class':'collapsibleregion collapsed'})
+    cmd_divs = soup.find_all(attrs={'class': 'collapsibleregion collapsed'})
     for cmd_div in cmd_divs:
         title_soup = cmd_div.div.find_all('div', class_='collapsibleregioncaption')
         func_name = title_soup[0].strong.contents[0]
         func_soup = cmd_div.div.find_all('div', class_='collapsibleregioninner')
+        code.interact(local=locals())
         func_description = func_soup[0].div.contents[0]
         with open(func_name + '.html', 'w') as f:
             f.write(str(func_soup[0]))
