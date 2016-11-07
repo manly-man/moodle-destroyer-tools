@@ -16,7 +16,6 @@ _text_format = {
 
 # maybe use gettext for different versions?
 class JsonFieldNames:
-
     access_exception = 'accessexception'
     add_attempt = 'addattempt'
     apply_to_all = 'applytoall'
@@ -120,12 +119,6 @@ class JsonFieldNames:
     ws_function = 'wsfunction'
     ws_token = 'wstoken'
 
-
-class UrlPaths:
-    web_service = '/webservice/rest/server.php'
-    token = '/login/token.php'
-    upload = '/webservice/upload.php'
-    download = '/webservice/pluginfile.php'
 
 text_format = LookupDict()
 
