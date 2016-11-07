@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 import glob
 import os
-import subprocess
 import re
+import subprocess
 import sys
+
 import wstools
-from util.worktree import NotInWorkTree
+from persistence.worktree import NotInWorkTree
 
 
 def exec_path_to_dict(paths):
