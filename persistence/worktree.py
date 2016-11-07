@@ -5,7 +5,7 @@ import re
 
 from frontend.models import Course, GlobalConfig
 from moodle.fieldnames import JsonFieldNames as Jn
-from util.resources import AssignmentFolder, SubmissionFolder, GradeMetaDataFolder
+from persistence.models import AssignmentFolder, SubmissionFolder, GradeFolder
 
 
 class WorkTree:
@@ -34,7 +34,7 @@ class WorkTree:
         self._user_data = self._load_json_file(self.user_meta)
         self._assignment_data = AssignmentFolder(self.assignment_meta)
         self._submission_data = SubmissionFolder(self.submission_meta)
-        self._grade_data = GradeMetaDataFolder(self.grade_meta)
+        self._grade_data = GradeFolder(self.grade_meta)
 
     @staticmethod
     def _initialize(force):
@@ -122,19 +122,20 @@ class WorkTree:
     @property
     def data(self):
         cs = []
+
         for course_data in self.courses.values():
             course = Course(course_data)
-
             course.users = self.users[str(course.id)]
+
             assignment_list = []
             for assignment_data in self.assignments.values():
                 if assignment_data[Jn.course] == course.id:
                     assignment_list.append(assignment_data)
             # course.assignments = [a for a in self.assignments.values() if a[Jn.course] == course.id]
             course.assignments = assignment_list
-            submission_list = []
+
             for assignment in course.assignments.values():
-                submission_list.append(self.submissions.get(assignment.id, None))
+                assignment.submissions = self.submissions.get(assignment.id, None)
                 assignment.grades = self.grades.get(assignment.id, None)
 
             cs.append(course)
