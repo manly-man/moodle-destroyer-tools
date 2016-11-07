@@ -1,10 +1,13 @@
-import moodle.models as models
-from moodle.frontend.models import Submission, GradingFile, Assignment, Course
-from moodle.exceptions import AccessDenied, InvalidResponse
-from util.worktree import WorkTree
-from util import interaction
 import concurrent.futures as cf
 import json
+from datetime import datetime
+import math
+
+import moodle.models as models
+from frontend.models import Submission, GradingFile, Assignment, Course
+from moodle.exceptions import AccessDenied, InvalidResponse
+from persistence.worktree import WorkTree
+from util import interaction
 
 MAX_WORKERS = 10
 
@@ -33,10 +36,11 @@ class MoodleFrontend:
         return output
 
     def sync_users(self):
-        users = {}
         # limit collected information to only relevant bits. is faster and can possibly work around some moodle bugs.
-        options = {'userfields': 'fullname, groups, id'}
+        sync_fields = ['fullname', 'groups', 'id']
+        options = {'userfields': ','.join(sync_fields)}
 
+        users = {}
         output = ""
         for cid in self.course_ids:
             try:
@@ -55,15 +59,17 @@ class MoodleFrontend:
         return output
 
     def sync_submissions(self):
+        now = math.floor(datetime.now().timestamp())
         response = self.session.mod_assign_get_submissions(self.assignment_ids,
                                                            since=self.worktree.submissions.last_sync)
-        result = self.worktree.submissions.update(response)
+        result = self.worktree.submissions.update(response, now)
         output = ['{}: {:d}'.format(k, v) for k, v in result.items()]
         return output
 
     def sync_grades(self):
+        now = math.floor(datetime.now().timestamp())
         response = self.session.mod_assign_get_grades(self.assignment_ids, since=self.worktree.grades.last_sync)
-        result = self.worktree.grades.update(response)
+        result = self.worktree.grades.update(response, now)
         output = ['{}: {:d}'.format(k, v) for k, v in result.items()]
         return output
 
@@ -95,7 +101,7 @@ class MoodleFrontend:
                 assignments += c.assignments.values()
         else:
             for c in courses:
-                assignments += c.mod_assign_get_assignments(assignment_ids)
+                assignments += c.get_assignments(assignment_ids)
 
         files = self.worktree.prepare_download(assignments)
 
@@ -148,50 +154,44 @@ class MoodleFrontend:
     def upload_files(self, files):
         # TODO, Wrap and return it, don't print. do print in wstools.upload. also modify submit
         response = self.session.upload_files(files)
-        text = response.json()
+        text = response
         print(json.dumps(text, indent=2, ensure_ascii=False))
         return text
 
     def search_courses_by_keywords(self, keyword_list):
         # TODO: wrap and return to wstools.enrol
         response = self.session.core_course_search_courses(' '.join(keyword_list))
-        return response.json()
+        return response
 
     def get_course_enrolment_methods(self, course_id):
         # TODO: wrap and return to wstools.enrol
         response = self.session.core_enrol_get_course_enrolment_methods(course_id)
-        return response.json()
+        return response
 
     def enrol_in_course(self, course_id, instance_id, password=''):
         # TODO: wrap and return to wstools.enrol
         response = self.session.enrol_self_enrol_user(course_id, instance_id=instance_id, password=password)
-        return response.json()
+        return response
 
     def save_submission(self, assignment_id, text='', text_format=0, text_file_id=0, files_id=0):
         # TODO: wrap and return to wstools.submit
         response = self.session.mod_assign_save_submission(assignment_id, text, text_format, text_file_id, files_id)
-        return response.json()
+        return response
 
-    def get_token(self, url, user, password, service):
+    @classmethod
+    def get_token(cls, url, user, password, service):
         # TODO: wrap and return to wstools.auth
         from moodle.communication import MoodleSession
-        from moodle.fieldnames import JsonFieldNames as Jn
-        self.session = MoodleSession(moodle_url=url)
-        response = self.session.get_token(user_name=user, password=password, service=service)
-        try:
-            data = response.json()
-            token = data[Jn.token]
-            self.session.token = token
-        except KeyError:
-            print(response.text)
-            raise SystemExit(1)
+
+        session = MoodleSession(moodle_url=url)
+        token = session.get_token(user_name=user, password=password, service=service)
 
         return token
 
     def get_user_id(self):
         # TODO: wrap and return to wstools.auth
         from moodle.fieldnames import JsonFieldNames as Jn
-        data = self.session.core_webservice_get_site_info().json()
+        data = self.session.core_webservice_get_site_info()
         return data[Jn.user_id]
 
     def parse_grade_files(self, fd_list):
