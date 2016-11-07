@@ -5,7 +5,7 @@ import re
 import subprocess
 import sys
 
-import wstools
+from frontend import commands
 from persistence.worktree import NotInWorkTree
 
 
@@ -37,7 +37,7 @@ def execute_external(sub_command):
 
 
 def internal_cmd():
-    return wstools.__all__
+    return commands.__all__
 
 
 def check_for_sub_command():
@@ -56,23 +56,23 @@ def main():
     sub_command = check_for_sub_command()
 
     if sub_command is None:
-        wstools.make_config_parser().print_help()
+        commands.make_config_parser().print_help()
         print_known_external_commands()
         raise SystemExit(1)
     elif sub_command in internal_cmd():
-        parser = wstools.make_config_parser()
+        parser = commands.make_config_parser()
         args, unknown = parser.parse_known_args()
         if 'func' in args:
             kwargs = vars(args)
             func = kwargs.pop('func')
             func(**kwargs)
         else:
-            call = getattr(wstools, sub_command)
+            call = getattr(commands, sub_command)
             call()
     elif sub_command in external_subcmds():
         execute_external(sub_command)
     else:
-        wstools.make_config_parser().print_help()
+        commands.make_config_parser().print_help()
         print_known_external_commands()
         raise SystemExit(1)
 

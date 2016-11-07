@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # interesting things:
 # inspect.signature for plugins
 # multithreading https://docs.python.org/3/tutorial/stdlib2.html#multi-threading
@@ -19,16 +17,17 @@ from util import interaction
 
 log = logging.getLogger('wstools')
 
-__all__ = ['auth', 'config', 'grade', 'init', 'pull', 'status', 'sync', 'upload', 'enrol', 'submit']
+__all__ = []
 
 
 class ParserManager:
     def __init__(self):
-        # self.parser = configargparse.ArgumentParser(default_config_files=WorkTree.get_config_file_list())
         self.parser = argparse.ArgumentParser()
         self.subparsers = self.parser.add_subparsers(help="internal sub command help")
 
     def register(self, name, help_text):
+        if name not in __all__:
+            __all__.append(name)
         return self.subparsers.add_parser(name, help=help_text)
 
 _pm = ParserManager()

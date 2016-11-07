@@ -7,6 +7,7 @@ from abc import abstractmethod
 
 
 class CachedMapping(Mapping):
+
     def __init__(self):
         self._cache = {}
 
