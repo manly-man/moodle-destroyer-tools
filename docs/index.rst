@@ -1,19 +1,16 @@
-.. Moodle Destroyer Tools documentation master file, created by
-   sphinx-quickstart on Wed Nov  2 11:05:31 2016.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+Moodle Destroyer Tools
+======================
 
-Welcome to Moodle Destroyer Tools's documentation!
-==================================================
-
-Contents:
+Using moodle on commandline interfaces.
+Conquer the moodle world with the best tools provided by manly-man.
 
 .. toctree::
-   :maxdepth: 2
+    :maxdepth: 2
+    :glob:
 
-.. automodule:: wstools
-   :members:
-   :undoc-members:
+    sections/wstools.rst
+    sections/legacy.rst
+    sections/devel.rst
 
 
 
