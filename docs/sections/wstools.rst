@@ -21,6 +21,7 @@ Your PC
 ^^^^^^^
 
 linux machine with python3 installed and the following additional python-libraries:
+
 * requests
 
 why linux? because -1 did not care to make it platform independent.
@@ -55,11 +56,13 @@ mdt.py is a wrapper like git, but not as powerfull:
 
 Configuration works much like git, there is a global and some local config files.
 
-global: *mdtconfig* will be in one of these folders if present: $XDG_CONFIG_HOME/, ~/.config/
-If none of these folders is found, the global config will be ~/.mdtconfig
+global:
+ *mdtconfig* will be in one of these folders if present: $XDG_CONFIG_HOME/, ~/.config/
+ If none of these folders is found, the global config will be ~/.mdtconfig
 
-local: after you use **mdt init** in a directory, you should find the folder .mdt
-Every value in .mdt/config will override the global values.
+local:
+ after you use **mdt init** in a directory, you should find the folder .mdt
+ Every value in .mdt/config will override the global values.
 
 
 Implemented Subcommands
