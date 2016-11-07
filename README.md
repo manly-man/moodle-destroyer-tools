@@ -8,7 +8,7 @@ Conquer the moodle world with the best tools provided by manly-man.
 
 To use the moodle-destroyer tools, please make sure you configured your submissions like shown in the screenshot.
 
-![moodle-settings](https://raw.githubusercontent.com/manly-man/moodle-destroyer-tools/develop/images/moodle-settings.png)
+![moodle-settings](https://raw.githubusercontent.com/manly-man/moodle-destroyer-tools/develop/docs/images/moodle-settings.png)
 
 * `Offline grading worksheet` enables the download of the grading-file.
 * `Feedback comments` enables a feedback-column in the grading-file
