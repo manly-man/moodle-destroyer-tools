@@ -1,7 +1,26 @@
-from moodle.fieldnames import JsonFieldNames as Jn
+from abc import abstractproperty
 
 
-class MoodleError(Exception):
+class _ExceptionRegistry(type):
+    def __init__(cls, name, bases, attrs):
+        if not hasattr(cls, 'plugins'):
+            # This branch only executes when processing the mount point itself.
+            # So, since this is a new plugin type, not an implementation, this
+            # class shouldn't be registered as a plugin. Instead, it sets up a
+            # list where plugins can be registered later.
+            cls.plugins = {}
+        else:
+            # This must be a plugin implementation, which should be registered.
+            # Simply appending it to the list is all that's needed to keep
+            # track of it later.
+            cls.plugins[attrs['code']] = cls
+
+
+class MoodleException(Exception, metaclass=_ExceptionRegistry):
+    @abstractproperty
+    def code(self):
+        pass
+
     def __init__(self, exception, errorcode, message, debuginfo=''):
         self.exception_name = exception
         self.message = message
@@ -9,48 +28,50 @@ class MoodleError(Exception):
         self.debug_message = debuginfo
 
     def __str__(self):
-        msg = 'Please Report this Exception!\n' \
-              '{} <<{}>>, Message: {} Debug:{}'.format(self.exception_name, self.error_code, self.message, self.debug_message)
+        msg = 'Please Report this Exception!' \
+              '\n {} <<{}>>' \
+              '\n Message: {}' \
+              '\n Debug:{}'.format(self.exception_name, self.error_code, self.message, self.debug_message)
         return msg
 
-
-class InvalidToken(MoodleError):
-    def __init__(self, message):
-        self.exception_name = Jn.moodle_exception
-        self.error_code = Jn.invalid_token
-        self.message = message
-
-    def __str__(self):
-        return 'your token is invalid, please use auth: {}'.format(self.message)
+    @classmethod
+    def generate_exception(cls, exception, errorcode, message, debuginfo = ''):
+        try:
+            return cls.plugins[errorcode](exception, errorcode, message, debuginfo)
+        except KeyError:
+            return cls(exception, errorcode, message, debuginfo)
 
 
-class ExpiredToken(MoodleError):
-    # todo, is only matched fpr accessexception error_code, could possiby something else.
-    def __init__(self, message):
-        self.exception_name = Jn.moodle_exception
-        self.error_code = Jn.invalid_token
-        self.message = message
+class InvalidToken(MoodleException):
+    code = 'invalidtoken'
 
     def __str__(self):
-        return 'your token is invalid, please use auth: {}'.format(self.message)
+        return 'your token is invalid, try "mdt auth"?\n {}'.format(self.message)
 
 
-class AccessDenied(MoodleError):
-    def __init__(self, message):
-        self.exception_name = Jn.required_capability_exception
-        self.error_code = Jn.no_permissions
-        self.message = message
+class AccessException(MoodleException):
+    code = 'accessexception'
+
+    def __str__(self):
+        return 'seems like you are not allowed to do this:\n {}'.format(self.message)
+
+
+class AccessDenied(MoodleException):
+    code = 'nopermissions'
 
     def __str__(self):
         return self.message
 
 
-class InvalidResponse(MoodleError):
-    def __init__(self, message, debug_message):
-        self.exception_name = Jn.invalid_response_exception
-        self.error_code = Jn.invalid_response_exception_errorcode
-        self.message = message
-        self.debug_message = debug_message
+class InvalidResponse(MoodleException):
+    code = 'invalidresponse'
+
+    def __str__(self):
+        return self.message + self.debug_message
+
+
+class InvalidRecord(MoodleException):
+    code = 'invalidrecord'
 
     def __str__(self):
         return self.message + self.debug_message
