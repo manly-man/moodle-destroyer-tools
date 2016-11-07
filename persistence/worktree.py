@@ -3,9 +3,9 @@ import json
 import os
 import re
 
+from frontend.models import Course, GlobalConfig
 from moodle.fieldnames import JsonFieldNames as Jn
-from moodle.frontend.models import Course, Assignment, Submission, GlobalConfig
-from util.resources import AssignmentMetaDataFolder, SubmissionMetaDataFolder, GradeMetaDataFolder
+from util.resources import AssignmentFolder, SubmissionFolder, GradeMetaDataFolder
 
 
 class WorkTree:
@@ -32,8 +32,8 @@ class WorkTree:
 
         self._course_data = self._load_json_file(self.course_meta)
         self._user_data = self._load_json_file(self.user_meta)
-        self._assignment_data = AssignmentMetaDataFolder(self.assignment_meta)
-        self._submission_data = SubmissionMetaDataFolder(self.submission_meta)
+        self._assignment_data = AssignmentFolder(self.assignment_meta)
+        self._submission_data = SubmissionFolder(self.submission_meta)
         self._grade_data = GradeMetaDataFolder(self.grade_meta)
 
     @staticmethod
@@ -122,14 +122,21 @@ class WorkTree:
     @property
     def data(self):
         cs = []
-        for c in self.courses.values():
-            course = Course(c)
+        for course_data in self.courses.values():
+            course = Course(course_data)
 
             course.users = self.users[str(course.id)]
-            course.assignments = [a for a in self.assignments.values() if a[Jn.course] == course.id]
+            assignment_list = []
+            for assignment_data in self.assignments.values():
+                if assignment_data[Jn.course] == course.id:
+                    assignment_list.append(assignment_data)
+            # course.assignments = [a for a in self.assignments.values() if a[Jn.course] == course.id]
+            course.assignments = assignment_list
+            submission_list = []
             for assignment in course.assignments.values():
-                assignment.submissions = self.submissions.get(assignment.id, None)
+                submission_list.append(self.submissions.get(assignment.id, None))
                 assignment.grades = self.grades.get(assignment.id, None)
+
             cs.append(course)
         return cs
 

@@ -30,6 +30,12 @@ class GradingFile(JsonDictWrapper):
     def assignment_id(self): return self['assignment_id']
 
     @property
+    def team_submission(self): return self.get('team_submission', False)
+
+    @team_submission.setter
+    def team_submission(self, value): self._data['team_submission'] = value
+
+    @property
     def grades(self): return self.GradeList(self['grades'])
 
     class GradeList(JsonListWrapper):
@@ -43,6 +49,9 @@ class GradingFile(JsonDictWrapper):
 
             @property
             def id(self): return self['id']
+
+            @id.setter
+            def id(self, value): self._data['id'] = value
 
             @property
             def grade(self): return self['grade']
@@ -190,6 +199,8 @@ class Assignment(MoodleAssignment):
 
     @property
     def grading_file_content(self):
+        # TODO, instead of writing the submission.id, write the user.id instead.
+        # TODO, add team_submission to the file, saves work when uploading grades.
         head = '{{"assignment_id": {:d}, "grades": [\n'
         end = '\n]}'
         line_format = '{{"name": "{}", "id": {:d}, "grade": {:3.1f}, "feedback":"" }}'
