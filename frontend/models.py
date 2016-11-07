@@ -7,7 +7,6 @@ from moodle.models import MoodleAssignment, MoodleCourse, MoodleUser, MoodleGrou
     MoodleGrade, MoodleFileMeta
 
 
-
 class GlobalConfig(JsonDictWrapper):
     @property
     def service(self): return self['service']
@@ -165,7 +164,7 @@ class Assignment(MoodleAssignment):
     def __init__(self, data, course=None):
         super().__init__(data)
         self.course = course
-        self._submissions = {}  # accesed via submission.id
+        self._submissions = {}  # accessed via submission.id
         self._grades = {}  # are accessed via user_id
 
     @property
@@ -313,23 +312,6 @@ class Assignment(MoodleAssignment):
         for i in sorted(assembled_tmp):
             html += i
         return html + '</body>'
-
-    def prepare_grade_upload_data(self, data):
-        # TODO: check for invalid grade value, since moodle will just ignore it.
-        upload_data = {
-            'assignment_id': self.id,
-            'team_submission': self.is_team_submission
-        }
-        for grade_data in data:
-            submission = self.submissions[grade_data['id']]
-            if self.is_team_submission:
-                group = self.course.groups[submission.group_id]
-                user = group.members[0]
-                grade_data['user_id'] = user.id
-            else:
-                grade_data['user_id'] = submission.user_id
-        upload_data['grade_data'] = data
-        return upload_data
 
 
 class Submission(MoodleSubmission):
