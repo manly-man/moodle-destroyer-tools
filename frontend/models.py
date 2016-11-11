@@ -288,6 +288,7 @@ class Assignment(MoodleAssignment):
     @property
     def merged_html(self):
         # TODO use mathjax local, not remote cdn. maybe on init or auth?
+        # html = ''
         html = '<head><meta charset="UTF-8"></head><body>' \
                '<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>'
         seperator_single = '\n\n\n<h1>{}</h1>\n\n\n'
@@ -295,7 +296,7 @@ class Assignment(MoodleAssignment):
         assembled_tmp = []
         for s in self.valid_submissions:
             tmp = ''
-            if s.has_editor_field_content:
+            if s.has_editor_field_content and s.editor_field_content.strip() != '':
                 if self.is_team_submission:
                     group = self.course.groups[s.group_id]
                     member_names = [user.name for user in group.members]
@@ -304,7 +305,7 @@ class Assignment(MoodleAssignment):
                     user = self.course.users[s.user_id]
                     tmp += seperator_single.format(user.name)
                 tmp += s.editor_field_content
-            assembled_tmp.append(tmp)
+                assembled_tmp.append(tmp)
 
         if len(assembled_tmp) == 0:
             return None
