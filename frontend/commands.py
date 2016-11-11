@@ -73,11 +73,14 @@ def auth(url=None, ask=False, username=None, service='moodle_mobile_app'):
 
     password = interaction.input_password()
 
-    frontend = MoodleFrontend(True)
-    token = frontend.get_token(settings[_url], settings[_user], password, settings[_service])
+    token = MoodleFrontend.get_token(settings[_url], settings[_user], password, settings[_service])
     settings[Jn.token] = token
     del password
 
+    # Writing values here once, to allow MoodleFrontend to read from it.
+    WorkTree.write_global_config(settings)
+
+    frontend = MoodleFrontend(True)
     settings['user_id'] = frontend.get_user_id()
 
     WorkTree.write_global_config(settings)
