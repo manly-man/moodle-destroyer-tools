@@ -310,8 +310,7 @@ class Assignment(MoodleAssignment):
         if len(assembled_tmp) == 0:
             return None
 
-        for i in sorted(assembled_tmp):
-            html += i
+        html += ''.join(sorted(assembled_tmp))
         return html + '</body>'
 
 
