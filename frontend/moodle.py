@@ -96,7 +96,7 @@ class MoodleFrontend:
 
         courses = self.worktree.data
         assignments = []
-        if assignment_ids is None:
+        if assignment_ids is None or 0 == len(assignment_ids):
             for c in courses:
                 assignments += c.assignments.values()
         else:
