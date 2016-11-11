@@ -386,6 +386,13 @@ _submit_file_group.add_argument('-f', '--files', nargs='+', type=argparse.FileTy
 _submit.set_defaults(func=submit)
 
 
+def dump():
+    frontend = MoodleFrontend()
+
+    frontend.get_course_content()
+
+_dump = _pm.register('dump', 'dump course countents')
+
 def config():
     parser = make_config_parser()
     parser.parse_known_args()

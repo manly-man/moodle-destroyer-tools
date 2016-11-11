@@ -627,6 +627,117 @@ class FileMetaDataResponse(JsonDictWrapper):
             def license(self): return self.get(Jn.license, "")
 
 
+class CourseContentResponse(JsonListWrapper):
+    def __iter__(self):
+        for section in self._data:
+            yield self.CourseSection(section)
+
+    class CourseSection(JsonDictWrapper):
+        @property
+        def id(self): return self[Jn.id]
+
+        @property
+        def name(self): return self[Jn.name]
+
+        @property
+        def visible(self): return self.get(Jn.visible, -1)
+
+        @property
+        def summary(self): return self[Jn.summary]
+
+        @property
+        def summary_format(self): return self[Jn.summary_format]
+
+        @property
+        def modules(self): return self.ModuleList(self[Jn.modules])
+
+        class ModuleList(JsonListWrapper):
+            def __iter__(self):
+                for module in self._data:
+                    yield self.Module(module)
+
+            class Module(JsonDictWrapper):
+                """ unimplemented, moodle calls these activity.
+                url string  Optional //activity url
+                instance int  Optional //instance id
+                description string  Optional //activity description
+                visible int  Optional //is the module visible
+                availability string  Optional //module availability settings
+                """
+                @property
+                def id(self): return self[Jn.id]
+
+                @property
+                def instance(self):
+                    """ the instance id """
+                    return self.get(Jn.instance, -1)
+
+                @property
+                def name(self): return self[Jn.name]
+
+                @property
+                def modname(self):
+                    """activity module type"""
+                    return self[Jn.modname]
+
+                @property
+                def modicon(self): return self[Jn.modicon]
+
+                @property
+                def modplural(self): return self[Jn.modplural]
+
+                @property
+                def indent(self): return self[Jn.indent]
+
+                @property
+                def contents(self):
+                    """is not marked as optional, but is only in modname == 'folder'"""
+                    return self.ContentList(self.get(Jn.contents, []))
+
+                class ContentList(JsonListWrapper):
+                    def __iter__(self):
+                        for content in self._data:
+                            yield self.Content(content)
+
+                    class Content(JsonDictWrapper):
+                        """
+                        fileurl string  Optional //downloadable file url
+                        content string  Optional //Raw content, will be used when type is content
+                        """
+                        @property
+                        def type(self): return self[Jn.type]
+
+                        @property
+                        def filename(self): return self[Jn.file_name]
+
+                        @property
+                        def file_path(self): return self[Jn.file_path]
+
+                        @property
+                        def file_size(self): return self[Jn.file_size]
+
+                        @property
+                        def time_modified(self): return self[Jn.time_modified]
+
+                        @property
+                        def time_created(self): return self[Jn.time_created]
+
+                        @property
+                        def author(self): return self[Jn.author]
+
+                        @property
+                        def license(self): return self[Jn.license]
+
+                        @property
+                        def user_id(self): return self[Jn.user_id]
+
+                        @property
+                        def sort_order(self): return 1 == self[Jn.sort_order]
+
+                        @property
+                        def url(self): return self[Jn.url]
+
+
 MoodleAssignment = CourseAssignmentResponse.CourseList.Course.AssignmentList.Assignment
 MoodleCourse = CourseListResponse.Course
 MoodleUser = EnrolledUsersListResponse.User
