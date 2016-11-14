@@ -6,6 +6,16 @@ from abc import abstractmethod
 # TODO, mebbe add locks for async usage.
 
 
+def _read_json(filename):
+    with open(filename) as file:
+        return json.load(file)
+
+
+def _dump_json(filename, data):
+    with open(filename, 'w') as file:
+        json.dump(data, file, indent=2, ensure_ascii=False, sort_keys=True)
+
+
 class CachedMapping(Mapping):
 
     def __init__(self):
@@ -27,17 +37,28 @@ class CachedMapping(Mapping):
         pass
 
 
+class CachedFile(Mapping):  # TODO: WIP
+    def __init__(self, file_path):
+        self._cache = None
+        self.path = file_path
+
+    def __iter__(self):
+        pass
+
+    def __getitem__(self, key):
+        if self._cache is None:
+            self._cache = self._read_file(self.path)
+        return self._cache[key]
+
+    def __len__(self):
+        pass
+
+    @abstractmethod
+    def _read_file(self, file_path):
+        pass
+
+
 class JsonDataFolder(CachedMapping):
-    @classmethod
-    def read_json(cls, filename):
-        with open(filename) as file:
-            return json.load(file)
-
-    @classmethod
-    def write_json(cls, filename, data):
-        with open(filename, 'w') as file:
-            json.dump(data, file, indent=2, ensure_ascii=False, sort_keys=True)
-
     def __init__(self, folder):
         super().__init__()
         self._folder = folder + '/'
@@ -45,13 +66,13 @@ class JsonDataFolder(CachedMapping):
     def _read_data(self, key):  # CachedMapping
         filename = self._folder + str(key)
         try:
-            return self.read_json(filename)
+            return _read_json(filename)
         except FileNotFoundError:
             raise KeyError(key)
 
     def _write_data(self, key, value):  # CachedMutableMapping
         filename = self._folder + str(key)
-        self.write_json(filename, value)
+        _dump_json(filename, value)
 
     def _setitem(self, key, value):
         self._cache[key] = value
@@ -76,7 +97,7 @@ class JsonMetaDataFolder(JsonDataFolder):
     def _read_meta(self):
         filename = self._meta_file_path
         try:
-            meta = self.read_json(filename)
+            meta = _read_json(filename)
         except FileNotFoundError:
             return
         for k, v in meta.items():
@@ -84,7 +105,7 @@ class JsonMetaDataFolder(JsonDataFolder):
 
     def _write_meta(self):
         meta = {k: v for k, v in vars(self).items() if not k.startswith('_')}
-        self.write_json(self._meta_file_path, meta)
+        _dump_json(self._meta_file_path, meta)
 
     def __iter__(self):
         names = set(os.listdir(self._folder))

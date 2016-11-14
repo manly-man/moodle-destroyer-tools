@@ -219,6 +219,7 @@ class WorkTree:
         return WorkTree.safe_file_name('{}--{:d}'.format(assignment.name, assignment.id)) + '/'
 
     def write_grading_and_html_file(self, assignment):
+        #TODO: check if submission was after deadline and write to grading file
         a_folder = self.assignment_folder(assignment)
         filename = 'gradingfile.json'
         if os.path.isfile(a_folder + filename):

@@ -343,7 +343,18 @@ def submit(text=None, textfiles=None, files=None, assignment_id=None):
     file_item_id = 0
     if files is not None:
         file_response = frontend.upload_files(files)
-        file_item_id = file_response[0]['itemid']
+        if file_response.has_errors:
+            for error in file_response.errors:
+                print(error)
+            answer = input('errors occured, continue anyway? [Y/n]: ')
+            if 'n' == answer:
+                raise SystemExit(0)
+            elif not ('y' == answer.lower() or '' == answer):
+                print('wat')
+                raise SystemExit(1)
+        for file in file_response:
+            file_item_id = file.item_id
+            break
 
     text_file_item_id = 0
     if textfiles is not None:

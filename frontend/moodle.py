@@ -186,9 +186,7 @@ class MoodleFrontend:
     def upload_files(self, files):
         # TODO, Wrap and return it, don't print. do print in wstools.upload. also modify submit
         response = self.session.upload_files(files)
-        text = response
-        print(json.dumps(text, indent=2, ensure_ascii=False))
-        return text
+        return models.FileUploadResponse(response)
 
     def search_courses_by_keywords(self, keyword_list):
         # TODO: wrap and return to wstools.enrol

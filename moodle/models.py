@@ -1,3 +1,4 @@
+from builtins import property
 from collections import Mapping, Sequence, Sized
 
 from moodle.fieldnames import JsonFieldNames as Jn
@@ -66,9 +67,6 @@ class CourseListResponse(JsonListWrapper):
     def __iter__(self):
         for course in self._data:
             yield self.Course(course)
-
-    def __init__(self, response):
-        super().__init__(response)
 
     class Course(JsonDictWrapper):
         """ optional:
@@ -736,6 +734,66 @@ class CourseContentResponse(JsonListWrapper):
 
                         @property
                         def url(self): return self[Jn.url]
+
+
+class FileUploadResponse(JsonListWrapper):
+    def __iter__(self):
+        for file in self._data:
+            yield self.FileResponse(file)
+
+    def __init__(self, json_list):
+        super().__init__(json_list)
+        self._errors = []
+        for item in json_list:
+            if 'error' in item:
+                self._data.remove(item)
+                self._errors.append(item)
+
+    @property
+    def has_errors(self):
+        return len(self._errors) > 0
+
+    @property
+    def errors(self):
+        return self.ErrorList(self._errors)
+
+    class FileResponse(JsonDictWrapper):
+        """ unimplemented:
+        "component":"user",
+        "contextid":1591,
+        "userid":"358",
+        "filearea":"draft",
+        "filename":"hurr.pdf",
+        "filepath":"\/",
+        "itemid":528004240,
+        "license":"allrightsreserved",
+        "author":"rawr",
+        "source":""
+        """
+        @property
+        def item_id(self): return self['itemid']
+
+    class ErrorList(JsonListWrapper):
+        def __iter__(self):
+            for error in self._data:
+                yield self.Error(error)
+
+        class Error(JsonDictWrapper):
+            def __str__(self):
+                return 'file: {}, path: {}, type {}, error {}'.format(
+                    self.file_name, self.file_path, self.error_type, self.error)
+
+            @property
+            def file_name(self): return self['filename']
+
+            @property
+            def file_path(self): return self['filepath']
+
+            @property
+            def error_type(self): return self['errortype']
+
+            @property
+            def error(self): return self['error']
 
 
 MoodleAssignment = CourseAssignmentResponse.CourseList.Course.AssignmentList.Assignment

@@ -80,7 +80,7 @@ class MoodleSessionCore(requests.Session):
         try:
             payload = response.json()
         except json.JSONDecodeError:
-            log.error('Moodle returned unexpected values: {}'.format(response.text))
+            log.error('Moodle returned unexpected values, expected valid json: {}'.format(response.text))
             raise SystemExit(1)
 
         try:
@@ -110,7 +110,19 @@ class MoodleSessionCore(requests.Session):
             Jn.item_id: item_id,
             Jn.token: self.token
         }
-        return self.post(self.url + endpoint, data, files=upload_info)
+
+        response = self.post(self.url + endpoint, data, files=upload_info)
+        if 'json' != self.rest_format:
+            return response.text
+
+        try:
+            payload = json.loads(response.text)
+            if isinstance(payload, dict) and 'exception' in payload:
+                raise MoodleException.generate_exception(**payload)
+            return payload
+        except json.JSONDecodeError:
+            log.error('moodle sent an unexpected response, expected valid json:\n {}'.format(response.text))
+            raise SystemExit(1)
 
     def download_file(self, file_url):
         args = {Jn.token: self.token}
