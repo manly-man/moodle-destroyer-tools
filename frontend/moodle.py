@@ -287,10 +287,10 @@ class MoodleFrontend:
 
         if 'n' == answer:
             print('do it right, then')
-            return
-        elif not ('y' == answer or '' == answer):
+            raise SystemExit(0)
+        elif not ('y' == answer.lower() or '' == answer):
             print('wat')
-            return
+            raise SystemExit(1)
 
         return upload_data
 
