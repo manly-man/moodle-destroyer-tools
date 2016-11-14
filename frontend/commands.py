@@ -370,7 +370,7 @@ def submit(text=None, textfiles=None, files=None, assignment_id=None):
     assignments = []
     if assignment_id is None:
         wt = WorkTree()
-        for aid, data in wt.assignments.items():
+        for data in wt.assignments.values():
             assignments.append(Assignment(data))
         choice = interaction.input_choices_from_list(assignments, 'which assignment? ')
         assignment_id = assignments[choice[0]].id
