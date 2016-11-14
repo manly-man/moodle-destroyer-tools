@@ -82,10 +82,28 @@ class MoodleFrontend:
         for as_id, submissions in self.worktree.submissions.items():
             for submission in submissions:
                 files += Submission(submission).files
+            with cf.ThreadPoolExecutor(max_workers=MAX_WORKERS) as tpe:
+                try:
+                    future_to_file = {tpe.submit(self.session.core_files_get_files, **file.meta_data_params): file for file in files}
+                    for future in cf.as_completed(future_to_file):
+                        file = future_to_file[future]
+                        response = models.FileMetaDataResponse(future.result())
+                        for file in response.files:
+                            print(file.author)
+                except KeyboardInterrupt:
+                    print('stopping…')
+                    tpe.shutdown()
+                    raise
 
-        for file in files:
-            wrapped = models.FileMetaDataResponse(self.session.core_files_get_files(**file.meta_data_params))
-            print(str(wrapped.raw))
+
+
+
+        # for file in files:
+        #     wrapped = models.FileMetaDataResponse(self.session.core_files_get_files(**file.meta_data_params))
+        #     print(str(wrapped.raw))
+        #     for received in wrapped.files:
+        #         print(received.author)
+
             # reply = moodle.get_submissions_for_assignments(wt.assignments.keys())
             # data = json.loads(strip_mlang(reply.text))
             # result = wt.submissions.update(data)
@@ -93,7 +111,10 @@ class MoodleFrontend:
             # print('finished. ' + ' '.join(output))
 
     def download_files(self, assignment_ids=None):
-
+        # import zipfile
+        # content = zipfile.ZipFile(filename)
+        # dirsplit = [a.split('/') for a in content.namelist()]
+        # content.extractall(path=None)
         courses = self.worktree.data
         assignments = []
         if assignment_ids is None or 0 == len(assignment_ids):
@@ -111,13 +132,19 @@ class MoodleFrontend:
         if file_count > 0:
             interaction.print_progress(counter, file_count)
             with cf.ThreadPoolExecutor(max_workers=MAX_WORKERS) as tpe:
-                future_to_file = {tpe.submit(self.session.download_file, file.url): file for file in files}
-                for future in cf.as_completed(future_to_file):
-                    file = future_to_file[future]
-                    response = future.result()
-                    counter += 1
-                    interaction.print_progress(counter, file_count, suffix=file.path)
-                    self.worktree.write_submission_file(file, response.content)
+                try:
+                    future_to_file = {tpe.submit(self.session.download_file, file.url): file for file in files}
+                    for future in cf.as_completed(future_to_file):
+                        file = future_to_file[future]
+                        response = future.result()
+                        counter += 1
+                        interaction.print_progress(counter, file_count, suffix=file.path)
+                        self.worktree.write_submission_file(file, response.content)
+                except KeyboardInterrupt:
+                    print('stopping…')
+                    tpe.shutdown()
+                    raise
+
         for a in assignments:
             self.worktree.write_grading_and_html_file(a)
 
@@ -144,12 +171,17 @@ class MoodleFrontend:
         if grade_count > 0:
             interaction.print_progress(counter, grade_count)
             with cf.ThreadPoolExecutor(max_workers=MAX_WORKERS) as tpe:
-                future_to_grade = {tpe.submit(self.session.mod_assign_save_grade, **args): args for args in args_list}
-                for future in cf.as_completed(future_to_grade):
-                    args = future_to_grade[future]
-                    response = future.result()
-                    counter += 1
-                    interaction.print_progress(counter, grade_count)
+                try:
+                    future_to_grade = {tpe.submit(self.session.mod_assign_save_grade, **args): args for args in args_list}
+                    for future in cf.as_completed(future_to_grade):
+                        args = future_to_grade[future]
+                        response = future.result()
+                        counter += 1
+                        interaction.print_progress(counter, grade_count)
+                except KeyboardInterrupt:
+                    print('stopping…')
+                    tpe.shutdown()
+                    raise
 
     def upload_files(self, files):
         # TODO, Wrap and return it, don't print. do print in wstools.upload. also modify submit
