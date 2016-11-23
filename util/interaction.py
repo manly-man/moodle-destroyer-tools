@@ -14,6 +14,18 @@ def input_choices_from_list(choices, text):
         a list of indices chosen by the user
     """
 
+    if not choices:
+        noCourses_text = """
+            There is an authorization problem.
+            It seems, that no managing role is assigned to your Moodle account.
+            Please check your Moodle instance for valid role assignment
+
+            exiting now...
+        """
+        print(noCourses_text)
+        import sys
+        sys.exit()
+
     digits = str(math.ceil(math.log10(len(choices))))
     format_str = '{:' + digits + 'd} {}'
     for n, c in enumerate(choices, 0):
