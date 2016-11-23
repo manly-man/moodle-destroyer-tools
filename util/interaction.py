@@ -13,18 +13,14 @@ def input_choices_from_list(choices, text):
     Returns:
         a list of indices chosen by the user
     """
-
-    if not choices:
-        noCourses_text = """
-            There is an authorization problem.
-            It seems, that no managing role is assigned to your Moodle account.
-            Please check your Moodle instance for valid role assignment
-
-            exiting now...
-        """
-        print(noCourses_text)
-        import sys
-        sys.exit()
+    no_courses_text = """
+        init will only list the courses you are enrolled in
+        and there seem to be none.
+        Either enrol in a course or add the course id as command line argument.
+    """
+    if choices is None or len(choices) == 0:
+        print(no_courses_text)
+        raise SystemExit(1)
 
     digits = str(math.ceil(math.log10(len(choices))))
     format_str = '{:' + digits + 'd} {}'
