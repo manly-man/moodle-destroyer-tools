@@ -44,7 +44,15 @@ class JsonDictWrapper(JsonWrapper, Mapping):
         return iter(self._data)
 
     def __getitem__(self, key):
-        return self._data[key]
+        """
+            Search for key.
+            KeyError will be thrown, if the key cannot be found.
+        """
+        try:
+            return self._data[key]
+        except KeyError:
+            raise
+
 
     def __init__(self, json_dict):
         super().__init__(json_dict)

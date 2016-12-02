@@ -18,7 +18,18 @@ class GlobalConfig(JsonDictWrapper):
     def user_id(self): return self['user_id']
 
     @property
-    def url(self): return self['url']
+    def url(self):
+        try:
+            return self['url']
+        except KeyError:
+            url_not_found_msg = """
+                'url' couldn't be found in your config file.
+                Maybe it's corrupted.
+                Either check the url in your config file
+                or delete the entire file and create a new one.
+            """
+            print(url_not_found_msg)
+            raise SystemExit(1)
 
     @property
     def user_name(self): return self['user_name']
