@@ -55,9 +55,9 @@ class JsonDictWrapper(JsonWrapper, Mapping):
 
 
     def __init__(self, json_dict):
-        super().__init__(json_dict)
-        if type(self._data) is not dict:
+        if type(json_dict) is not dict:
             raise TypeError('received type {}, expected dict'.format(type(json_dict)))
+        super().__init__(json_dict)
 
     __marker = object()
 
