@@ -17,10 +17,10 @@ class GlobalConfig(JsonDictWrapper):
             return self['token']
         except KeyError:
             token_not_found_msg = """
-                'url' couldn't be found in your config file.
-                Maybe it's corrupted.
-                Either check the url in your config file
-                or delete the entire file and create a new one.
+            'url' couldn't be found in your config file.
+            Maybe it's corrupted.
+            Either check the url in your config file
+            or delete the entire file and create a new one.
             """
             raise SystemExit(token_not_found_msg)
 
@@ -30,10 +30,10 @@ class GlobalConfig(JsonDictWrapper):
             return self['user_id']
         except KeyError:
             user_id_not_found_msg = """
-                'user_id' couldn't be found in your config file.
-                Maybe it's corrupted.
-                Either check the url in your config file
-                or delete the entire file and create a new one.
+            'user_id' couldn't be found in your config file.
+            Maybe it's corrupted.
+            Either check the url in your config file
+            or delete the entire file and create a new one.
             """
             raise SystemExit(user_id_not_found_msg)
 
@@ -43,10 +43,10 @@ class GlobalConfig(JsonDictWrapper):
             return self['url']
         except KeyError:
             url_not_found_msg = """
-                'url' couldn't be found in your config file.
-                Maybe it's corrupted.
-                Either check the url in your config file
-                or delete the entire file and create a new one.
+            'url' couldn't be found in your config file.
+            Maybe it's corrupted.
+            Either check the url in your config file
+            or delete the entire file and create a new one.
             """
             raise SystemExit(url_not_found_msg)
 
