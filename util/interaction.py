@@ -24,13 +24,12 @@ def input_choices_from_list(choices, text):
 
     digits = str(math.ceil(math.log10(len(choices))))
     format_str = '{:' + digits + 'd} {}'
-    for n, c in enumerate(choices, 0):
+    for n, c in enumerate(choices):
         print(format_str.format(n, c))
     try:
         return [int(c) for c in input(text).split()]
     except EOFError:
         return []
-
 
 
 def get_user_pref(text, option):

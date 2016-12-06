@@ -14,61 +14,9 @@ from frontend.models import Course, Assignment
 from moodle.fieldnames import JsonFieldNames as Jn, text_format
 from persistence.worktree import WorkTree
 from util import interaction
+from frontend.cmdparser import ParserManager, Argument, ArgumentGroup
 
 log = logging.getLogger('wstools')
-
-__all__ = []
-
-
-class ArgparseArgument:
-    def add_to_parser(self, parser):
-        raise NotImplementedError
-
-
-class Argument(ArgparseArgument):
-    def add_to_parser(self, parser):
-        parser.add_argument(*self.args, **self.kwargs)
-
-    def __init__(self, *args, **kwargs):
-        self.args = args
-        self.kwargs = kwargs
-
-
-class ArgumentGroup(ArgparseArgument):
-    def add_to_parser(self, parser):
-        group = parser.add_argument_group(self.name, self.help_text)
-        for arg in self.arg_list:
-            arg.add_to_parser(group)
-
-    def __init__(self, name, help_text, arg_list):
-        self.name = name
-        self.help_text = help_text
-        self.arg_list = arg_list
-
-
-class ParserManager:
-    parser = argparse.ArgumentParser()
-    subparsers = parser.add_subparsers(help="internal sub command help")
-
-    # def __init__(self):
-    #     self.parser = argparse.ArgumentParser()
-    #     self.subparsers = self.parser.add_subparsers(help="internal sub command help")
-
-    @classmethod
-    def register(cls, name, help_text):
-        if name not in __all__:
-            __all__.append(name)
-        return cls.subparsers.add_parser(name, help=help_text)
-
-    @classmethod
-    def command(cls, help_text, *arguments):
-        def register_function(function):
-            sub = cls.register(function.__name__, help_text)
-            for arg in arguments:
-                arg.add_to_parser(sub)
-            sub.set_defaults(func=function)
-
-        return register_function
 
 
 def make_config_parser():
@@ -427,35 +375,11 @@ def submit(text=None, textfiles=None, files=None, assignment_id=None):
     print(data)
 
 
-_submit = ParserManager.register('submit', 'submit text or files to assignment for grading')
-_submit.add_argument('-a', '--assignment_id', help='the assignment id to submit to.')
-
-_submit_online_group = _submit.add_argument_group('online', 'for online text submission')
-_submit_online_group.add_argument('-t', '--text', type=argparse.FileType('r'),
-                                  help='the text file with content you want to submit (txt,md,html)')
-_submit_online_group.add_argument('-tf', '--textfiles', nargs='+', type=argparse.FileType('rb'),
-                                  help='files you want in the text. pictures in markdown?')
-
-_submit_file_group = _submit.add_argument_group('files', 'for file submission')
-_submit_file_group.add_argument('-f', '--files', nargs='+', type=argparse.FileType('rb'),
-                                help='the files you want to sumbit.')
-
-_submit.set_defaults(func=submit)
-
-
 @ParserManager.command(
-    'dump course countents'
+    'dump course countents, work in progress'
 )
 def dump():
     frontend = MoodleFrontend()
 
     frontend.get_course_content()
 
-
-@ParserManager.command(
-    'shows config values, nothing else'
-)
-def config():
-    parser = make_config_parser()
-    parser.parse_known_args()
-    # parser.print_values()

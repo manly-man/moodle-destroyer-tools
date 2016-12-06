@@ -37,7 +37,7 @@ def execute_external(sub_command):
 
 
 def internal_cmd():
-    return commands.__all__
+    return commands.ParserManager.known_commands
 
 
 def check_for_sub_command():

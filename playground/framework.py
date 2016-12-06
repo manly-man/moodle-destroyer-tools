@@ -311,4 +311,3 @@ class MoodleCourseFields(JsonFieldRegistry):
 
     def __getitem__(self, index):
         return self._data[index]
-
