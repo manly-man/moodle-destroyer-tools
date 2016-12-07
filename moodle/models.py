@@ -24,7 +24,7 @@ class JsonListWrapper(JsonWrapper, Sequence):
         return self._data[index]
 
     def __init__(self, json_list):
-        if type(json_list) is not list:
+        if not issubclass(type(json_list), Sequence):
             raise TypeError('received type {}, expected list'.format(type(json_list)))
         super().__init__(json_list)
 
@@ -53,9 +53,8 @@ class JsonDictWrapper(JsonWrapper, Mapping):
         except KeyError:
             raise
 
-
     def __init__(self, json_dict):
-        if type(json_dict) is not dict:
+        if not issubclass(type(json_dict), Mapping):
             raise TypeError('received type {}, expected dict'.format(type(json_dict)))
         super().__init__(json_dict)
 

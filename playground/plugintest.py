@@ -1,6 +1,7 @@
 import argparse
 import abc
 import collections
+import collections.abc
 import numbers
 import test.test_coroutines
 
