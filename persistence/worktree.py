@@ -66,7 +66,14 @@ class WorkTree:
 
     @staticmethod
     def get_global_config_values():
-        return GlobalConfig(WorkTree._load_json_file(WorkTree.get_global_config_filename()))
+        try:
+            return GlobalConfig(WorkTree._load_json_file(WorkTree.get_global_config_filename()))
+        except TypeError:
+            config_error_msg = """
+            config couldn't be initalized.
+            If you created the config yourself, check for proper JSON formation.
+            """
+            raise SystemExit(config_error_msg)
 
     @staticmethod
     def create_global_config_file():
@@ -125,7 +132,17 @@ class WorkTree:
 
         for course_data in self.courses.values():
             course = Course(course_data)
-            course.users = self.users[str(course.id)]
+            users = self.users
+            if users is None or len(users) == 0:
+                no_users_msg = """
+                No users in courses found.
+                If you did not sync already, metadata is probably missing.
+                Use subcommand sync to retrieve metadata from selected moodle
+                courses.
+                """
+                raise SystemExit(no_users_msg)
+            else:
+                    course.users = users[str(course.id)]
 
             assignment_list = []
             for assignment_data in self.assignments.values():

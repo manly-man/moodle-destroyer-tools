@@ -10,6 +10,11 @@ from persistence.worktree import NotInWorkTree
 
 
 def exec_path_to_dict(paths):
+    """
+    Aggregate subcommands and their respective execution path.
+
+    :returns dict with subcmd:full_path
+    """
     mdt_pattern = re.compile('mdt-\S+')
     matches = mdt_pattern.findall(" ".join(paths))  # find all like mdt-*
     cmd_names = [re.compile('^mdt-').sub('', m) for m in matches]  # strip ^mdt-
@@ -17,7 +22,8 @@ def exec_path_to_dict(paths):
 
 
 def external_subcmds():
-    """this gets all files that are in $PATH and match mdt-*
+    """
+    this gets all files that are in $PATH and match mdt-*
 
     :returns dict with subcmd:full_path
     """
@@ -30,6 +36,9 @@ def external_subcmds():
 
 
 def execute_external(sub_command):
+    """
+    execute sub_command
+    """
     extern = external_subcmds()
     argv = sys.argv[1:]
     argv[0] = extern[sub_command]

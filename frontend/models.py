@@ -12,13 +12,43 @@ class GlobalConfig(JsonDictWrapper):
     def service(self): return self['service']
 
     @property
-    def token(self): return self['token']
+    def token(self):
+        try:
+            return self['token']
+        except KeyError:
+            token_not_found_msg = """
+            'url' couldn't be found in your config file.
+            Maybe it's corrupted.
+            Either check the url in your config file
+            or delete the entire file and create a new one.
+            """
+            raise SystemExit(token_not_found_msg)
 
     @property
-    def user_id(self): return self['user_id']
+    def user_id(self):
+        try:
+            return self['user_id']
+        except KeyError:
+            user_id_not_found_msg = """
+            'user_id' couldn't be found in your config file.
+            Maybe it's corrupted.
+            Either check the url in your config file
+            or delete the entire file and create a new one.
+            """
+            raise SystemExit(user_id_not_found_msg)
 
     @property
-    def url(self): return self['url']
+    def url(self):
+        try:
+            return self['url']
+        except KeyError:
+            url_not_found_msg = """
+            'url' couldn't be found in your config file.
+            Maybe it's corrupted.
+            Either check the url in your config file
+            or delete the entire file and create a new one.
+            """
+            raise SystemExit(url_not_found_msg)
 
     @property
     def user_name(self): return self['user_name']
