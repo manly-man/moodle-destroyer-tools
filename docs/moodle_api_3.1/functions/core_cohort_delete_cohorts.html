@@ -1,0 +1,19 @@
+<div class="collapsibleregioninner" id="aera_core_cohort_delete_cohorts_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Deletes all specified cohorts.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>cohortids</b> (Required)<br/>        <br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+list of ( <br/>int <span style="color:#2A33A6">  <i>//cohort ID</i></span><br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[cohortids] =&gt;
+    Array 
+        (
+        [0] =&gt; int
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+cohortids[0]= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

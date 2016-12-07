@@ -1,0 +1,101 @@
+<div class="collapsibleregioninner" id="aera_tool_mobile_get_plugins_supporting_mobile_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Returns a list of Moodle plugins supporting the mobile app.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>plugins</b> list of ( <br/>object {<br/><b>component</b> string <span style="color:#2A33A6">  <i>//The plugin component name.</i></span><br/><b>version</b> string <span style="color:#2A33A6">  <i>//The plugin version number.</i></span><br/><b>addon</b> string <span style="color:#2A33A6">  <i>//The Mobile addon (package) name.</i></span><br/><b>dependencies</b> <span style="color:#2A33A6">  <i>//The list of Mobile addons this addon depends on.</i></span><br/>list of ( <br/>string <span style="color:#2A33A6">  <i>//Mobile addon name.</i></span><br/>)<b>fileurl</b> string <span style="color:#2A33A6">  <i>//The addon package url for download
+                                                            or empty if it doesn't exist.</i></span><br/><b>filehash</b> string <span style="color:#2A33A6">  <i>//The addon package hash or empty if it doesn't exist.</i></span><br/><b>filesize</b> int <span style="color:#2A33A6">  <i>//The addon package size or empty if it doesn't exist.</i></span><br/>} <br/>)<b>warnings</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//list of warnings</i></span><br/>list of ( <br/><span style="color:#2A33A6">  <i>//warning</i></span><br/>object {<br/><b>item</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//item</i></span><br/><b>itemid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//item id</i></span><br/><b>warningcode</b> string <span style="color:#2A33A6">  <i>//the warning code can be used by the client app to implement specific behaviour</i></span><br/><b>message</b> string <span style="color:#2A33A6">  <i>//untranslated english message to explain the warning</i></span><br/>} <br/>)} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [plugins] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [component] =&gt; string                        
+                        [version] =&gt; string                        
+                        [addon] =&gt; string                        
+                        [dependencies] =&gt;
+                            Array 
+                                (
+                                [0] =&gt; string
+                                )                        
+                        [fileurl] =&gt; string                        
+                        [filehash] =&gt; string                        
+                        [filesize] =&gt; int                        
+                        )
+                )        
+        [warnings] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [item] =&gt; string                        
+                        [itemid] =&gt; int                        
+                        [warningcode] =&gt; string                        
+                        [message] =&gt; string                        
+                        )
+                )        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="plugins"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="component"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="version"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="addon"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="dependencies"&gt;
+                        &lt;MULTIPLE&gt;
+                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                        &lt;/MULTIPLE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="fileurl"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="filehash"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="filesize"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="warnings"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="item"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="itemid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="warningcode"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="message"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

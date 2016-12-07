@@ -1,0 +1,118 @@
+<div class="collapsibleregioninner" id="aera_mod_lti_create_tool_proxy_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Create a tool proxy</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>name</b> (Default to "")<br/>        Tool proxy name<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+string <span style="color:#2A33A6"> <b>Default to ""</b> <i>//Tool proxy name</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[name] =&gt; string
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+name= string
+
+</pre></div></div></span><span style="font-size:80%"><b>regurl</b> (Required)<br/>        Tool proxy registration URL<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+string <span style="color:#2A33A6">  <i>//Tool proxy registration URL</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[regurl] =&gt; string
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+regurl= string
+
+</pre></div></div></span><span style="font-size:80%"><b>capabilityoffered</b> (Default to "Array
+(
+)
+")<br/>        Array of capabilities<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+<span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//Array of capabilities</i></span><br/>list of ( <br/>string <span style="color:#2A33A6">  <i>//Tool proxy capabilities offered</i></span><br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[capabilityoffered] =&gt;
+    Array 
+        (
+        [0] =&gt; string
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+capabilityoffered[0]= string
+
+</pre></div></div></span><span style="font-size:80%"><b>serviceoffered</b> (Default to "Array
+(
+)
+")<br/>        Array of services<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+<span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//Array of services</i></span><br/>list of ( <br/>string <span style="color:#2A33A6">  <i>//Tool proxy services offered</i></span><br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[serviceoffered] =&gt;
+    Array 
+        (
+        [0] =&gt; string
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+serviceoffered[0]= string
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//Tool proxy id</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//Tool proxy name</i></span><br/><b>regurl</b> string <span style="color:#2A33A6">  <i>//Tool proxy registration URL</i></span><br/><b>state</b> int <span style="color:#2A33A6">  <i>//Tool proxy state</i></span><br/><b>guid</b> string <span style="color:#2A33A6">  <i>//Tool proxy globally unique identifier</i></span><br/><b>secret</b> string <span style="color:#2A33A6">  <i>//Tool proxy shared secret</i></span><br/><b>vendorcode</b> string <span style="color:#2A33A6">  <i>//Tool proxy consumer code</i></span><br/><b>capabilityoffered</b> string <span style="color:#2A33A6">  <i>//Tool proxy capabilities offered</i></span><br/><b>serviceoffered</b> string <span style="color:#2A33A6">  <i>//Tool proxy services offered</i></span><br/><b>toolproxy</b> string <span style="color:#2A33A6">  <i>//Tool proxy</i></span><br/><b>timecreated</b> int <span style="color:#2A33A6">  <i>//Tool proxy time created</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6">  <i>//Tool proxy modified</i></span><br/>} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [id] =&gt; int        
+        [name] =&gt; string        
+        [regurl] =&gt; string        
+        [state] =&gt; int        
+        [guid] =&gt; string        
+        [secret] =&gt; string        
+        [vendorcode] =&gt; string        
+        [capabilityoffered] =&gt; string        
+        [serviceoffered] =&gt; string        
+        [toolproxy] =&gt; string        
+        [timecreated] =&gt; int        
+        [timemodified] =&gt; int        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="id"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="name"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="regurl"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="state"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="guid"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="secret"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="vendorcode"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="capabilityoffered"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="serviceoffered"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="toolproxy"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="timecreated"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="timemodified"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>Yes<br/><br/></div>

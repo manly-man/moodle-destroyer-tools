@@ -1,0 +1,91 @@
+<div class="collapsibleregioninner" id="aera_core_course_duplicate_course_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Duplicate an existing course (creating a new one), without user data</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>courseid</b> (Required)<br/>        course to duplicate id<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//course to duplicate id</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[courseid] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+courseid= int
+
+</pre></div></div></span><span style="font-size:80%"><b>fullname</b> (Required)<br/>        duplicated course full name<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+string <span style="color:#2A33A6">  <i>//duplicated course full name</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[fullname] =&gt; string
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+fullname= string
+
+</pre></div></div></span><span style="font-size:80%"><b>shortname</b> (Required)<br/>        duplicated course short name<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+string <span style="color:#2A33A6">  <i>//duplicated course short name</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[shortname] =&gt; string
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+shortname= string
+
+</pre></div></div></span><span style="font-size:80%"><b>categoryid</b> (Required)<br/>        duplicated course category parent<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//duplicated course category parent</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[categoryid] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+categoryid= int
+
+</pre></div></div></span><span style="font-size:80%"><b>visible</b> (Default to "1")<br/>        duplicated course visible, default to yes<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6"> <b>Default to "1"</b> <i>//duplicated course visible, default to yes</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[visible] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+visible= int
+
+</pre></div></div></span><span style="font-size:80%"><b>options</b> (Default to "1")<br/>        0<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+list of ( <br/>object {<br/><b>name</b> string <span style="color:#2A33A6">  <i>//The backup option name:
+                                            "activities" (int) Include course activites (default to 1 that is equal to yes),
+                                            "blocks" (int) Include course blocks (default to 1 that is equal to yes),
+                                            "filters" (int) Include course filters  (default to 1 that is equal to yes),
+                                            "users" (int) Include users (default to 0 that is equal to no),
+                                            "role_assignments" (int) Include role assignments  (default to 0 that is equal to no),
+                                            "comments" (int) Include user comments  (default to 0 that is equal to no),
+                                            "userscompletion" (int) Include user course completion information  (default to 0 that is equal to no),
+                                            "logs" (int) Include course logs  (default to 0 that is equal to no),
+                                            "grade_histories" (int) Include histories  (default to 0 that is equal to no)</i></span><br/><b>value</b> string <span style="color:#2A33A6">  <i>//the value for the option 1 (yes) or 0 (no)</i></span><br/>} <br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[options] =&gt;
+    Array 
+        (
+        [0] =&gt;
+            Array 
+                (
+                [name] =&gt; string                
+                [value] =&gt; string                
+                )
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+options[0][name]= string
+options[0][value]= string
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//course id</i></span><br/><b>shortname</b> string <span style="color:#2A33A6">  <i>//short name</i></span><br/>} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [id] =&gt; int        
+        [shortname] =&gt; string        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="id"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="shortname"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

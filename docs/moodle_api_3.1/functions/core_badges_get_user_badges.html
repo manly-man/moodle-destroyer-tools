@@ -1,0 +1,204 @@
+<div class="collapsibleregioninner" id="aera_core_badges_get_user_badges_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Returns the list of badges awarded to a user.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>userid</b> (Default to "0")<br/>        Badges only for this user id, empty for current user<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//Badges only for this user id, empty for current user</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[userid] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+userid= int
+
+</pre></div></div></span><span style="font-size:80%"><b>courseid</b> (Default to "0")<br/>        Filter badges by course id, empty all the courses<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//Filter badges by course id, empty all the courses</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[courseid] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+courseid= int
+
+</pre></div></div></span><span style="font-size:80%"><b>page</b> (Default to "0")<br/>        The page of records to return.<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//The page of records to return.</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[page] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+page= int
+
+</pre></div></div></span><span style="font-size:80%"><b>perpage</b> (Default to "0")<br/>        The number of records to return per page<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//The number of records to return per page</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[perpage] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+perpage= int
+
+</pre></div></div></span><span style="font-size:80%"><b>search</b> (Default to "")<br/>        A simple string to search for<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+string <span style="color:#2A33A6"> <b>Default to ""</b> <i>//A simple string to search for</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[search] =&gt; string
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+search= string
+
+</pre></div></div></span><span style="font-size:80%"><b>onlypublic</b> (Default to "")<br/>        Whether to return only public badges<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6"> <b>Default to ""</b> <i>//Whether to return only public badges</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[onlypublic] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+onlypublic= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>badges</b> list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Badge id.</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//Badge name.</i></span><br/><b>description</b> string <span style="color:#2A33A6">  <i>//Badge description.</i></span><br/><b>badgeurl</b> string <span style="color:#2A33A6">  <i>//Badge URL.</i></span><br/><b>timecreated</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Time created.</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Time modified.</i></span><br/><b>usercreated</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//User created.</i></span><br/><b>usermodified</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//User modified.</i></span><br/><b>issuername</b> string <span style="color:#2A33A6">  <i>//Issuer name.</i></span><br/><b>issuerurl</b> string <span style="color:#2A33A6">  <i>//Issuer URL.</i></span><br/><b>issuercontact</b> string <span style="color:#2A33A6">  <i>//Issuer contact.</i></span><br/><b>expiredate</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Expire date.</i></span><br/><b>expireperiod</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Expire period.</i></span><br/><b>type</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Type.</i></span><br/><b>courseid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Course id.</i></span><br/><b>message</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Message.</i></span><br/><b>messagesubject</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Message subject.</i></span><br/><b>attachment</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Attachment.</i></span><br/><b>status</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Status.</i></span><br/><b>issuedid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Issued id.</i></span><br/><b>uniquehash</b> string <span style="color:#2A33A6">  <i>//Unique hash.</i></span><br/><b>dateissued</b> int <span style="color:#2A33A6">  <i>//Date issued.</i></span><br/><b>dateexpire</b> int <span style="color:#2A33A6">  <i>//Date expire.</i></span><br/><b>visible</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Visible.</i></span><br/>} <br/>)<b>warnings</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//list of warnings</i></span><br/>list of ( <br/><span style="color:#2A33A6">  <i>//warning</i></span><br/>object {<br/><b>item</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//item</i></span><br/><b>itemid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//item id</i></span><br/><b>warningcode</b> string <span style="color:#2A33A6">  <i>//the warning code can be used by the client app to implement specific behaviour</i></span><br/><b>message</b> string <span style="color:#2A33A6">  <i>//untranslated english message to explain the warning</i></span><br/>} <br/>)} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [badges] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [id] =&gt; int                        
+                        [name] =&gt; string                        
+                        [description] =&gt; string                        
+                        [badgeurl] =&gt; string                        
+                        [timecreated] =&gt; int                        
+                        [timemodified] =&gt; int                        
+                        [usercreated] =&gt; int                        
+                        [usermodified] =&gt; int                        
+                        [issuername] =&gt; string                        
+                        [issuerurl] =&gt; string                        
+                        [issuercontact] =&gt; string                        
+                        [expiredate] =&gt; int                        
+                        [expireperiod] =&gt; int                        
+                        [type] =&gt; int                        
+                        [courseid] =&gt; int                        
+                        [message] =&gt; string                        
+                        [messagesubject] =&gt; string                        
+                        [attachment] =&gt; int                        
+                        [status] =&gt; int                        
+                        [issuedid] =&gt; int                        
+                        [uniquehash] =&gt; string                        
+                        [dateissued] =&gt; int                        
+                        [dateexpire] =&gt; int                        
+                        [visible] =&gt; int                        
+                        )
+                )        
+        [warnings] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [item] =&gt; string                        
+                        [itemid] =&gt; int                        
+                        [warningcode] =&gt; string                        
+                        [message] =&gt; string                        
+                        )
+                )        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="badges"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="id"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="name"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="description"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="badgeurl"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="timecreated"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="timemodified"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="usercreated"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="usermodified"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="issuername"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="issuerurl"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="issuercontact"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="expiredate"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="expireperiod"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="type"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="courseid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="message"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="messagesubject"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="attachment"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="status"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="issuedid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="uniquehash"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="dateissued"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="dateexpire"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="visible"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="warnings"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="item"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="itemid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="warningcode"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="message"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

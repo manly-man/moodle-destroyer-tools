@@ -1,0 +1,206 @@
+<div class="collapsibleregioninner" id="aera_core_course_get_contents_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Get course contents</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>courseid</b> (Required)<br/>        course id<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//course id</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[courseid] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+courseid= int
+
+</pre></div></div></span><span style="font-size:80%"><b>options</b> (Default to "Array
+(
+)
+")<br/>        Options, used since Moodle 2.9<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+<span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//Options, used since Moodle 2.9</i></span><br/>list of ( <br/>object {<br/><b>name</b> string <span style="color:#2A33A6">  <i>//The expected keys (value format) are:
+                                                excludemodules (bool) Do not return modules, return only the sections structure
+                                                excludecontents (bool) Do not return module contents (i.e: files inside a resource)
+                                                sectionid (int) Return only this section
+                                                sectionnumber (int) Return only this section with number (order)
+                                                cmid (int) Return only this module information (among the whole sections structure)
+                                                modname (string) Return only modules with this name "label, forum, etc..."
+                                                modid (int) Return only the module with this id (to be used with modname</i></span><br/><b>value</b> string <span style="color:#2A33A6">  <i>//the value of the option,
+                                                                    this param is personaly validated in the external function.</i></span><br/>} <br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[options] =&gt;
+    Array 
+        (
+        [0] =&gt;
+            Array 
+                (
+                [name] =&gt; string                
+                [value] =&gt; string                
+                )
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+options[0][name]= string
+options[0][value]= string
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//Section ID</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//Section name</i></span><br/><b>visible</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//is the section visible</i></span><br/><b>summary</b> string <span style="color:#2A33A6">  <i>//Section description</i></span><br/><b>summaryformat</b> int <span style="color:#2A33A6">  <i>//summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>modules</b> <span style="color:#2A33A6">  <i>//list of module</i></span><br/>list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//activity id</i></span><br/><b>url</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//activity url</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//activity module name</i></span><br/><b>instance</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//instance id</i></span><br/><b>description</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//activity description</i></span><br/><b>visible</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//is the module visible</i></span><br/><b>modicon</b> string <span style="color:#2A33A6">  <i>//activity icon url</i></span><br/><b>modname</b> string <span style="color:#2A33A6">  <i>//activity module type</i></span><br/><b>modplural</b> string <span style="color:#2A33A6">  <i>//activity module plural name</i></span><br/><b>availability</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//module availability settings</i></span><br/><b>indent</b> int <span style="color:#2A33A6">  <i>//number of identation in the site</i></span><br/><b>contents</b> list of ( <br/>object {<br/><b>type</b> string <span style="color:#2A33A6">  <i>//a file or a folder or external link</i></span><br/><b>filename</b> string <span style="color:#2A33A6">  <i>//filename</i></span><br/><b>filepath</b> string <span style="color:#2A33A6">  <i>//filepath</i></span><br/><b>filesize</b> int <span style="color:#2A33A6">  <i>//filesize</i></span><br/><b>fileurl</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//downloadable file url</i></span><br/><b>content</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Raw content, will be used when type is content</i></span><br/><b>timecreated</b> int <span style="color:#2A33A6">  <i>//Time created</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6">  <i>//Time modified</i></span><br/><b>sortorder</b> int <span style="color:#2A33A6">  <i>//Content sort order</i></span><br/><b>userid</b> int <span style="color:#2A33A6">  <i>//User who added this content to moodle</i></span><br/><b>author</b> string <span style="color:#2A33A6">  <i>//Content owner</i></span><br/><b>license</b> string <span style="color:#2A33A6">  <i>//Content license</i></span><br/>} <br/>)} <br/>)} <br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [0] =&gt;
+            Array 
+                (
+                [id] =&gt; int                
+                [name] =&gt; string                
+                [visible] =&gt; int                
+                [summary] =&gt; string                
+                [summaryformat] =&gt; int                
+                [modules] =&gt;
+                    Array 
+                        (
+                        [0] =&gt;
+                            Array 
+                                (
+                                [id] =&gt; int                                
+                                [url] =&gt; string                                
+                                [name] =&gt; string                                
+                                [instance] =&gt; int                                
+                                [description] =&gt; string                                
+                                [visible] =&gt; int                                
+                                [modicon] =&gt; string                                
+                                [modname] =&gt; string                                
+                                [modplural] =&gt; string                                
+                                [availability] =&gt; string                                
+                                [indent] =&gt; int                                
+                                [contents] =&gt;
+                                    Array 
+                                        (
+                                        [0] =&gt;
+                                            Array 
+                                                (
+                                                [type] =&gt; string                                                
+                                                [filename] =&gt; string                                                
+                                                [filepath] =&gt; string                                                
+                                                [filesize] =&gt; int                                                
+                                                [fileurl] =&gt; string                                                
+                                                [content] =&gt; string                                                
+                                                [timecreated] =&gt; int                                                
+                                                [timemodified] =&gt; int                                                
+                                                [sortorder] =&gt; int                                                
+                                                [userid] =&gt; int                                                
+                                                [author] =&gt; string                                                
+                                                [license] =&gt; string                                                
+                                                )
+                                        )                                
+                                )
+                        )                
+                )
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;MULTIPLE&gt;
+        &lt;SINGLE&gt;
+            &lt;KEY name="id"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="name"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="visible"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="summary"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="summaryformat"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="modules"&gt;
+                &lt;MULTIPLE&gt;
+                    &lt;SINGLE&gt;
+                        &lt;KEY name="id"&gt;
+                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                        &lt;/KEY&gt;
+                        &lt;KEY name="url"&gt;
+                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                        &lt;/KEY&gt;
+                        &lt;KEY name="name"&gt;
+                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                        &lt;/KEY&gt;
+                        &lt;KEY name="instance"&gt;
+                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                        &lt;/KEY&gt;
+                        &lt;KEY name="description"&gt;
+                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                        &lt;/KEY&gt;
+                        &lt;KEY name="visible"&gt;
+                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                        &lt;/KEY&gt;
+                        &lt;KEY name="modicon"&gt;
+                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                        &lt;/KEY&gt;
+                        &lt;KEY name="modname"&gt;
+                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                        &lt;/KEY&gt;
+                        &lt;KEY name="modplural"&gt;
+                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                        &lt;/KEY&gt;
+                        &lt;KEY name="availability"&gt;
+                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                        &lt;/KEY&gt;
+                        &lt;KEY name="indent"&gt;
+                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                        &lt;/KEY&gt;
+                        &lt;KEY name="contents"&gt;
+                            &lt;MULTIPLE&gt;
+                                &lt;SINGLE&gt;
+                                    &lt;KEY name="type"&gt;
+                                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                    &lt;/KEY&gt;
+                                    &lt;KEY name="filename"&gt;
+                                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                    &lt;/KEY&gt;
+                                    &lt;KEY name="filepath"&gt;
+                                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                    &lt;/KEY&gt;
+                                    &lt;KEY name="filesize"&gt;
+                                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                    &lt;/KEY&gt;
+                                    &lt;KEY name="fileurl"&gt;
+                                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                    &lt;/KEY&gt;
+                                    &lt;KEY name="content"&gt;
+                                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                    &lt;/KEY&gt;
+                                    &lt;KEY name="timecreated"&gt;
+                                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                    &lt;/KEY&gt;
+                                    &lt;KEY name="timemodified"&gt;
+                                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                    &lt;/KEY&gt;
+                                    &lt;KEY name="sortorder"&gt;
+                                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                    &lt;/KEY&gt;
+                                    &lt;KEY name="userid"&gt;
+                                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                    &lt;/KEY&gt;
+                                    &lt;KEY name="author"&gt;
+                                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                    &lt;/KEY&gt;
+                                    &lt;KEY name="license"&gt;
+                                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                    &lt;/KEY&gt;
+                                &lt;/SINGLE&gt;
+                            &lt;/MULTIPLE&gt;
+                        &lt;/KEY&gt;
+                    &lt;/SINGLE&gt;
+                &lt;/MULTIPLE&gt;
+            &lt;/KEY&gt;
+        &lt;/SINGLE&gt;
+    &lt;/MULTIPLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

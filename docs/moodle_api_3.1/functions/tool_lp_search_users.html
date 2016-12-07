@@ -1,0 +1,116 @@
+<div class="collapsibleregioninner" id="aera_tool_lp_search_users_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Search for users.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>query</b> (Required)<br/>        Query string<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+string <span style="color:#2A33A6">  <i>//Query string</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[query] =&gt; string
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+query= string
+
+</pre></div></div></span><span style="font-size:80%"><b>capability</b> (Required)<br/>        Required capability<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+string <span style="color:#2A33A6">  <i>//Required capability</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[capability] =&gt; string
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+capability= string
+
+</pre></div></div></span><span style="font-size:80%"><b>limitfrom</b> (Default to "0")<br/>        Number of records to skip<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//Number of records to skip</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[limitfrom] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+limitfrom= int
+
+</pre></div></div></span><span style="font-size:80%"><b>limitnum</b> (Default to "100")<br/>        Number of records to fetch<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+string <span style="color:#2A33A6"> <b>Default to "100"</b> <i>//Number of records to fetch</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[limitnum] =&gt; string
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+limitnum= string
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>users</b> list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//id</i></span><br/><b>email</b> string <span style="color:#2A33A6">  <i>//email</i></span><br/><b>idnumber</b> string <span style="color:#2A33A6">  <i>//idnumber</i></span><br/><b>phone1</b> string <span style="color:#2A33A6">  <i>//phone1</i></span><br/><b>phone2</b> string <span style="color:#2A33A6">  <i>//phone2</i></span><br/><b>department</b> string <span style="color:#2A33A6">  <i>//department</i></span><br/><b>institution</b> string <span style="color:#2A33A6">  <i>//institution</i></span><br/><b>fullname</b> string <span style="color:#2A33A6">  <i>//fullname</i></span><br/><b>identity</b> string <span style="color:#2A33A6">  <i>//identity</i></span><br/><b>profileurl</b> string <span style="color:#2A33A6">  <i>//profileurl</i></span><br/><b>profileimageurl</b> string <span style="color:#2A33A6">  <i>//profileimageurl</i></span><br/><b>profileimageurlsmall</b> string <span style="color:#2A33A6">  <i>//profileimageurlsmall</i></span><br/>} <br/>)<b>count</b> int <span style="color:#2A33A6">  <i>//Total number of results.</i></span><br/>} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [users] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [id] =&gt; int                        
+                        [email] =&gt; string                        
+                        [idnumber] =&gt; string                        
+                        [phone1] =&gt; string                        
+                        [phone2] =&gt; string                        
+                        [department] =&gt; string                        
+                        [institution] =&gt; string                        
+                        [fullname] =&gt; string                        
+                        [identity] =&gt; string                        
+                        [profileurl] =&gt; string                        
+                        [profileimageurl] =&gt; string                        
+                        [profileimageurlsmall] =&gt; string                        
+                        )
+                )        
+        [count] =&gt; int        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="users"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="id"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="email"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="idnumber"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="phone1"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="phone2"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="department"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="institution"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="fullname"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="identity"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="profileurl"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="profileimageurl"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="profileimageurlsmall"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="count"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>Yes<br/><br/></div>

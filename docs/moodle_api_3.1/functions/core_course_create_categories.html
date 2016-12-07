@@ -1,0 +1,62 @@
+<div class="collapsibleregioninner" id="aera_core_course_create_categories_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Create course categories</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>categories</b> (Required)<br/>        <br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+list of ( <br/>object {<br/><b>name</b> string <span style="color:#2A33A6">  <i>//new category name</i></span><br/><b>parent</b> int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//the parent category id inside which the new category will be created
+                                         - set to 0 for a root category</i></span><br/><b>idnumber</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//the new category idnumber</i></span><br/><b>description</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//the new category description</i></span><br/><b>descriptionformat</b> int <span style="color:#2A33A6"> <b>Default to "1"</b> <i>//description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>theme</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//the new category theme. This option must be enabled on moodle</i></span><br/>} <br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[categories] =&gt;
+    Array 
+        (
+        [0] =&gt;
+            Array 
+                (
+                [name] =&gt; string                
+                [parent] =&gt; int                
+                [idnumber] =&gt; string                
+                [description] =&gt; string                
+                [descriptionformat] =&gt; int                
+                [theme] =&gt; string                
+                )
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+categories[0][name]= string
+categories[0][parent]= int
+categories[0][idnumber]= string
+categories[0][description]= string
+categories[0][descriptionformat]= int
+categories[0][theme]= string
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//new category id</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//new category name</i></span><br/>} <br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [0] =&gt;
+            Array 
+                (
+                [id] =&gt; int                
+                [name] =&gt; string                
+                )
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;MULTIPLE&gt;
+        &lt;SINGLE&gt;
+            &lt;KEY name="id"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="name"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+        &lt;/SINGLE&gt;
+    &lt;/MULTIPLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

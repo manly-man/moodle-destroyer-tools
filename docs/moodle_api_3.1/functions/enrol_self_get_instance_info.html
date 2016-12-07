@@ -1,0 +1,53 @@
+<div class="collapsibleregioninner" id="aera_enrol_self_get_instance_info_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">self enrolment instance information.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>instanceid</b> (Required)<br/>        instance id of self enrolment plugin.<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//instance id of self enrolment plugin.</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[instanceid] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+instanceid= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//id of course enrolment instance</i></span><br/><b>courseid</b> int <span style="color:#2A33A6">  <i>//id of course</i></span><br/><b>type</b> string <span style="color:#2A33A6">  <i>//type of enrolment plugin</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//name of enrolment plugin</i></span><br/><b>status</b> string <span style="color:#2A33A6">  <i>//status of enrolment plugin</i></span><br/><b>enrolpassword</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//password required for enrolment</i></span><br/>} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [id] =&gt; int        
+        [courseid] =&gt; int        
+        [type] =&gt; string        
+        [name] =&gt; string        
+        [status] =&gt; string        
+        [enrolpassword] =&gt; string        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="id"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="courseid"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="type"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="name"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="status"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="enrolpassword"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

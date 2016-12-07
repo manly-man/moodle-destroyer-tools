@@ -1,0 +1,72 @@
+<div class="collapsibleregioninner" id="aera_mod_assign_set_user_flags_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Creates or updates user flags</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>assignmentid</b> (Required)<br/>        assignment id<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//assignment id</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[assignmentid] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+assignmentid= int
+
+</pre></div></div></span><span style="font-size:80%"><b>userflags</b> (Required)<br/>        <br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+list of ( <br/>object {<br/><b>userid</b> int <span style="color:#2A33A6">  <i>//student id</i></span><br/><b>locked</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//locked</i></span><br/><b>mailed</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//mailed</i></span><br/><b>extensionduedate</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//extension due date</i></span><br/><b>workflowstate</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//marking workflow state</i></span><br/><b>allocatedmarker</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//allocated marker</i></span><br/>} <br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[userflags] =&gt;
+    Array 
+        (
+        [0] =&gt;
+            Array 
+                (
+                [userid] =&gt; int                
+                [locked] =&gt; int                
+                [mailed] =&gt; int                
+                [extensionduedate] =&gt; int                
+                [workflowstate] =&gt; string                
+                [allocatedmarker] =&gt; int                
+                )
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+userflags[0][userid]= int
+userflags[0][locked]= int
+userflags[0][mailed]= int
+userflags[0][extensionduedate]= int
+userflags[0][workflowstate]= string
+userflags[0][allocatedmarker]= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//id of record if successful, -1 for failure</i></span><br/><b>userid</b> int <span style="color:#2A33A6">  <i>//userid of record</i></span><br/><b>errormessage</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Failure error message</i></span><br/>} <br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [0] =&gt;
+            Array 
+                (
+                [id] =&gt; int                
+                [userid] =&gt; int                
+                [errormessage] =&gt; string                
+                )
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;MULTIPLE&gt;
+        &lt;SINGLE&gt;
+            &lt;KEY name="id"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="userid"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="errormessage"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+        &lt;/SINGLE&gt;
+    &lt;/MULTIPLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

@@ -1,0 +1,216 @@
+<div class="collapsibleregioninner" id="aera_core_notes_get_course_notes_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Returns all notes in specified course (or site), for the specified user.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>courseid</b> (Required)<br/>        course id, 0 for SITE<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//course id, 0 for SITE</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[courseid] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+courseid= int
+
+</pre></div></div></span><span style="font-size:80%"><b>userid</b> (Default to "0")<br/>        user id<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//user id</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[userid] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+userid= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%">notes<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+<span style="color:#2A33A6">  <i>//notes</i></span><br/>object {<br/><b>sitenotes</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//site notes</i></span><br/>list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//id of this note</i></span><br/><b>courseid</b> int <span style="color:#2A33A6">  <i>//id of the course</i></span><br/><b>userid</b> int <span style="color:#2A33A6">  <i>//user id</i></span><br/><b>content</b> string <span style="color:#2A33A6">  <i>//the content text formated</i></span><br/><b>format</b> int <span style="color:#2A33A6">  <i>//content format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>created</b> int <span style="color:#2A33A6">  <i>//time created (timestamp)</i></span><br/><b>lastmodified</b> int <span style="color:#2A33A6">  <i>//time of last modification (timestamp)</i></span><br/><b>usermodified</b> int <span style="color:#2A33A6">  <i>//user id of the creator of this note</i></span><br/><b>publishstate</b> string <span style="color:#2A33A6">  <i>//state of the note (i.e. draft, public, site) </i></span><br/>} <br/>)<b>coursenotes</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//couse notes</i></span><br/>list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//id of this note</i></span><br/><b>courseid</b> int <span style="color:#2A33A6">  <i>//id of the course</i></span><br/><b>userid</b> int <span style="color:#2A33A6">  <i>//user id</i></span><br/><b>content</b> string <span style="color:#2A33A6">  <i>//the content text formated</i></span><br/><b>format</b> int <span style="color:#2A33A6">  <i>//content format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>created</b> int <span style="color:#2A33A6">  <i>//time created (timestamp)</i></span><br/><b>lastmodified</b> int <span style="color:#2A33A6">  <i>//time of last modification (timestamp)</i></span><br/><b>usermodified</b> int <span style="color:#2A33A6">  <i>//user id of the creator of this note</i></span><br/><b>publishstate</b> string <span style="color:#2A33A6">  <i>//state of the note (i.e. draft, public, site) </i></span><br/>} <br/>)<b>personalnotes</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//personal notes</i></span><br/>list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//id of this note</i></span><br/><b>courseid</b> int <span style="color:#2A33A6">  <i>//id of the course</i></span><br/><b>userid</b> int <span style="color:#2A33A6">  <i>//user id</i></span><br/><b>content</b> string <span style="color:#2A33A6">  <i>//the content text formated</i></span><br/><b>format</b> int <span style="color:#2A33A6">  <i>//content format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>created</b> int <span style="color:#2A33A6">  <i>//time created (timestamp)</i></span><br/><b>lastmodified</b> int <span style="color:#2A33A6">  <i>//time of last modification (timestamp)</i></span><br/><b>usermodified</b> int <span style="color:#2A33A6">  <i>//user id of the creator of this note</i></span><br/><b>publishstate</b> string <span style="color:#2A33A6">  <i>//state of the note (i.e. draft, public, site) </i></span><br/>} <br/>)<b>warnings</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//list of warnings</i></span><br/>list of ( <br/><span style="color:#2A33A6">  <i>//warning</i></span><br/>object {<br/><b>item</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//item</i></span><br/><b>itemid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//item id</i></span><br/><b>warningcode</b> string <span style="color:#2A33A6">  <i>//the warning code can be used by the client app to implement specific behaviour</i></span><br/><b>message</b> string <span style="color:#2A33A6">  <i>//untranslated english message to explain the warning</i></span><br/>} <br/>)} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [sitenotes] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [id] =&gt; int                        
+                        [courseid] =&gt; int                        
+                        [userid] =&gt; int                        
+                        [content] =&gt; string                        
+                        [format] =&gt; int                        
+                        [created] =&gt; int                        
+                        [lastmodified] =&gt; int                        
+                        [usermodified] =&gt; int                        
+                        [publishstate] =&gt; string                        
+                        )
+                )        
+        [coursenotes] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [id] =&gt; int                        
+                        [courseid] =&gt; int                        
+                        [userid] =&gt; int                        
+                        [content] =&gt; string                        
+                        [format] =&gt; int                        
+                        [created] =&gt; int                        
+                        [lastmodified] =&gt; int                        
+                        [usermodified] =&gt; int                        
+                        [publishstate] =&gt; string                        
+                        )
+                )        
+        [personalnotes] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [id] =&gt; int                        
+                        [courseid] =&gt; int                        
+                        [userid] =&gt; int                        
+                        [content] =&gt; string                        
+                        [format] =&gt; int                        
+                        [created] =&gt; int                        
+                        [lastmodified] =&gt; int                        
+                        [usermodified] =&gt; int                        
+                        [publishstate] =&gt; string                        
+                        )
+                )        
+        [warnings] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [item] =&gt; string                        
+                        [itemid] =&gt; int                        
+                        [warningcode] =&gt; string                        
+                        [message] =&gt; string                        
+                        )
+                )        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="sitenotes"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="id"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="courseid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="userid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="content"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="format"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="created"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="lastmodified"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="usermodified"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="publishstate"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="coursenotes"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="id"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="courseid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="userid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="content"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="format"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="created"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="lastmodified"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="usermodified"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="publishstate"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="personalnotes"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="id"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="courseid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="userid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="content"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="format"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="created"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="lastmodified"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="usermodified"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="publishstate"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="warnings"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="item"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="itemid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="warningcode"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="message"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

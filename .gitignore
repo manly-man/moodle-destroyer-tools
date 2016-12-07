@@ -138,3 +138,13 @@ tramp
 # cask packages
 .cask/
 
+# pycharm
+.idea/
+
+# shpinx
+docs/_build
+docs/_static
+docs/_templares
+
+# moodle destroyer tools
+.mdt/

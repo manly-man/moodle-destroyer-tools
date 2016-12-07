@@ -1,0 +1,326 @@
+<div class="collapsibleregioninner" id="aera_core_enrol_get_enrolled_users_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Get enrolled users by course id.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>courseid</b> (Required)<br/>        course id<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//course id</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[courseid] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+courseid= int
+
+</pre></div></div></span><span style="font-size:80%"><b>options</b> (Default to "Array
+(
+)
+")<br/>        Option names:
+                            * withcapability (string) return only users with this capability. This option requires 'moodle/role:review' on the course context.
+                            * groupid (integer) return only users in this group id. If the course has groups enabled and this param
+                                                isn't defined, returns all the viewable users.
+                                                This option requires 'moodle/site:accessallgroups' on the course context if the
+                                                user doesn't belong to the group.
+                            * onlyactive (integer) return only users with active enrolments and matching time restrictions. This option requires 'moodle/course:enrolreview' on the course context.
+                            * userfields ('string, string, ...') return only the values of these user fields.
+                            * limitfrom (integer) sql limit from.
+                            * limitnumber (integer) maximum number of returned users.
+                            * sortby (string) sort by id, firstname or lastname. For ordering like the site does, use siteorder.
+                            * sortdirection (string) ASC or DESC<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+<span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//Option names:
+                            * withcapability (string) return only users with this capability. This option requires 'moodle/role:review' on the course context.
+                            * groupid (integer) return only users in this group id. If the course has groups enabled and this param
+                                                isn't defined, returns all the viewable users.
+                                                This option requires 'moodle/site:accessallgroups' on the course context if the
+                                                user doesn't belong to the group.
+                            * onlyactive (integer) return only users with active enrolments and matching time restrictions. This option requires 'moodle/course:enrolreview' on the course context.
+                            * userfields ('string, string, ...') return only the values of these user fields.
+                            * limitfrom (integer) sql limit from.
+                            * limitnumber (integer) maximum number of returned users.
+                            * sortby (string) sort by id, firstname or lastname. For ordering like the site does, use siteorder.
+                            * sortdirection (string) ASC or DESC</i></span><br/>list of ( <br/>object {<br/><b>name</b> string <span style="color:#2A33A6">  <i>//option name</i></span><br/><b>value</b> string <span style="color:#2A33A6">  <i>//option value</i></span><br/>} <br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[options] =&gt;
+    Array 
+        (
+        [0] =&gt;
+            Array 
+                (
+                [name] =&gt; string                
+                [value] =&gt; string                
+                )
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+options[0][name]= string
+options[0][value]= string
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//ID of the user</i></span><br/><b>username</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Username policy is defined in Moodle security config</i></span><br/><b>firstname</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//The first name(s) of the user</i></span><br/><b>lastname</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//The family name of the user</i></span><br/><b>fullname</b> string <span style="color:#2A33A6">  <i>//The fullname of the user</i></span><br/><b>email</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//An email address - allow email as root@localhost</i></span><br/><b>address</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Postal address</i></span><br/><b>phone1</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Phone 1</i></span><br/><b>phone2</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Phone 2</i></span><br/><b>icq</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//icq number</i></span><br/><b>skype</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//skype id</i></span><br/><b>yahoo</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//yahoo id</i></span><br/><b>aim</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//aim id</i></span><br/><b>msn</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//msn number</i></span><br/><b>department</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//department</i></span><br/><b>institution</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//institution</i></span><br/><b>idnumber</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//An arbitrary ID code number perhaps from the institution</i></span><br/><b>interests</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//user interests (separated by commas)</i></span><br/><b>firstaccess</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//first access to the site (0 if never)</i></span><br/><b>lastaccess</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//last access to the site (0 if never)</i></span><br/><b>description</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//User profile description</i></span><br/><b>descriptionformat</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>city</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Home city of the user</i></span><br/><b>url</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//URL of the user</i></span><br/><b>country</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Home country code of the user, such as AU or CZ</i></span><br/><b>profileimageurlsmall</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//User image profile URL - small version</i></span><br/><b>profileimageurl</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//User image profile URL - big version</i></span><br/><b>customfields</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//User custom fields (also known as user profil fields)</i></span><br/>list of ( <br/>object {<br/><b>type</b> string <span style="color:#2A33A6">  <i>//The type of the custom field - text field, checkbox...</i></span><br/><b>value</b> string <span style="color:#2A33A6">  <i>//The value of the custom field</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//The name of the custom field</i></span><br/><b>shortname</b> string <span style="color:#2A33A6">  <i>//The shortname of the custom field - to be able to build the field class in the code</i></span><br/>} <br/>)<b>groups</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//user groups</i></span><br/>list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//group id</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//group name</i></span><br/><b>description</b> string <span style="color:#2A33A6">  <i>//group description</i></span><br/><b>descriptionformat</b> int <span style="color:#2A33A6">  <i>//description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/>} <br/>)<b>roles</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//user roles</i></span><br/>list of ( <br/>object {<br/><b>roleid</b> int <span style="color:#2A33A6">  <i>//role id</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//role name</i></span><br/><b>shortname</b> string <span style="color:#2A33A6">  <i>//role shortname</i></span><br/><b>sortorder</b> int <span style="color:#2A33A6">  <i>//role sortorder</i></span><br/>} <br/>)<b>preferences</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//User preferences</i></span><br/>list of ( <br/>object {<br/><b>name</b> string <span style="color:#2A33A6">  <i>//The name of the preferences</i></span><br/><b>value</b> string <span style="color:#2A33A6">  <i>//The value of the custom field</i></span><br/>} <br/>)<b>enrolledcourses</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//Courses where the user is enrolled - limited by which courses the user is able to see</i></span><br/>list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//Id of the course</i></span><br/><b>fullname</b> string <span style="color:#2A33A6">  <i>//Fullname of the course</i></span><br/><b>shortname</b> string <span style="color:#2A33A6">  <i>//Shortname of the course</i></span><br/>} <br/>)} <br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [0] =&gt;
+            Array 
+                (
+                [id] =&gt; int                
+                [username] =&gt; string                
+                [firstname] =&gt; string                
+                [lastname] =&gt; string                
+                [fullname] =&gt; string                
+                [email] =&gt; string                
+                [address] =&gt; string                
+                [phone1] =&gt; string                
+                [phone2] =&gt; string                
+                [icq] =&gt; string                
+                [skype] =&gt; string                
+                [yahoo] =&gt; string                
+                [aim] =&gt; string                
+                [msn] =&gt; string                
+                [department] =&gt; string                
+                [institution] =&gt; string                
+                [idnumber] =&gt; string                
+                [interests] =&gt; string                
+                [firstaccess] =&gt; int                
+                [lastaccess] =&gt; int                
+                [description] =&gt; string                
+                [descriptionformat] =&gt; int                
+                [city] =&gt; string                
+                [url] =&gt; string                
+                [country] =&gt; string                
+                [profileimageurlsmall] =&gt; string                
+                [profileimageurl] =&gt; string                
+                [customfields] =&gt;
+                    Array 
+                        (
+                        [0] =&gt;
+                            Array 
+                                (
+                                [type] =&gt; string                                
+                                [value] =&gt; string                                
+                                [name] =&gt; string                                
+                                [shortname] =&gt; string                                
+                                )
+                        )                
+                [groups] =&gt;
+                    Array 
+                        (
+                        [0] =&gt;
+                            Array 
+                                (
+                                [id] =&gt; int                                
+                                [name] =&gt; string                                
+                                [description] =&gt; string                                
+                                [descriptionformat] =&gt; int                                
+                                )
+                        )                
+                [roles] =&gt;
+                    Array 
+                        (
+                        [0] =&gt;
+                            Array 
+                                (
+                                [roleid] =&gt; int                                
+                                [name] =&gt; string                                
+                                [shortname] =&gt; string                                
+                                [sortorder] =&gt; int                                
+                                )
+                        )                
+                [preferences] =&gt;
+                    Array 
+                        (
+                        [0] =&gt;
+                            Array 
+                                (
+                                [name] =&gt; string                                
+                                [value] =&gt; string                                
+                                )
+                        )                
+                [enrolledcourses] =&gt;
+                    Array 
+                        (
+                        [0] =&gt;
+                            Array 
+                                (
+                                [id] =&gt; int                                
+                                [fullname] =&gt; string                                
+                                [shortname] =&gt; string                                
+                                )
+                        )                
+                )
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;MULTIPLE&gt;
+        &lt;SINGLE&gt;
+            &lt;KEY name="id"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="username"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="firstname"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="lastname"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="fullname"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="email"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="address"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="phone1"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="phone2"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="icq"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="skype"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="yahoo"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="aim"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="msn"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="department"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="institution"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="idnumber"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="interests"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="firstaccess"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="lastaccess"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="description"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="descriptionformat"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="city"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="url"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="country"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="profileimageurlsmall"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="profileimageurl"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="customfields"&gt;
+                &lt;MULTIPLE&gt;
+                    &lt;SINGLE&gt;
+                        &lt;KEY name="type"&gt;
+                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                        &lt;/KEY&gt;
+                        &lt;KEY name="value"&gt;
+                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                        &lt;/KEY&gt;
+                        &lt;KEY name="name"&gt;
+                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                        &lt;/KEY&gt;
+                        &lt;KEY name="shortname"&gt;
+                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                        &lt;/KEY&gt;
+                    &lt;/SINGLE&gt;
+                &lt;/MULTIPLE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="groups"&gt;
+                &lt;MULTIPLE&gt;
+                    &lt;SINGLE&gt;
+                        &lt;KEY name="id"&gt;
+                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                        &lt;/KEY&gt;
+                        &lt;KEY name="name"&gt;
+                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                        &lt;/KEY&gt;
+                        &lt;KEY name="description"&gt;
+                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                        &lt;/KEY&gt;
+                        &lt;KEY name="descriptionformat"&gt;
+                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                        &lt;/KEY&gt;
+                    &lt;/SINGLE&gt;
+                &lt;/MULTIPLE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="roles"&gt;
+                &lt;MULTIPLE&gt;
+                    &lt;SINGLE&gt;
+                        &lt;KEY name="roleid"&gt;
+                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                        &lt;/KEY&gt;
+                        &lt;KEY name="name"&gt;
+                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                        &lt;/KEY&gt;
+                        &lt;KEY name="shortname"&gt;
+                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                        &lt;/KEY&gt;
+                        &lt;KEY name="sortorder"&gt;
+                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                        &lt;/KEY&gt;
+                    &lt;/SINGLE&gt;
+                &lt;/MULTIPLE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="preferences"&gt;
+                &lt;MULTIPLE&gt;
+                    &lt;SINGLE&gt;
+                        &lt;KEY name="name"&gt;
+                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                        &lt;/KEY&gt;
+                        &lt;KEY name="value"&gt;
+                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                        &lt;/KEY&gt;
+                    &lt;/SINGLE&gt;
+                &lt;/MULTIPLE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="enrolledcourses"&gt;
+                &lt;MULTIPLE&gt;
+                    &lt;SINGLE&gt;
+                        &lt;KEY name="id"&gt;
+                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                        &lt;/KEY&gt;
+                        &lt;KEY name="fullname"&gt;
+                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                        &lt;/KEY&gt;
+                        &lt;KEY name="shortname"&gt;
+                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                        &lt;/KEY&gt;
+                    &lt;/SINGLE&gt;
+                &lt;/MULTIPLE&gt;
+            &lt;/KEY&gt;
+        &lt;/SINGLE&gt;
+    &lt;/MULTIPLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

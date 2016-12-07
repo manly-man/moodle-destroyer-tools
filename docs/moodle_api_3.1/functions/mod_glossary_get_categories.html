@@ -1,0 +1,107 @@
+<div class="collapsibleregioninner" id="aera_mod_glossary_get_categories_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Get the categories.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>id</b> (Required)<br/>        The glossary ID<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//The glossary ID</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[id] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+id= int
+
+</pre></div></div></span><span style="font-size:80%"><b>from</b> (Default to "0")<br/>        Start returning records from here<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//Start returning records from here</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[from] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+from= int
+
+</pre></div></div></span><span style="font-size:80%"><b>limit</b> (Default to "20")<br/>        Number of records to return<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6"> <b>Default to "20"</b> <i>//Number of records to return</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[limit] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+limit= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>count</b> int <span style="color:#2A33A6">  <i>//The total number of records.</i></span><br/><b>categories</b> list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//The category ID</i></span><br/><b>glossaryid</b> int <span style="color:#2A33A6">  <i>//The glossary ID</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//The name of the category</i></span><br/><b>usedynalink</b> int <span style="color:#2A33A6">  <i>//Whether the category is automatically linked</i></span><br/>} <br/>)<b>warnings</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//list of warnings</i></span><br/>list of ( <br/><span style="color:#2A33A6">  <i>//warning</i></span><br/>object {<br/><b>item</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//item</i></span><br/><b>itemid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//item id</i></span><br/><b>warningcode</b> string <span style="color:#2A33A6">  <i>//the warning code can be used by the client app to implement specific behaviour</i></span><br/><b>message</b> string <span style="color:#2A33A6">  <i>//untranslated english message to explain the warning</i></span><br/>} <br/>)} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [count] =&gt; int        
+        [categories] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [id] =&gt; int                        
+                        [glossaryid] =&gt; int                        
+                        [name] =&gt; string                        
+                        [usedynalink] =&gt; int                        
+                        )
+                )        
+        [warnings] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [item] =&gt; string                        
+                        [itemid] =&gt; int                        
+                        [warningcode] =&gt; string                        
+                        [message] =&gt; string                        
+                        )
+                )        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="count"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="categories"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="id"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="glossaryid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="name"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="usedynalink"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="warnings"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="item"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="itemid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="warningcode"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="message"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

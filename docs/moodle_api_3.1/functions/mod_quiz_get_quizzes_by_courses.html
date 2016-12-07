@@ -1,0 +1,313 @@
+<div class="collapsibleregioninner" id="aera_mod_quiz_get_quizzes_by_courses_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Returns a list of quizzes in a provided list of courses,
+                            if no list is provided all quizzes that the user can view will be returned.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>courseids</b> (Default to "Array
+(
+)
+")<br/>        Array of course ids<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+<span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//Array of course ids</i></span><br/>list of ( <br/>int <span style="color:#2A33A6">  <i>//course id</i></span><br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[courseids] =&gt;
+    Array 
+        (
+        [0] =&gt; int
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+courseids[0]= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>quizzes</b> list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//Standard Moodle primary key.</i></span><br/><b>course</b> int <span style="color:#2A33A6">  <i>//Foreign key reference to the course this quiz is part of.</i></span><br/><b>coursemodule</b> int <span style="color:#2A33A6">  <i>//Course module id.</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//Quiz name.</i></span><br/><b>intro</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Quiz introduction text.</i></span><br/><b>introformat</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>timeopen</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//The time when this quiz opens. (0 = no restriction.)</i></span><br/><b>timeclose</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//The time when this quiz closes. (0 = no restriction.)</i></span><br/><b>timelimit</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//The time limit for quiz attempts, in seconds.</i></span><br/><b>overduehandling</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//The method used to handle overdue attempts.
+                                                                    'autosubmit', 'graceperiod' or 'autoabandon'.</i></span><br/><b>graceperiod</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//The amount of time (in seconds) after the time limit
+                                                                runs out during which attempts can still be submitted,
+                                                                if overduehandling is set to allow it.</i></span><br/><b>preferredbehaviour</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//The behaviour to ask questions to use.</i></span><br/><b>canredoquestions</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Allows students to redo any completed question
+                                                                        within a quiz attempt.</i></span><br/><b>attempts</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//The maximum number of attempts a student is allowed.</i></span><br/><b>attemptonlast</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Whether subsequent attempts start from the answer
+                                                                    to the previous attempt (1) or start blank (0).</i></span><br/><b>grademethod</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//One of the values QUIZ_GRADEHIGHEST, QUIZ_GRADEAVERAGE,
+                                                                    QUIZ_ATTEMPTFIRST or QUIZ_ATTEMPTLAST.</i></span><br/><b>decimalpoints</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Number of decimal points to use when displaying
+                                                                    grades.</i></span><br/><b>questiondecimalpoints</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Number of decimal points to use when
+                                                                            displaying question grades.
+                                                                            (-1 means use decimalpoints.)</i></span><br/><b>reviewattempt</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Whether users are allowed to review their quiz
+                                                                    attempts at various times. This is a bit field, decoded by the
+                                                                    mod_quiz_display_options class. It is formed by ORing together
+                                                                    the constants defined there.</i></span><br/><b>reviewcorrectness</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Whether users are allowed to review their quiz
+                                                                        attempts at various times.
+                                                                        A bit field, like reviewattempt.</i></span><br/><b>reviewmarks</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Whether users are allowed to review their quiz attempts
+                                                                at various times. A bit field, like reviewattempt.</i></span><br/><b>reviewspecificfeedback</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Whether users are allowed to review their
+                                                                            quiz attempts at various times. A bit field, like
+                                                                            reviewattempt.</i></span><br/><b>reviewgeneralfeedback</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Whether users are allowed to review their
+                                                                            quiz attempts at various times. A bit field, like
+                                                                            reviewattempt.</i></span><br/><b>reviewrightanswer</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Whether users are allowed to review their quiz
+                                                                        attempts at various times. A bit field, like
+                                                                        reviewattempt.</i></span><br/><b>reviewoverallfeedback</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Whether users are allowed to review their quiz
+                                                                            attempts at various times. A bit field, like
+                                                                            reviewattempt.</i></span><br/><b>questionsperpage</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//How often to insert a page break when editing
+                                                                        the quiz, or when shuffling the question order.</i></span><br/><b>navmethod</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Any constraints on how the user is allowed to navigate
+                                                                around the quiz. Currently recognised values are
+                                                                'free' and 'seq'.</i></span><br/><b>shuffleanswers</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Whether the parts of the question should be shuffled,
+                                                                    in those question types that support it.</i></span><br/><b>sumgrades</b> double <span style="color:#2A33A6"> <b>Optional</b> <i>//The total of all the question instance maxmarks.</i></span><br/><b>grade</b> double <span style="color:#2A33A6"> <b>Optional</b> <i>//The total that the quiz overall grade is scaled to be
+                                                            out of.</i></span><br/><b>timecreated</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//The time when the quiz was added to the course.</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Last modified time.</i></span><br/><b>password</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//A password that the student must enter before starting or
+                                                                continuing a quiz attempt.</i></span><br/><b>subnet</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Used to restrict the IP addresses from which this quiz can
+                                                            be attempted. The format is as requried by the address_in_subnet
+                                                            function.</i></span><br/><b>browsersecurity</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Restriciton on the browser the student must
+                                                                    use. E.g. 'securewindow'.</i></span><br/><b>delay1</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Delay that must be left between the first and second attempt,
+                                                            in seconds.</i></span><br/><b>delay2</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Delay that must be left between the second and subsequent
+                                                            attempt, in seconds.</i></span><br/><b>showuserpicture</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Option to show the user's picture during the
+                                                                    attempt and on the review page.</i></span><br/><b>showblocks</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Whether blocks should be shown on the attempt.php and
+                                                                review.php pages.</i></span><br/><b>completionattemptsexhausted</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Mark quiz complete when the student has
+                                                                                exhausted the maximum number of attempts</i></span><br/><b>completionpass</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Whether to require passing grade</i></span><br/><b>autosaveperiod</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Auto-save delay</i></span><br/><b>hasfeedback</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Whether the quiz has any non-blank feedback text</i></span><br/><b>hasquestions</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Whether the quiz has questions</i></span><br/><b>section</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Course section id</i></span><br/><b>visible</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Module visibility</i></span><br/><b>groupmode</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Group mode</i></span><br/><b>groupingid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Grouping id</i></span><br/>} <br/>)<b>warnings</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//list of warnings</i></span><br/>list of ( <br/><span style="color:#2A33A6">  <i>//warning</i></span><br/>object {<br/><b>item</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//item</i></span><br/><b>itemid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//item id</i></span><br/><b>warningcode</b> string <span style="color:#2A33A6">  <i>//the warning code can be used by the client app to implement specific behaviour</i></span><br/><b>message</b> string <span style="color:#2A33A6">  <i>//untranslated english message to explain the warning</i></span><br/>} <br/>)} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [quizzes] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [id] =&gt; int                        
+                        [course] =&gt; int                        
+                        [coursemodule] =&gt; int                        
+                        [name] =&gt; string                        
+                        [intro] =&gt; string                        
+                        [introformat] =&gt; int                        
+                        [timeopen] =&gt; int                        
+                        [timeclose] =&gt; int                        
+                        [timelimit] =&gt; int                        
+                        [overduehandling] =&gt; string                        
+                        [graceperiod] =&gt; int                        
+                        [preferredbehaviour] =&gt; string                        
+                        [canredoquestions] =&gt; int                        
+                        [attempts] =&gt; int                        
+                        [attemptonlast] =&gt; int                        
+                        [grademethod] =&gt; int                        
+                        [decimalpoints] =&gt; int                        
+                        [questiondecimalpoints] =&gt; int                        
+                        [reviewattempt] =&gt; int                        
+                        [reviewcorrectness] =&gt; int                        
+                        [reviewmarks] =&gt; int                        
+                        [reviewspecificfeedback] =&gt; int                        
+                        [reviewgeneralfeedback] =&gt; int                        
+                        [reviewrightanswer] =&gt; int                        
+                        [reviewoverallfeedback] =&gt; int                        
+                        [questionsperpage] =&gt; int                        
+                        [navmethod] =&gt; string                        
+                        [shuffleanswers] =&gt; int                        
+                        [sumgrades] =&gt; double                        
+                        [grade] =&gt; double                        
+                        [timecreated] =&gt; int                        
+                        [timemodified] =&gt; int                        
+                        [password] =&gt; string                        
+                        [subnet] =&gt; string                        
+                        [browsersecurity] =&gt; string                        
+                        [delay1] =&gt; int                        
+                        [delay2] =&gt; int                        
+                        [showuserpicture] =&gt; int                        
+                        [showblocks] =&gt; int                        
+                        [completionattemptsexhausted] =&gt; int                        
+                        [completionpass] =&gt; int                        
+                        [autosaveperiod] =&gt; int                        
+                        [hasfeedback] =&gt; int                        
+                        [hasquestions] =&gt; int                        
+                        [section] =&gt; int                        
+                        [visible] =&gt; int                        
+                        [groupmode] =&gt; int                        
+                        [groupingid] =&gt; int                        
+                        )
+                )        
+        [warnings] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [item] =&gt; string                        
+                        [itemid] =&gt; int                        
+                        [warningcode] =&gt; string                        
+                        [message] =&gt; string                        
+                        )
+                )        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="quizzes"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="id"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="course"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="coursemodule"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="name"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="intro"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="introformat"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="timeopen"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="timeclose"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="timelimit"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="overduehandling"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="graceperiod"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="preferredbehaviour"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="canredoquestions"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="attempts"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="attemptonlast"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="grademethod"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="decimalpoints"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="questiondecimalpoints"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="reviewattempt"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="reviewcorrectness"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="reviewmarks"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="reviewspecificfeedback"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="reviewgeneralfeedback"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="reviewrightanswer"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="reviewoverallfeedback"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="questionsperpage"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="navmethod"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="shuffleanswers"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="sumgrades"&gt;
+                        &lt;VALUE&gt;double&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="grade"&gt;
+                        &lt;VALUE&gt;double&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="timecreated"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="timemodified"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="password"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="subnet"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="browsersecurity"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="delay1"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="delay2"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="showuserpicture"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="showblocks"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="completionattemptsexhausted"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="completionpass"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="autosaveperiod"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="hasfeedback"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="hasquestions"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="section"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="visible"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="groupmode"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="groupingid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="warnings"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="item"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="itemid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="warningcode"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="message"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

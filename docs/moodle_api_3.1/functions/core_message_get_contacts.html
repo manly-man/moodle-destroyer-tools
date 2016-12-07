@@ -1,0 +1,124 @@
+<div class="collapsibleregioninner" id="aera_core_message_get_contacts_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Retrieve the contact list</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>online</b> <span style="color:#2A33A6">  <i>//List of online contacts</i></span><br/>list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//User ID</i></span><br/><b>fullname</b> string <span style="color:#2A33A6">  <i>//User full name</i></span><br/><b>profileimageurl</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//User picture URL</i></span><br/><b>profileimageurlsmall</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Small user picture URL</i></span><br/><b>unread</b> int <span style="color:#2A33A6">  <i>//Unread message count</i></span><br/>} <br/>)<b>offline</b> <span style="color:#2A33A6">  <i>//List of offline contacts</i></span><br/>list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//User ID</i></span><br/><b>fullname</b> string <span style="color:#2A33A6">  <i>//User full name</i></span><br/><b>profileimageurl</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//User picture URL</i></span><br/><b>profileimageurlsmall</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Small user picture URL</i></span><br/><b>unread</b> int <span style="color:#2A33A6">  <i>//Unread message count</i></span><br/>} <br/>)<b>strangers</b> <span style="color:#2A33A6">  <i>//List of users that are not in the user's contact list but have sent a message</i></span><br/>list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//User ID</i></span><br/><b>fullname</b> string <span style="color:#2A33A6">  <i>//User full name</i></span><br/><b>profileimageurl</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//User picture URL</i></span><br/><b>profileimageurlsmall</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Small user picture URL</i></span><br/><b>unread</b> int <span style="color:#2A33A6">  <i>//Unread message count</i></span><br/>} <br/>)} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [online] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [id] =&gt; int                        
+                        [fullname] =&gt; string                        
+                        [profileimageurl] =&gt; string                        
+                        [profileimageurlsmall] =&gt; string                        
+                        [unread] =&gt; int                        
+                        )
+                )        
+        [offline] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [id] =&gt; int                        
+                        [fullname] =&gt; string                        
+                        [profileimageurl] =&gt; string                        
+                        [profileimageurlsmall] =&gt; string                        
+                        [unread] =&gt; int                        
+                        )
+                )        
+        [strangers] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [id] =&gt; int                        
+                        [fullname] =&gt; string                        
+                        [profileimageurl] =&gt; string                        
+                        [profileimageurlsmall] =&gt; string                        
+                        [unread] =&gt; int                        
+                        )
+                )        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="online"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="id"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="fullname"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="profileimageurl"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="profileimageurlsmall"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="unread"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="offline"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="id"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="fullname"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="profileimageurl"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="profileimageurlsmall"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="unread"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="strangers"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="id"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="fullname"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="profileimageurl"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="profileimageurlsmall"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="unread"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

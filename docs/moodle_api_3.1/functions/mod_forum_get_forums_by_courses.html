@@ -1,0 +1,151 @@
+<div class="collapsibleregioninner" id="aera_mod_forum_get_forums_by_courses_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Returns a list of forum instances in a provided set of courses, if
+            no courses are provided then all the forum instances the user has access to will be
+            returned.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>courseids</b> (Default to "Array
+(
+)
+")<br/>        Array of Course IDs<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+<span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//Array of Course IDs</i></span><br/>list of ( <br/>int <span style="color:#2A33A6">  <i>//course ID</i></span><br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[courseids] =&gt;
+    Array 
+        (
+        [0] =&gt; int
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+courseids[0]= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+list of ( <br/><span style="color:#2A33A6">  <i>//forum</i></span><br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//Forum id</i></span><br/><b>course</b> int <span style="color:#2A33A6">  <i>//Course id</i></span><br/><b>type</b> string <span style="color:#2A33A6">  <i>//The forum type</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//Forum name</i></span><br/><b>intro</b> string <span style="color:#2A33A6">  <i>//The forum intro</i></span><br/><b>introformat</b> int <span style="color:#2A33A6">  <i>//intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>assessed</b> int <span style="color:#2A33A6">  <i>//Aggregate type</i></span><br/><b>assesstimestart</b> int <span style="color:#2A33A6">  <i>//Assess start time</i></span><br/><b>assesstimefinish</b> int <span style="color:#2A33A6">  <i>//Assess finish time</i></span><br/><b>scale</b> int <span style="color:#2A33A6">  <i>//Scale</i></span><br/><b>maxbytes</b> int <span style="color:#2A33A6">  <i>//Maximum attachment size</i></span><br/><b>maxattachments</b> int <span style="color:#2A33A6">  <i>//Maximum number of attachments</i></span><br/><b>forcesubscribe</b> int <span style="color:#2A33A6">  <i>//Force users to subscribe</i></span><br/><b>trackingtype</b> int <span style="color:#2A33A6">  <i>//Subscription mode</i></span><br/><b>rsstype</b> int <span style="color:#2A33A6">  <i>//RSS feed for this activity</i></span><br/><b>rssarticles</b> int <span style="color:#2A33A6">  <i>//Number of RSS recent articles</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6">  <i>//Time modified</i></span><br/><b>warnafter</b> int <span style="color:#2A33A6">  <i>//Post threshold for warning</i></span><br/><b>blockafter</b> int <span style="color:#2A33A6">  <i>//Post threshold for blocking</i></span><br/><b>blockperiod</b> int <span style="color:#2A33A6">  <i>//Time period for blocking</i></span><br/><b>completiondiscussions</b> int <span style="color:#2A33A6">  <i>//Student must create discussions</i></span><br/><b>completionreplies</b> int <span style="color:#2A33A6">  <i>//Student must post replies</i></span><br/><b>completionposts</b> int <span style="color:#2A33A6">  <i>//Student must post discussions or replies</i></span><br/><b>cmid</b> int <span style="color:#2A33A6">  <i>//Course module id</i></span><br/><b>numdiscussions</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Number of discussions in the forum</i></span><br/><b>cancreatediscussions</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//If the user can create discussions</i></span><br/>} <br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [0] =&gt;
+            Array 
+                (
+                [id] =&gt; int                
+                [course] =&gt; int                
+                [type] =&gt; string                
+                [name] =&gt; string                
+                [intro] =&gt; string                
+                [introformat] =&gt; int                
+                [assessed] =&gt; int                
+                [assesstimestart] =&gt; int                
+                [assesstimefinish] =&gt; int                
+                [scale] =&gt; int                
+                [maxbytes] =&gt; int                
+                [maxattachments] =&gt; int                
+                [forcesubscribe] =&gt; int                
+                [trackingtype] =&gt; int                
+                [rsstype] =&gt; int                
+                [rssarticles] =&gt; int                
+                [timemodified] =&gt; int                
+                [warnafter] =&gt; int                
+                [blockafter] =&gt; int                
+                [blockperiod] =&gt; int                
+                [completiondiscussions] =&gt; int                
+                [completionreplies] =&gt; int                
+                [completionposts] =&gt; int                
+                [cmid] =&gt; int                
+                [numdiscussions] =&gt; int                
+                [cancreatediscussions] =&gt; int                
+                )
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;MULTIPLE&gt;
+        &lt;SINGLE&gt;
+            &lt;KEY name="id"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="course"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="type"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="name"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="intro"&gt;
+                &lt;VALUE&gt;string&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="introformat"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="assessed"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="assesstimestart"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="assesstimefinish"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="scale"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="maxbytes"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="maxattachments"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="forcesubscribe"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="trackingtype"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="rsstype"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="rssarticles"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="timemodified"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="warnafter"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="blockafter"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="blockperiod"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="completiondiscussions"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="completionreplies"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="completionposts"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="cmid"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="numdiscussions"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+            &lt;KEY name="cancreatediscussions"&gt;
+                &lt;VALUE&gt;int&lt;/VALUE&gt;
+            &lt;/KEY&gt;
+        &lt;/SINGLE&gt;
+    &lt;/MULTIPLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

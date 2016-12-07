@@ -1,0 +1,162 @@
+<div class="collapsibleregioninner" id="aera_core_webservice_get_site_info_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Return some site info / user info / list web service functions</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>serviceshortnames</b> (Default to "Array
+(
+)
+")<br/>        DEPRECATED PARAMETER - it was a design error in the original implementation. \
+                    It is ignored now. (parameter kept for backward compatibility)<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+<span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//DEPRECATED PARAMETER - it was a design error in the original implementation. \
+                    It is ignored now. (parameter kept for backward compatibility)</i></span><br/>list of ( <br/>string <span style="color:#2A33A6">  <i>//service shortname</i></span><br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[serviceshortnames] =&gt;
+    Array 
+        (
+        [0] =&gt; string
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+serviceshortnames[0]= string
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>sitename</b> string <span style="color:#2A33A6">  <i>//site name</i></span><br/><b>username</b> string <span style="color:#2A33A6">  <i>//username</i></span><br/><b>firstname</b> string <span style="color:#2A33A6">  <i>//first name</i></span><br/><b>lastname</b> string <span style="color:#2A33A6">  <i>//last name</i></span><br/><b>fullname</b> string <span style="color:#2A33A6">  <i>//user full name</i></span><br/><b>lang</b> string <span style="color:#2A33A6">  <i>//user language</i></span><br/><b>userid</b> int <span style="color:#2A33A6">  <i>//user id</i></span><br/><b>siteurl</b> string <span style="color:#2A33A6">  <i>//site url</i></span><br/><b>userpictureurl</b> string <span style="color:#2A33A6">  <i>//the user profile picture.
+                    Warning: this url is the public URL that only works when forcelogin is set to NO and guestaccess is set to YES.
+                    In order to retrieve user profile pictures independently of the Moodle config, replace "pluginfile.php" by
+                    "webservice/pluginfile.php?token=WSTOKEN&amp;file;="
+                    Of course the user can only see profile picture depending
+                    on his/her permissions. Moreover it is recommended to use HTTPS too.</i></span><br/><b>functions</b> list of ( <br/><span style="color:#2A33A6">  <i>//functions that are available</i></span><br/>object {<br/><b>name</b> string <span style="color:#2A33A6">  <i>//function name</i></span><br/><b>version</b> string <span style="color:#2A33A6">  <i>//The version number of the component to which the function belongs</i></span><br/>} <br/>)<b>downloadfiles</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//1 if users are allowed to download files, 0 if not</i></span><br/><b>uploadfiles</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//1 if users are allowed to upload files, 0 if not</i></span><br/><b>release</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Moodle release number</i></span><br/><b>version</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Moodle version number</i></span><br/><b>mobilecssurl</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Mobile custom CSS theme</i></span><br/><b>advancedfeatures</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//Advanced features availability</i></span><br/>list of ( <br/><span style="color:#2A33A6">  <i>//Advanced features availability</i></span><br/>object {<br/><b>name</b> string <span style="color:#2A33A6">  <i>//feature name</i></span><br/><b>value</b> int <span style="color:#2A33A6">  <i>//feature value. Usually 1 means enabled.</i></span><br/>} <br/>)<b>usercanmanageownfiles</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//true if the user can manage his own files</i></span><br/><b>userquota</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//user quota (bytes). 0 means user can ignore the quota</i></span><br/><b>usermaxuploadfilesize</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//user max upload file size (bytes). -1 means the user can ignore the upload file size</i></span><br/><b>userhomepage</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//the default home page for the user: 0 for the site home, 1 for dashboard</i></span><br/>} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [sitename] =&gt; string        
+        [username] =&gt; string        
+        [firstname] =&gt; string        
+        [lastname] =&gt; string        
+        [fullname] =&gt; string        
+        [lang] =&gt; string        
+        [userid] =&gt; int        
+        [siteurl] =&gt; string        
+        [userpictureurl] =&gt; string        
+        [functions] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [name] =&gt; string                        
+                        [version] =&gt; string                        
+                        )
+                )        
+        [downloadfiles] =&gt; int        
+        [uploadfiles] =&gt; int        
+        [release] =&gt; string        
+        [version] =&gt; string        
+        [mobilecssurl] =&gt; string        
+        [advancedfeatures] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [name] =&gt; string                        
+                        [value] =&gt; int                        
+                        )
+                )        
+        [usercanmanageownfiles] =&gt; int        
+        [userquota] =&gt; int        
+        [usermaxuploadfilesize] =&gt; int        
+        [userhomepage] =&gt; int        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="sitename"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="username"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="firstname"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="lastname"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="fullname"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="lang"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="userid"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="siteurl"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="userpictureurl"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="functions"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="name"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="version"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="downloadfiles"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="uploadfiles"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="release"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="version"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="mobilecssurl"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="advancedfeatures"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="name"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="value"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="usercanmanageownfiles"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="userquota"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="usermaxuploadfilesize"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="userhomepage"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

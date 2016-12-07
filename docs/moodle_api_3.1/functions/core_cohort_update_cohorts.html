@@ -1,0 +1,43 @@
+<div class="collapsibleregioninner" id="aera_core_cohort_update_cohorts_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Updates existing cohorts.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>cohorts</b> (Required)<br/>        <br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//ID of the cohort</i></span><br/><b>categorytype</b> object {<br/><b>type</b> string <span style="color:#2A33A6">  <i>//the name of the field: id (numeric value
+                                        of course category id) or idnumber (alphanumeric value of idnumber course category)
+                                        or system (value ignored)</i></span><br/><b>value</b> string <span style="color:#2A33A6">  <i>//the value of the categorytype</i></span><br/>} <br/><b>name</b> string <span style="color:#2A33A6">  <i>//cohort name</i></span><br/><b>idnumber</b> string <span style="color:#2A33A6">  <i>//cohort idnumber</i></span><br/><b>description</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//cohort description</i></span><br/><b>descriptionformat</b> int <span style="color:#2A33A6"> <b>Default to "1"</b> <i>//description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>visible</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//cohort visible</i></span><br/>} <br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[cohorts] =&gt;
+    Array 
+        (
+        [0] =&gt;
+            Array 
+                (
+                [id] =&gt; int                
+                [categorytype] =&gt;
+                    Array 
+                        (
+                        [type] =&gt; string                        
+                        [value] =&gt; string                        
+                        )                
+                [name] =&gt; string                
+                [idnumber] =&gt; string                
+                [description] =&gt; string                
+                [descriptionformat] =&gt; int                
+                [visible] =&gt; int                
+                )
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+cohorts[0][id]= int
+cohorts[0][categorytype][type]= string
+cohorts[0][categorytype][value]= string
+cohorts[0][name]= string
+cohorts[0][idnumber]= string
+cohorts[0][description]= string
+cohorts[0][descriptionformat]= int
+cohorts[0][visible]= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

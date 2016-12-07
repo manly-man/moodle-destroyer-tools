@@ -1,0 +1,219 @@
+<div class="collapsibleregioninner" id="aera_mod_quiz_get_attempt_review_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Returns review information for the given finished attempt, can be used by users or teachers.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>attemptid</b> (Required)<br/>        attempt id<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//attempt id</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[attemptid] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+attemptid= int
+
+</pre></div></div></span><span style="font-size:80%"><b>page</b> (Default to "-1")<br/>        page number, empty for all the questions in all the pages<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6"> <b>Default to "-1"</b> <i>//page number, empty for all the questions in all the pages</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[page] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+page= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>grade</b> string <span style="color:#2A33A6">  <i>//grade for the quiz (or empty or "notyetgraded")</i></span><br/><b>attempt</b> object {<br/><b>id</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Attempt id.</i></span><br/><b>quiz</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Foreign key reference to the quiz that was attempted.</i></span><br/><b>userid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Foreign key reference to the user whose attempt this is.</i></span><br/><b>attempt</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Sequentially numbers this students attempts at this quiz.</i></span><br/><b>uniqueid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Foreign key reference to the question_usage that holds the
+                                                    details of the the question_attempts that make up this quiz
+                                                    attempt.</i></span><br/><b>layout</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//Attempt layout.</i></span><br/><b>currentpage</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Attempt current page.</i></span><br/><b>preview</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Whether is a preview attempt or not.</i></span><br/><b>state</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//The current state of the attempts. 'inprogress',
+                                                'overdue', 'finished' or 'abandoned'.</i></span><br/><b>timestart</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Time when the attempt was started.</i></span><br/><b>timefinish</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Time when the attempt was submitted.
+                                                    0 if the attempt has not been submitted yet.</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Last modified time.</i></span><br/><b>timecheckstate</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//Next time quiz cron should check attempt for
+                                                        state changes.  NULL means never check.</i></span><br/><b>sumgrades</b> double <span style="color:#2A33A6"> <b>Optional</b> <i>//Total marks for this attempt.</i></span><br/>} <br/><b>additionaldata</b> list of ( <br/>object {<br/><b>id</b> string <span style="color:#2A33A6">  <i>//id of the data</i></span><br/><b>title</b> string <span style="color:#2A33A6">  <i>//data title</i></span><br/><b>content</b> string <span style="color:#2A33A6">  <i>//data content</i></span><br/>} <br/>)<b>questions</b> list of ( <br/>object {<br/><b>slot</b> int <span style="color:#2A33A6">  <i>//slot number</i></span><br/><b>type</b> string <span style="color:#2A33A6">  <i>//question type, i.e: multichoice</i></span><br/><b>page</b> int <span style="color:#2A33A6">  <i>//page of the quiz this question appears on</i></span><br/><b>html</b> string <span style="color:#2A33A6">  <i>//the question rendered</i></span><br/><b>flagged</b> int <span style="color:#2A33A6">  <i>//whether the question is flagged or not</i></span><br/><b>number</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//question ordering number in the quiz</i></span><br/><b>state</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//the state where the question is in</i></span><br/><b>status</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//current formatted state of the question</i></span><br/><b>mark</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//the mark awarded</i></span><br/><b>maxmark</b> double <span style="color:#2A33A6"> <b>Optional</b> <i>//the maximum mark possible for this question attempt</i></span><br/>} <br/>)<b>warnings</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//list of warnings</i></span><br/>list of ( <br/><span style="color:#2A33A6">  <i>//warning</i></span><br/>object {<br/><b>item</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//item</i></span><br/><b>itemid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//item id</i></span><br/><b>warningcode</b> string <span style="color:#2A33A6">  <i>//the warning code can be used by the client app to implement specific behaviour</i></span><br/><b>message</b> string <span style="color:#2A33A6">  <i>//untranslated english message to explain the warning</i></span><br/>} <br/>)} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [grade] =&gt; string        
+        [attempt] =&gt;
+            Array 
+                (
+                [id] =&gt; int                
+                [quiz] =&gt; int                
+                [userid] =&gt; int                
+                [attempt] =&gt; int                
+                [uniqueid] =&gt; int                
+                [layout] =&gt; string                
+                [currentpage] =&gt; int                
+                [preview] =&gt; int                
+                [state] =&gt; string                
+                [timestart] =&gt; int                
+                [timefinish] =&gt; int                
+                [timemodified] =&gt; int                
+                [timecheckstate] =&gt; int                
+                [sumgrades] =&gt; double                
+                )        
+        [additionaldata] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [id] =&gt; string                        
+                        [title] =&gt; string                        
+                        [content] =&gt; string                        
+                        )
+                )        
+        [questions] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [slot] =&gt; int                        
+                        [type] =&gt; string                        
+                        [page] =&gt; int                        
+                        [html] =&gt; string                        
+                        [flagged] =&gt; int                        
+                        [number] =&gt; int                        
+                        [state] =&gt; string                        
+                        [status] =&gt; string                        
+                        [mark] =&gt; string                        
+                        [maxmark] =&gt; double                        
+                        )
+                )        
+        [warnings] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [item] =&gt; string                        
+                        [itemid] =&gt; int                        
+                        [warningcode] =&gt; string                        
+                        [message] =&gt; string                        
+                        )
+                )        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="grade"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="attempt"&gt;
+            &lt;SINGLE&gt;
+                &lt;KEY name="id"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="quiz"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="userid"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="attempt"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="uniqueid"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="layout"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="currentpage"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="preview"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="state"&gt;
+                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="timestart"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="timefinish"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="timemodified"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="timecheckstate"&gt;
+                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+                &lt;KEY name="sumgrades"&gt;
+                    &lt;VALUE&gt;double&lt;/VALUE&gt;
+                &lt;/KEY&gt;
+            &lt;/SINGLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="additionaldata"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="id"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="title"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="content"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="questions"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="slot"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="type"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="page"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="html"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="flagged"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="number"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="state"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="status"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="mark"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="maxmark"&gt;
+                        &lt;VALUE&gt;double&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="warnings"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="item"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="itemid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="warningcode"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="message"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

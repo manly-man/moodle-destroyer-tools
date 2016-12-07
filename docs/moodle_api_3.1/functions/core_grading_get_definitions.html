@@ -1,0 +1,325 @@
+<div class="collapsibleregioninner" id="aera_core_grading_get_definitions_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Get grading definitions</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>cmids</b> (Required)<br/>        1 or more course module ids<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+<span style="color:#2A33A6">  <i>//1 or more course module ids</i></span><br/>list of ( <br/>int <span style="color:#2A33A6">  <i>//course module id</i></span><br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[cmids] =&gt;
+    Array 
+        (
+        [0] =&gt; int
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+cmids[0]= int
+
+</pre></div></div></span><span style="font-size:80%"><b>areaname</b> (Required)<br/>        area name<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+string <span style="color:#2A33A6">  <i>//area name</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[areaname] =&gt; string
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+areaname= string
+
+</pre></div></div></span><span style="font-size:80%"><b>activeonly</b> (Default to "0")<br/>        Only the active method<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//Only the active method</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[activeonly] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+activeonly= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>areas</b> <span style="color:#2A33A6">  <i>//list of grading areas</i></span><br/>list of ( <br/>object {<br/><b>cmid</b> int <span style="color:#2A33A6">  <i>//course module id</i></span><br/><b>contextid</b> int <span style="color:#2A33A6">  <i>//context id</i></span><br/><b>component</b> string <span style="color:#2A33A6">  <i>//component name</i></span><br/><b>areaname</b> string <span style="color:#2A33A6">  <i>//area name</i></span><br/><b>activemethod</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//active method</i></span><br/><b>definitions</b> <span style="color:#2A33A6">  <i>//definitions</i></span><br/>list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//definition id</i></span><br/><b>method</b> string <span style="color:#2A33A6">  <i>//method</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//name</i></span><br/><b>description</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//description</i></span><br/><b>descriptionformat</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>status</b> int <span style="color:#2A33A6">  <i>//status</i></span><br/><b>copiedfromid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//copied from id</i></span><br/><b>timecreated</b> int <span style="color:#2A33A6">  <i>//creation time</i></span><br/><b>usercreated</b> int <span style="color:#2A33A6">  <i>//user who created definition</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6">  <i>//last modified time</i></span><br/><b>usermodified</b> int <span style="color:#2A33A6">  <i>//user who modified definition</i></span><br/><b>timecopied</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//time copied</i></span><br/><b>guide</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//items</i></span><br/>object {<br/><b>guide_criteria</b> list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//criterion id</i></span><br/><b>sortorder</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//sortorder</i></span><br/><b>description</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//description</i></span><br/><b>descriptionformat</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>shortname</b> string <span style="color:#2A33A6">  <i>//description</i></span><br/><b>descriptionmarkers</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//markers description</i></span><br/><b>descriptionmarkersformat</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//descriptionmarkers format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>maxscore</b> double <span style="color:#2A33A6">  <i>//maximum score</i></span><br/>} <br/>)<b>guide_comments</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//comments</i></span><br/>list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//criterion id</i></span><br/><b>sortorder</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//sortorder</i></span><br/><b>description</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//description</i></span><br/><b>descriptionformat</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/>} <br/>)} <br/><b>rubric</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//items</i></span><br/>object {<br/><b>rubric_criteria</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//definition details</i></span><br/>list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//criterion id</i></span><br/><b>sortorder</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//sortorder</i></span><br/><b>description</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//description</i></span><br/><b>descriptionformat</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>levels</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//levels</i></span><br/>list of ( <br/>object {<br/><b>id</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//level id</i></span><br/><b>score</b> double <span style="color:#2A33A6"> <b>Optional</b> <i>//score</i></span><br/><b>definition</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//definition</i></span><br/><b>definitionformat</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//definition format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/>} <br/>)} <br/>)} <br/>} <br/>)} <br/>)<b>warnings</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//list of warnings</i></span><br/>list of ( <br/><span style="color:#2A33A6">  <i>//warning</i></span><br/>object {<br/><b>item</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//item</i></span><br/><b>itemid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//item id</i></span><br/><b>warningcode</b> string <span style="color:#2A33A6">  <i>//the warning code can be used by the client app to implement specific behaviour</i></span><br/><b>message</b> string <span style="color:#2A33A6">  <i>//untranslated english message to explain the warning</i></span><br/>} <br/>)} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [areas] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [cmid] =&gt; int                        
+                        [contextid] =&gt; int                        
+                        [component] =&gt; string                        
+                        [areaname] =&gt; string                        
+                        [activemethod] =&gt; string                        
+                        [definitions] =&gt;
+                            Array 
+                                (
+                                [0] =&gt;
+                                    Array 
+                                        (
+                                        [id] =&gt; int                                        
+                                        [method] =&gt; string                                        
+                                        [name] =&gt; string                                        
+                                        [description] =&gt; string                                        
+                                        [descriptionformat] =&gt; int                                        
+                                        [status] =&gt; int                                        
+                                        [copiedfromid] =&gt; int                                        
+                                        [timecreated] =&gt; int                                        
+                                        [usercreated] =&gt; int                                        
+                                        [timemodified] =&gt; int                                        
+                                        [usermodified] =&gt; int                                        
+                                        [timecopied] =&gt; int                                        
+                                        [guide] =&gt;
+                                            Array 
+                                                (
+                                                [guide_criteria] =&gt;
+                                                    Array 
+                                                        (
+                                                        [0] =&gt;
+                                                            Array 
+                                                                (
+                                                                [id] =&gt; int                                                                
+                                                                [sortorder] =&gt; int                                                                
+                                                                [description] =&gt; string                                                                
+                                                                [descriptionformat] =&gt; int                                                                
+                                                                [shortname] =&gt; string                                                                
+                                                                [descriptionmarkers] =&gt; string                                                                
+                                                                [descriptionmarkersformat] =&gt; int                                                                
+                                                                [maxscore] =&gt; double                                                                
+                                                                )
+                                                        )                                                
+                                                [guide_comments] =&gt;
+                                                    Array 
+                                                        (
+                                                        [0] =&gt;
+                                                            Array 
+                                                                (
+                                                                [id] =&gt; int                                                                
+                                                                [sortorder] =&gt; int                                                                
+                                                                [description] =&gt; string                                                                
+                                                                [descriptionformat] =&gt; int                                                                
+                                                                )
+                                                        )                                                
+                                                )                                        
+                                        [rubric] =&gt;
+                                            Array 
+                                                (
+                                                [rubric_criteria] =&gt;
+                                                    Array 
+                                                        (
+                                                        [0] =&gt;
+                                                            Array 
+                                                                (
+                                                                [id] =&gt; int                                                                
+                                                                [sortorder] =&gt; int                                                                
+                                                                [description] =&gt; string                                                                
+                                                                [descriptionformat] =&gt; int                                                                
+                                                                [levels] =&gt;
+                                                                    Array 
+                                                                        (
+                                                                        [0] =&gt;
+                                                                            Array 
+                                                                                (
+                                                                                [id] =&gt; int                                                                                
+                                                                                [score] =&gt; double                                                                                
+                                                                                [definition] =&gt; string                                                                                
+                                                                                [definitionformat] =&gt; int                                                                                
+                                                                                )
+                                                                        )                                                                
+                                                                )
+                                                        )                                                
+                                                )                                        
+                                        )
+                                )                        
+                        )
+                )        
+        [warnings] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [item] =&gt; string                        
+                        [itemid] =&gt; int                        
+                        [warningcode] =&gt; string                        
+                        [message] =&gt; string                        
+                        )
+                )        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="areas"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="cmid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="contextid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="component"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="areaname"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="activemethod"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="definitions"&gt;
+                        &lt;MULTIPLE&gt;
+                            &lt;SINGLE&gt;
+                                &lt;KEY name="id"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="method"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="name"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="description"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="descriptionformat"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="status"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="copiedfromid"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="timecreated"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="usercreated"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="timemodified"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="usermodified"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="timecopied"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="guide"&gt;
+                                    &lt;SINGLE&gt;
+                                        &lt;KEY name="guide_criteria"&gt;
+                                            &lt;MULTIPLE&gt;
+                                                &lt;SINGLE&gt;
+                                                    &lt;KEY name="id"&gt;
+                                                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                                    &lt;/KEY&gt;
+                                                    &lt;KEY name="sortorder"&gt;
+                                                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                                    &lt;/KEY&gt;
+                                                    &lt;KEY name="description"&gt;
+                                                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                                    &lt;/KEY&gt;
+                                                    &lt;KEY name="descriptionformat"&gt;
+                                                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                                    &lt;/KEY&gt;
+                                                    &lt;KEY name="shortname"&gt;
+                                                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                                    &lt;/KEY&gt;
+                                                    &lt;KEY name="descriptionmarkers"&gt;
+                                                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                                    &lt;/KEY&gt;
+                                                    &lt;KEY name="descriptionmarkersformat"&gt;
+                                                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                                    &lt;/KEY&gt;
+                                                    &lt;KEY name="maxscore"&gt;
+                                                        &lt;VALUE&gt;double&lt;/VALUE&gt;
+                                                    &lt;/KEY&gt;
+                                                &lt;/SINGLE&gt;
+                                            &lt;/MULTIPLE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="guide_comments"&gt;
+                                            &lt;MULTIPLE&gt;
+                                                &lt;SINGLE&gt;
+                                                    &lt;KEY name="id"&gt;
+                                                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                                    &lt;/KEY&gt;
+                                                    &lt;KEY name="sortorder"&gt;
+                                                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                                    &lt;/KEY&gt;
+                                                    &lt;KEY name="description"&gt;
+                                                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                                    &lt;/KEY&gt;
+                                                    &lt;KEY name="descriptionformat"&gt;
+                                                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                                    &lt;/KEY&gt;
+                                                &lt;/SINGLE&gt;
+                                            &lt;/MULTIPLE&gt;
+                                        &lt;/KEY&gt;
+                                    &lt;/SINGLE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="rubric"&gt;
+                                    &lt;SINGLE&gt;
+                                        &lt;KEY name="rubric_criteria"&gt;
+                                            &lt;MULTIPLE&gt;
+                                                &lt;SINGLE&gt;
+                                                    &lt;KEY name="id"&gt;
+                                                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                                    &lt;/KEY&gt;
+                                                    &lt;KEY name="sortorder"&gt;
+                                                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                                    &lt;/KEY&gt;
+                                                    &lt;KEY name="description"&gt;
+                                                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                                    &lt;/KEY&gt;
+                                                    &lt;KEY name="descriptionformat"&gt;
+                                                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                                    &lt;/KEY&gt;
+                                                    &lt;KEY name="levels"&gt;
+                                                        &lt;MULTIPLE&gt;
+                                                            &lt;SINGLE&gt;
+                                                                &lt;KEY name="id"&gt;
+                                                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                                                &lt;/KEY&gt;
+                                                                &lt;KEY name="score"&gt;
+                                                                    &lt;VALUE&gt;double&lt;/VALUE&gt;
+                                                                &lt;/KEY&gt;
+                                                                &lt;KEY name="definition"&gt;
+                                                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                                                &lt;/KEY&gt;
+                                                                &lt;KEY name="definitionformat"&gt;
+                                                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                                                &lt;/KEY&gt;
+                                                            &lt;/SINGLE&gt;
+                                                        &lt;/MULTIPLE&gt;
+                                                    &lt;/KEY&gt;
+                                                &lt;/SINGLE&gt;
+                                            &lt;/MULTIPLE&gt;
+                                        &lt;/KEY&gt;
+                                    &lt;/SINGLE&gt;
+                                &lt;/KEY&gt;
+                            &lt;/SINGLE&gt;
+                        &lt;/MULTIPLE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="warnings"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="item"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="itemid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="warningcode"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="message"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

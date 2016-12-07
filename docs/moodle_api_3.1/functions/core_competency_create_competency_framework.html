@@ -1,0 +1,127 @@
+<div class="collapsibleregioninner" id="aera_core_competency_create_competency_framework_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Creates new competency frameworks.</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>competencyframework</b> (Required)<br/>        <br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>shortname</b> string <span style="color:#2A33A6">  <i>//shortname</i></span><br/><b>idnumber</b> string <span style="color:#2A33A6">  <i>//idnumber</i></span><br/><b>description</b> string <span style="color:#2A33A6"> <b>Default to ""</b> <i>//description</i></span><br/><b>descriptionformat</b> int <span style="color:#2A33A6"> <b>Default to "1"</b> <i>//description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>visible</b> int <span style="color:#2A33A6"> <b>Default to "1"</b> <i>//visible</i></span><br/><b>scaleid</b> int <span style="color:#2A33A6">  <i>//scaleid</i></span><br/><b>scaleconfiguration</b> string <span style="color:#2A33A6">  <i>//scaleconfiguration</i></span><br/><b>contextid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//The context id</i></span><br/><b>contextlevel</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//The context level</i></span><br/><b>instanceid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//The Instance id</i></span><br/><b>taxonomies</b> string <span style="color:#2A33A6"> <b>Default to ""</b> <i>//taxonomies</i></span><br/><b>timecreated</b> int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//timecreated</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//timemodified</i></span><br/><b>usermodified</b> int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//usermodified</i></span><br/>} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[competencyframework] =&gt;
+    Array 
+        (
+        [shortname] =&gt; string        
+        [idnumber] =&gt; string        
+        [description] =&gt; string        
+        [descriptionformat] =&gt; int        
+        [visible] =&gt; int        
+        [scaleid] =&gt; int        
+        [scaleconfiguration] =&gt; string        
+        [contextid] =&gt; int        
+        [contextlevel] =&gt; string        
+        [instanceid] =&gt; int        
+        [taxonomies] =&gt; string        
+        [timecreated] =&gt; int        
+        [timemodified] =&gt; int        
+        [usermodified] =&gt; int        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+competencyframework[shortname]= string
+competencyframework[idnumber]= string
+competencyframework[description]= string
+competencyframework[descriptionformat]= int
+competencyframework[visible]= int
+competencyframework[scaleid]= int
+competencyframework[scaleconfiguration]= string
+competencyframework[contextid]= int
+competencyframework[contextlevel]= string
+competencyframework[instanceid]= int
+competencyframework[taxonomies]= string
+competencyframework[timecreated]= int
+competencyframework[timemodified]= int
+competencyframework[usermodified]= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>shortname</b> string <span style="color:#2A33A6">  <i>//shortname</i></span><br/><b>idnumber</b> string <span style="color:#2A33A6">  <i>//idnumber</i></span><br/><b>description</b> string <span style="color:#2A33A6">  <i>//description</i></span><br/><b>descriptionformat</b> int <span style="color:#2A33A6"> <b>Default to "1"</b> <i>//description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>visible</b> int <span style="color:#2A33A6">  <i>//visible</i></span><br/><b>scaleid</b> int <span style="color:#2A33A6">  <i>//scaleid</i></span><br/><b>scaleconfiguration</b> string <span style="color:#2A33A6">  <i>//scaleconfiguration</i></span><br/><b>contextid</b> int <span style="color:#2A33A6">  <i>//contextid</i></span><br/><b>taxonomies</b> string <span style="color:#2A33A6">  <i>//taxonomies</i></span><br/><b>id</b> int <span style="color:#2A33A6">  <i>//id</i></span><br/><b>timecreated</b> int <span style="color:#2A33A6">  <i>//timecreated</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6">  <i>//timemodified</i></span><br/><b>usermodified</b> int <span style="color:#2A33A6">  <i>//usermodified</i></span><br/><b>canmanage</b> int <span style="color:#2A33A6">  <i>//canmanage</i></span><br/><b>competenciescount</b> int <span style="color:#2A33A6">  <i>//competenciescount</i></span><br/><b>contextname</b> string <span style="color:#2A33A6">  <i>//contextname</i></span><br/><b>contextnamenoprefix</b> string <span style="color:#2A33A6">  <i>//contextnamenoprefix</i></span><br/>} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [shortname] =&gt; string        
+        [idnumber] =&gt; string        
+        [description] =&gt; string        
+        [descriptionformat] =&gt; int        
+        [visible] =&gt; int        
+        [scaleid] =&gt; int        
+        [scaleconfiguration] =&gt; string        
+        [contextid] =&gt; int        
+        [taxonomies] =&gt; string        
+        [id] =&gt; int        
+        [timecreated] =&gt; int        
+        [timemodified] =&gt; int        
+        [usermodified] =&gt; int        
+        [canmanage] =&gt; int        
+        [competenciescount] =&gt; int        
+        [contextname] =&gt; string        
+        [contextnamenoprefix] =&gt; string        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="shortname"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="idnumber"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="description"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="descriptionformat"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="visible"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="scaleid"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="scaleconfiguration"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="contextid"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="taxonomies"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="id"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="timecreated"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="timemodified"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="usermodified"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="canmanage"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="competenciescount"&gt;
+            &lt;VALUE&gt;int&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="contextname"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="contextnamenoprefix"&gt;
+            &lt;VALUE&gt;string&lt;/VALUE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>Yes<br/><br/></div>

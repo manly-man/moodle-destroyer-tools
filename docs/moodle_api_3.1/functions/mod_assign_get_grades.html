@@ -1,0 +1,138 @@
+<div class="collapsibleregioninner" id="aera_mod_assign_get_grades_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Returns grades from the assignment</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>assignmentids</b> (Required)<br/>        1 or more assignment ids<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+<span style="color:#2A33A6">  <i>//1 or more assignment ids</i></span><br/>list of ( <br/>int <span style="color:#2A33A6">  <i>//assignment id</i></span><br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[assignmentids] =&gt;
+    Array 
+        (
+        [0] =&gt; int
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+assignmentids[0]= int
+
+</pre></div></div></span><span style="font-size:80%"><b>since</b> (Default to "0")<br/>        timestamp, only return records where timemodified &gt;= since<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//timestamp, only return records where timemodified &gt;= since</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[since] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+since= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>assignments</b> <span style="color:#2A33A6">  <i>//list of assignment grade information</i></span><br/>list of ( <br/>object {<br/><b>assignmentid</b> int <span style="color:#2A33A6">  <i>//assignment id</i></span><br/><b>grades</b> list of ( <br/><span style="color:#2A33A6">  <i>//grade information</i></span><br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//grade id</i></span><br/><b>assignment</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//assignment id</i></span><br/><b>userid</b> int <span style="color:#2A33A6">  <i>//student id</i></span><br/><b>attemptnumber</b> int <span style="color:#2A33A6">  <i>//attempt number</i></span><br/><b>timecreated</b> int <span style="color:#2A33A6">  <i>//grade creation time</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6">  <i>//grade last modified time</i></span><br/><b>grader</b> int <span style="color:#2A33A6">  <i>//grader</i></span><br/><b>grade</b> string <span style="color:#2A33A6">  <i>//grade</i></span><br/><b>gradefordisplay</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//grade rendered into a format suitable for display</i></span><br/>} <br/>)} <br/>)<b>warnings</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//list of warnings</i></span><br/>list of ( <br/><span style="color:#2A33A6">  <i>//warning</i></span><br/>object {<br/><b>item</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//item is always 'assignment'</i></span><br/><b>itemid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//when errorcode is 3 then itemid is an assignment id. When errorcode is 1, itemid is a course module id</i></span><br/><b>warningcode</b> string <span style="color:#2A33A6">  <i>//errorcode can be 3 (no grades found) or 1 (no permission to get grades)</i></span><br/><b>message</b> string <span style="color:#2A33A6">  <i>//untranslated english message to explain the warning</i></span><br/>} <br/>)} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [assignments] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [assignmentid] =&gt; int                        
+                        [grades] =&gt;
+                            Array 
+                                (
+                                [0] =&gt;
+                                    Array 
+                                        (
+                                        [id] =&gt; int                                        
+                                        [assignment] =&gt; int                                        
+                                        [userid] =&gt; int                                        
+                                        [attemptnumber] =&gt; int                                        
+                                        [timecreated] =&gt; int                                        
+                                        [timemodified] =&gt; int                                        
+                                        [grader] =&gt; int                                        
+                                        [grade] =&gt; string                                        
+                                        [gradefordisplay] =&gt; string                                        
+                                        )
+                                )                        
+                        )
+                )        
+        [warnings] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [item] =&gt; string                        
+                        [itemid] =&gt; int                        
+                        [warningcode] =&gt; string                        
+                        [message] =&gt; string                        
+                        )
+                )        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="assignments"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="assignmentid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="grades"&gt;
+                        &lt;MULTIPLE&gt;
+                            &lt;SINGLE&gt;
+                                &lt;KEY name="id"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="assignment"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="userid"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="attemptnumber"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="timecreated"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="timemodified"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="grader"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="grade"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="gradefordisplay"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                            &lt;/SINGLE&gt;
+                        &lt;/MULTIPLE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="warnings"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="item"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="itemid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="warningcode"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="message"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

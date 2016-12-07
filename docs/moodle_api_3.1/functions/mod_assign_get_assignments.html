@@ -1,0 +1,313 @@
+<div class="collapsibleregioninner" id="aera_mod_assign_get_assignments_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Returns the courses and assignments for the users capability</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>courseids</b> (Default to "Array
+(
+)
+")<br/>        0 or more course ids<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+<span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//0 or more course ids</i></span><br/>list of ( <br/>int <span style="color:#2A33A6">  <i>//course id, empty for retrieving all the courses where the user is enroled in</i></span><br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[courseids] =&gt;
+    Array 
+        (
+        [0] =&gt; int
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+courseids[0]= int
+
+</pre></div></div></span><span style="font-size:80%"><b>capabilities</b> (Default to "Array
+(
+)
+")<br/>        list of capabilities used to filter courses<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+<span style="color:#2A33A6"> <b>Default to "Array
+(
+)
+"</b> <i>//list of capabilities used to filter courses</i></span><br/>list of ( <br/>string <span style="color:#2A33A6">  <i>//capability</i></span><br/>)
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[capabilities] =&gt;
+    Array 
+        (
+        [0] =&gt; string
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+capabilities[0]= string
+
+</pre></div></div></span><span style="font-size:80%"><b>includenotenrolledcourses</b> (Default to "")<br/>        whether to return courses that the user can see
+                                                                    even if is not enroled in. This requires the parameter courseids
+                                                                    to not be empty.<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6"> <b>Default to ""</b> <i>//whether to return courses that the user can see
+                                                                    even if is not enroled in. This requires the parameter courseids
+                                                                    to not be empty.</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[includenotenrolledcourses] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+includenotenrolledcourses= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>courses</b> <span style="color:#2A33A6">  <i>//list of courses</i></span><br/>list of ( <br/><span style="color:#2A33A6">  <i>//course information object</i></span><br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//course id</i></span><br/><b>fullname</b> string <span style="color:#2A33A6">  <i>//course full name</i></span><br/><b>shortname</b> string <span style="color:#2A33A6">  <i>//course short name</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6">  <i>//last time modified</i></span><br/><b>assignments</b> <span style="color:#2A33A6">  <i>//assignment info</i></span><br/>list of ( <br/><span style="color:#2A33A6">  <i>//assignment information object</i></span><br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//assignment id</i></span><br/><b>cmid</b> int <span style="color:#2A33A6">  <i>//course module id</i></span><br/><b>course</b> int <span style="color:#2A33A6">  <i>//course id</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//assignment name</i></span><br/><b>nosubmissions</b> int <span style="color:#2A33A6">  <i>//no submissions</i></span><br/><b>submissiondrafts</b> int <span style="color:#2A33A6">  <i>//submissions drafts</i></span><br/><b>sendnotifications</b> int <span style="color:#2A33A6">  <i>//send notifications</i></span><br/><b>sendlatenotifications</b> int <span style="color:#2A33A6">  <i>//send notifications</i></span><br/><b>sendstudentnotifications</b> int <span style="color:#2A33A6">  <i>//send student notifications (default)</i></span><br/><b>duedate</b> int <span style="color:#2A33A6">  <i>//assignment due date</i></span><br/><b>allowsubmissionsfromdate</b> int <span style="color:#2A33A6">  <i>//allow submissions from date</i></span><br/><b>grade</b> int <span style="color:#2A33A6">  <i>//grade type</i></span><br/><b>timemodified</b> int <span style="color:#2A33A6">  <i>//last time assignment was modified</i></span><br/><b>completionsubmit</b> int <span style="color:#2A33A6">  <i>//if enabled, set activity as complete following submission</i></span><br/><b>cutoffdate</b> int <span style="color:#2A33A6">  <i>//date after which submission is not accepted without an extension</i></span><br/><b>teamsubmission</b> int <span style="color:#2A33A6">  <i>//if enabled, students submit as a team</i></span><br/><b>requireallteammemberssubmit</b> int <span style="color:#2A33A6">  <i>//if enabled, all team members must submit</i></span><br/><b>teamsubmissiongroupingid</b> int <span style="color:#2A33A6">  <i>//the grouping id for the team submission groups</i></span><br/><b>blindmarking</b> int <span style="color:#2A33A6">  <i>//if enabled, hide identities until reveal identities actioned</i></span><br/><b>revealidentities</b> int <span style="color:#2A33A6">  <i>//show identities for a blind marking assignment</i></span><br/><b>attemptreopenmethod</b> string <span style="color:#2A33A6">  <i>//method used to control opening new attempts</i></span><br/><b>maxattempts</b> int <span style="color:#2A33A6">  <i>//maximum number of attempts allowed</i></span><br/><b>markingworkflow</b> int <span style="color:#2A33A6">  <i>//enable marking workflow</i></span><br/><b>markingallocation</b> int <span style="color:#2A33A6">  <i>//enable marking allocation</i></span><br/><b>requiresubmissionstatement</b> int <span style="color:#2A33A6">  <i>//student must accept submission statement</i></span><br/><b>configs</b> <span style="color:#2A33A6">  <i>//configuration settings</i></span><br/>list of ( <br/><span style="color:#2A33A6">  <i>//assignment configuration object</i></span><br/>object {<br/><b>id</b> int <span style="color:#2A33A6">  <i>//assign_plugin_config id</i></span><br/><b>assignment</b> int <span style="color:#2A33A6">  <i>//assignment id</i></span><br/><b>plugin</b> string <span style="color:#2A33A6">  <i>//plugin</i></span><br/><b>subtype</b> string <span style="color:#2A33A6">  <i>//subtype</i></span><br/><b>name</b> string <span style="color:#2A33A6">  <i>//name</i></span><br/><b>value</b> string <span style="color:#2A33A6">  <i>//value</i></span><br/>} <br/>)<b>intro</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//assignment intro, not allways returned because it deppends on the activity configuration</i></span><br/><b>introformat</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</i></span><br/><b>introattachments</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//intro attachments files</i></span><br/>list of ( <br/>object {<br/><b>filename</b> string <span style="color:#2A33A6">  <i>//file name</i></span><br/><b>mimetype</b> string <span style="color:#2A33A6">  <i>//mime type</i></span><br/><b>fileurl</b> string <span style="color:#2A33A6">  <i>//file download url</i></span><br/>} <br/>)} <br/>)} <br/>)<b>warnings</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//list of warnings</i></span><br/>list of ( <br/><span style="color:#2A33A6">  <i>//warning</i></span><br/>object {<br/><b>item</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//item can be 'course' (errorcode 1 or 2) or 'module' (errorcode 1)</i></span><br/><b>itemid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//When item is a course then itemid is a course id. When the item is a module then itemid is a module id</i></span><br/><b>warningcode</b> string <span style="color:#2A33A6">  <i>//errorcode can be 1 (no access rights) or 2 (not enrolled or no permissions)</i></span><br/><b>message</b> string <span style="color:#2A33A6">  <i>//untranslated english message to explain the warning</i></span><br/>} <br/>)} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [courses] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [id] =&gt; int                        
+                        [fullname] =&gt; string                        
+                        [shortname] =&gt; string                        
+                        [timemodified] =&gt; int                        
+                        [assignments] =&gt;
+                            Array 
+                                (
+                                [0] =&gt;
+                                    Array 
+                                        (
+                                        [id] =&gt; int                                        
+                                        [cmid] =&gt; int                                        
+                                        [course] =&gt; int                                        
+                                        [name] =&gt; string                                        
+                                        [nosubmissions] =&gt; int                                        
+                                        [submissiondrafts] =&gt; int                                        
+                                        [sendnotifications] =&gt; int                                        
+                                        [sendlatenotifications] =&gt; int                                        
+                                        [sendstudentnotifications] =&gt; int                                        
+                                        [duedate] =&gt; int                                        
+                                        [allowsubmissionsfromdate] =&gt; int                                        
+                                        [grade] =&gt; int                                        
+                                        [timemodified] =&gt; int                                        
+                                        [completionsubmit] =&gt; int                                        
+                                        [cutoffdate] =&gt; int                                        
+                                        [teamsubmission] =&gt; int                                        
+                                        [requireallteammemberssubmit] =&gt; int                                        
+                                        [teamsubmissiongroupingid] =&gt; int                                        
+                                        [blindmarking] =&gt; int                                        
+                                        [revealidentities] =&gt; int                                        
+                                        [attemptreopenmethod] =&gt; string                                        
+                                        [maxattempts] =&gt; int                                        
+                                        [markingworkflow] =&gt; int                                        
+                                        [markingallocation] =&gt; int                                        
+                                        [requiresubmissionstatement] =&gt; int                                        
+                                        [configs] =&gt;
+                                            Array 
+                                                (
+                                                [0] =&gt;
+                                                    Array 
+                                                        (
+                                                        [id] =&gt; int                                                        
+                                                        [assignment] =&gt; int                                                        
+                                                        [plugin] =&gt; string                                                        
+                                                        [subtype] =&gt; string                                                        
+                                                        [name] =&gt; string                                                        
+                                                        [value] =&gt; string                                                        
+                                                        )
+                                                )                                        
+                                        [intro] =&gt; string                                        
+                                        [introformat] =&gt; int                                        
+                                        [introattachments] =&gt;
+                                            Array 
+                                                (
+                                                [0] =&gt;
+                                                    Array 
+                                                        (
+                                                        [filename] =&gt; string                                                        
+                                                        [mimetype] =&gt; string                                                        
+                                                        [fileurl] =&gt; string                                                        
+                                                        )
+                                                )                                        
+                                        )
+                                )                        
+                        )
+                )        
+        [warnings] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [item] =&gt; string                        
+                        [itemid] =&gt; int                        
+                        [warningcode] =&gt; string                        
+                        [message] =&gt; string                        
+                        )
+                )        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="courses"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="id"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="fullname"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="shortname"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="timemodified"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="assignments"&gt;
+                        &lt;MULTIPLE&gt;
+                            &lt;SINGLE&gt;
+                                &lt;KEY name="id"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="cmid"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="course"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="name"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="nosubmissions"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="submissiondrafts"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="sendnotifications"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="sendlatenotifications"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="sendstudentnotifications"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="duedate"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="allowsubmissionsfromdate"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="grade"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="timemodified"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="completionsubmit"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="cutoffdate"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="teamsubmission"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="requireallteammemberssubmit"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="teamsubmissiongroupingid"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="blindmarking"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="revealidentities"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="attemptreopenmethod"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="maxattempts"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="markingworkflow"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="markingallocation"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="requiresubmissionstatement"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="configs"&gt;
+                                    &lt;MULTIPLE&gt;
+                                        &lt;SINGLE&gt;
+                                            &lt;KEY name="id"&gt;
+                                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                            &lt;/KEY&gt;
+                                            &lt;KEY name="assignment"&gt;
+                                                &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                            &lt;/KEY&gt;
+                                            &lt;KEY name="plugin"&gt;
+                                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                            &lt;/KEY&gt;
+                                            &lt;KEY name="subtype"&gt;
+                                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                            &lt;/KEY&gt;
+                                            &lt;KEY name="name"&gt;
+                                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                            &lt;/KEY&gt;
+                                            &lt;KEY name="value"&gt;
+                                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                            &lt;/KEY&gt;
+                                        &lt;/SINGLE&gt;
+                                    &lt;/MULTIPLE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="intro"&gt;
+                                    &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="introformat"&gt;
+                                    &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="introattachments"&gt;
+                                    &lt;MULTIPLE&gt;
+                                        &lt;SINGLE&gt;
+                                            &lt;KEY name="filename"&gt;
+                                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                            &lt;/KEY&gt;
+                                            &lt;KEY name="mimetype"&gt;
+                                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                            &lt;/KEY&gt;
+                                            &lt;KEY name="fileurl"&gt;
+                                                &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                            &lt;/KEY&gt;
+                                        &lt;/SINGLE&gt;
+                                    &lt;/MULTIPLE&gt;
+                                &lt;/KEY&gt;
+                            &lt;/SINGLE&gt;
+                        &lt;/MULTIPLE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="warnings"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="item"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="itemid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="warningcode"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="message"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>

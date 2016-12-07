@@ -1,0 +1,334 @@
+<div class="collapsibleregioninner" id="aera_gradereport_user_get_grades_table_inner"><br/><div style="border:solid 1px #DEDEDE;background:#E2E0E0;
+                        color:#222222;padding:4px;">Get the user/s report grades table for a course</div><br/><br/><span style="color:#EA33A6">Arguments</span><br/><span style="font-size:80%"><b>courseid</b> (Required)<br/>        Course Id<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6">  <i>//Course Id</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[courseid] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+courseid= int
+
+</pre></div></div></span><span style="font-size:80%"><b>userid</b> (Default to "0")<br/>        Return grades only for this user (optional)<br/><br/><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+int <span style="color:#2A33A6"> <b>Default to "0"</b> <i>//Return grades only for this user (optional)</i></span><br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+[userid] =&gt; int
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST (POST parameters)</b><br/>
+userid= int
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Response</span><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FFF1BC;color:#222222;padding:4px;"><pre><b>General structure</b><br/>
+object {<br/><b>tables</b> list of ( <br/>object {<br/><b>courseid</b> int <span style="color:#2A33A6">  <i>//course id</i></span><br/><b>userid</b> int <span style="color:#2A33A6">  <i>//user id</i></span><br/><b>userfullname</b> string <span style="color:#2A33A6">  <i>//user fullname</i></span><br/><b>maxdepth</b> int <span style="color:#2A33A6">  <i>//table max depth (needed for printing it)</i></span><br/><b>tabledata</b> list of ( <br/><span style="color:#2A33A6">  <i>//table</i></span><br/>object {<br/><b>itemname</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//The item returned data</i></span><br/>object {<br/><b>class</b> string <span style="color:#2A33A6">  <i>//class</i></span><br/><b>colspan</b> int <span style="color:#2A33A6">  <i>//col span</i></span><br/><b>content</b> string <span style="color:#2A33A6">  <i>//cell content</i></span><br/><b>celltype</b> string <span style="color:#2A33A6">  <i>//cell type</i></span><br/><b>id</b> string <span style="color:#2A33A6">  <i>//id</i></span><br/>} <br/><b>leader</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//The item returned data</i></span><br/>object {<br/><b>class</b> string <span style="color:#2A33A6">  <i>//class</i></span><br/><b>rowspan</b> int <span style="color:#2A33A6">  <i>//row span</i></span><br/>} <br/><b>weight</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//weight column</i></span><br/>object {<br/><b>class</b> string <span style="color:#2A33A6">  <i>//class</i></span><br/><b>content</b> string <span style="color:#2A33A6">  <i>//cell content</i></span><br/><b>headers</b> string <span style="color:#2A33A6">  <i>//headers</i></span><br/>} <br/><b>grade</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//grade column</i></span><br/>object {<br/><b>class</b> string <span style="color:#2A33A6">  <i>//class</i></span><br/><b>content</b> string <span style="color:#2A33A6">  <i>//cell content</i></span><br/><b>headers</b> string <span style="color:#2A33A6">  <i>//headers</i></span><br/>} <br/><b>range</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//range column</i></span><br/>object {<br/><b>class</b> string <span style="color:#2A33A6">  <i>//class</i></span><br/><b>content</b> string <span style="color:#2A33A6">  <i>//cell content</i></span><br/><b>headers</b> string <span style="color:#2A33A6">  <i>//headers</i></span><br/>} <br/><b>percentage</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//percentage column</i></span><br/>object {<br/><b>class</b> string <span style="color:#2A33A6">  <i>//class</i></span><br/><b>content</b> string <span style="color:#2A33A6">  <i>//cell content</i></span><br/><b>headers</b> string <span style="color:#2A33A6">  <i>//headers</i></span><br/>} <br/><b>lettergrade</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//lettergrade column</i></span><br/>object {<br/><b>class</b> string <span style="color:#2A33A6">  <i>//class</i></span><br/><b>content</b> string <span style="color:#2A33A6">  <i>//cell content</i></span><br/><b>headers</b> string <span style="color:#2A33A6">  <i>//headers</i></span><br/>} <br/><b>rank</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//rank column</i></span><br/>object {<br/><b>class</b> string <span style="color:#2A33A6">  <i>//class</i></span><br/><b>content</b> string <span style="color:#2A33A6">  <i>//cell content</i></span><br/><b>headers</b> string <span style="color:#2A33A6">  <i>//headers</i></span><br/>} <br/><b>average</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//average column</i></span><br/>object {<br/><b>class</b> string <span style="color:#2A33A6">  <i>//class</i></span><br/><b>content</b> string <span style="color:#2A33A6">  <i>//cell content</i></span><br/><b>headers</b> string <span style="color:#2A33A6">  <i>//headers</i></span><br/>} <br/><b>feedback</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//feedback column</i></span><br/>object {<br/><b>class</b> string <span style="color:#2A33A6">  <i>//class</i></span><br/><b>content</b> string <span style="color:#2A33A6">  <i>//cell content</i></span><br/><b>headers</b> string <span style="color:#2A33A6">  <i>//headers</i></span><br/>} <br/><b>contributiontocoursetotal</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//contributiontocoursetotal column</i></span><br/>object {<br/><b>class</b> string <span style="color:#2A33A6">  <i>//class</i></span><br/><b>content</b> string <span style="color:#2A33A6">  <i>//cell content</i></span><br/><b>headers</b> string <span style="color:#2A33A6">  <i>//headers</i></span><br/>} <br/>} <br/>)} <br/>)<b>warnings</b> <span style="color:#2A33A6"> <b>Optional</b> <i>//list of warnings</i></span><br/>list of ( <br/><span style="color:#2A33A6">  <i>//warning</i></span><br/>object {<br/><b>item</b> string <span style="color:#2A33A6"> <b>Optional</b> <i>//item</i></span><br/><b>itemid</b> int <span style="color:#2A33A6"> <b>Optional</b> <i>//item id</i></span><br/><b>warningcode</b> string <span style="color:#2A33A6">  <i>//the warning code can be used by the client app to implement specific behaviour</i></span><br/><b>message</b> string <span style="color:#2A33A6">  <i>//untranslated english message to explain the warning</i></span><br/>} <br/>)} <br/>
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#DFEEE7;color:#222222;padding:4px;"><pre><b>XML-RPC (PHP structure)</b><br/>
+
+    Array 
+        (
+        [tables] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [courseid] =&gt; int                        
+                        [userid] =&gt; int                        
+                        [userfullname] =&gt; string                        
+                        [maxdepth] =&gt; int                        
+                        [tabledata] =&gt;
+                            Array 
+                                (
+                                [0] =&gt;
+                                    Array 
+                                        (
+                                        [itemname] =&gt;
+                                            Array 
+                                                (
+                                                [class] =&gt; string                                                
+                                                [colspan] =&gt; int                                                
+                                                [content] =&gt; string                                                
+                                                [celltype] =&gt; string                                                
+                                                [id] =&gt; string                                                
+                                                )                                        
+                                        [leader] =&gt;
+                                            Array 
+                                                (
+                                                [class] =&gt; string                                                
+                                                [rowspan] =&gt; int                                                
+                                                )                                        
+                                        [weight] =&gt;
+                                            Array 
+                                                (
+                                                [class] =&gt; string                                                
+                                                [content] =&gt; string                                                
+                                                [headers] =&gt; string                                                
+                                                )                                        
+                                        [grade] =&gt;
+                                            Array 
+                                                (
+                                                [class] =&gt; string                                                
+                                                [content] =&gt; string                                                
+                                                [headers] =&gt; string                                                
+                                                )                                        
+                                        [range] =&gt;
+                                            Array 
+                                                (
+                                                [class] =&gt; string                                                
+                                                [content] =&gt; string                                                
+                                                [headers] =&gt; string                                                
+                                                )                                        
+                                        [percentage] =&gt;
+                                            Array 
+                                                (
+                                                [class] =&gt; string                                                
+                                                [content] =&gt; string                                                
+                                                [headers] =&gt; string                                                
+                                                )                                        
+                                        [lettergrade] =&gt;
+                                            Array 
+                                                (
+                                                [class] =&gt; string                                                
+                                                [content] =&gt; string                                                
+                                                [headers] =&gt; string                                                
+                                                )                                        
+                                        [rank] =&gt;
+                                            Array 
+                                                (
+                                                [class] =&gt; string                                                
+                                                [content] =&gt; string                                                
+                                                [headers] =&gt; string                                                
+                                                )                                        
+                                        [average] =&gt;
+                                            Array 
+                                                (
+                                                [class] =&gt; string                                                
+                                                [content] =&gt; string                                                
+                                                [headers] =&gt; string                                                
+                                                )                                        
+                                        [feedback] =&gt;
+                                            Array 
+                                                (
+                                                [class] =&gt; string                                                
+                                                [content] =&gt; string                                                
+                                                [headers] =&gt; string                                                
+                                                )                                        
+                                        [contributiontocoursetotal] =&gt;
+                                            Array 
+                                                (
+                                                [class] =&gt; string                                                
+                                                [content] =&gt; string                                                
+                                                [headers] =&gt; string                                                
+                                                )                                        
+                                        )
+                                )                        
+                        )
+                )        
+        [warnings] =&gt;
+            Array 
+                (
+                [0] =&gt;
+                    Array 
+                        (
+                        [item] =&gt; string                        
+                        [itemid] =&gt; int                        
+                        [warningcode] =&gt; string                        
+                        [message] =&gt; string                        
+                        )
+                )        
+        )
+</pre></div></div><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;RESPONSE&gt;
+    &lt;SINGLE&gt;
+        &lt;KEY name="tables"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="courseid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="userid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="userfullname"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="maxdepth"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="tabledata"&gt;
+                        &lt;MULTIPLE&gt;
+                            &lt;SINGLE&gt;
+                                &lt;KEY name="itemname"&gt;
+                                    &lt;SINGLE&gt;
+                                        &lt;KEY name="class"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="colspan"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="content"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="celltype"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="id"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                    &lt;/SINGLE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="leader"&gt;
+                                    &lt;SINGLE&gt;
+                                        &lt;KEY name="class"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="rowspan"&gt;
+                                            &lt;VALUE&gt;int&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                    &lt;/SINGLE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="weight"&gt;
+                                    &lt;SINGLE&gt;
+                                        &lt;KEY name="class"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="content"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="headers"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                    &lt;/SINGLE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="grade"&gt;
+                                    &lt;SINGLE&gt;
+                                        &lt;KEY name="class"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="content"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="headers"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                    &lt;/SINGLE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="range"&gt;
+                                    &lt;SINGLE&gt;
+                                        &lt;KEY name="class"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="content"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="headers"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                    &lt;/SINGLE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="percentage"&gt;
+                                    &lt;SINGLE&gt;
+                                        &lt;KEY name="class"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="content"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="headers"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                    &lt;/SINGLE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="lettergrade"&gt;
+                                    &lt;SINGLE&gt;
+                                        &lt;KEY name="class"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="content"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="headers"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                    &lt;/SINGLE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="rank"&gt;
+                                    &lt;SINGLE&gt;
+                                        &lt;KEY name="class"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="content"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="headers"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                    &lt;/SINGLE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="average"&gt;
+                                    &lt;SINGLE&gt;
+                                        &lt;KEY name="class"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="content"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="headers"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                    &lt;/SINGLE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="feedback"&gt;
+                                    &lt;SINGLE&gt;
+                                        &lt;KEY name="class"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="content"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="headers"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                    &lt;/SINGLE&gt;
+                                &lt;/KEY&gt;
+                                &lt;KEY name="contributiontocoursetotal"&gt;
+                                    &lt;SINGLE&gt;
+                                        &lt;KEY name="class"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="content"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                        &lt;KEY name="headers"&gt;
+                                            &lt;VALUE&gt;string&lt;/VALUE&gt;
+                                        &lt;/KEY&gt;
+                                    &lt;/SINGLE&gt;
+                                &lt;/KEY&gt;
+                            &lt;/SINGLE&gt;
+                        &lt;/MULTIPLE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+        &lt;KEY name="warnings"&gt;
+            &lt;MULTIPLE&gt;
+                &lt;SINGLE&gt;
+                    &lt;KEY name="item"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="itemid"&gt;
+                        &lt;VALUE&gt;int&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="warningcode"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                    &lt;KEY name="message"&gt;
+                        &lt;VALUE&gt;string&lt;/VALUE&gt;
+                    &lt;/KEY&gt;
+                &lt;/SINGLE&gt;
+            &lt;/MULTIPLE&gt;
+        &lt;/KEY&gt;
+    &lt;/SINGLE&gt;
+&lt;/RESPONSE&gt;
+
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Error message</span><br/><br/><span style="font-size:80%"><div><div style="border:solid 1px #DEDEDE;background:#FEEBE5;color:#222222;padding:4px;"><pre><b>REST</b><br/>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;EXCEPTION class="invalid_parameter_exception"&gt;
+    &lt;MESSAGE&gt;Invalid parameter value detected&lt;/MESSAGE&gt;
+    &lt;DEBUGINFO&gt;&lt;/DEBUGINFO&gt;
+&lt;/EXCEPTION&gt;
+</pre></div></div></span><br/><br/><span style="color:#EA33A6">Restricted to logged-in users<br/></span>Yes<br/><br/><span style="color:#EA33A6">Callable from AJAX<br/></span>No<br/><br/></div>
