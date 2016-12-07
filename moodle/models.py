@@ -1,4 +1,3 @@
-from builtins import property
 from collections import Mapping, Sequence, Sized
 
 from moodle.fieldnames import JsonFieldNames as Jn
