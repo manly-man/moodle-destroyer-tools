@@ -11,7 +11,6 @@ from util import interaction
 
 MAX_WORKERS = 10
 
-
 class MoodleFrontend:
     def __init__(self, worktree=None):
         # todo, read course from worktree config.
@@ -244,7 +243,8 @@ class MoodleFrontend:
         invalid_values = []
 
         for file in fd_list:
-            wrapped = GradingFile(json.load(file))
+            # cls needs to be set, for the strict flag to be registered.
+            wrapped = GradingFile(json.load(file, cls=json.JSONDecoder, strict=False))
 
             assignment = Assignment(self.worktree.assignments[wrapped.assignment_id])
             assignment.course = Course(self.worktree.courses[assignment.course_id])
