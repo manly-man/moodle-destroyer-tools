@@ -17,13 +17,14 @@ from util import interaction
 from frontend.cmdparser import ParserManager, Argument, ArgumentGroup
 
 log = logging.getLogger('wstools')
+pm = ParserManager('wstools', 'internal sub command help')
 
 
 def make_config_parser():
-    return ParserManager.parser
+    return pm.parser
 
 
-@ParserManager.command(
+@pm.command(
     'retrieve access token from server',
     Argument('-u', '--username', dest='username', help='username', required=False),
     Argument('--url', help='the moodle host name', required=False),
@@ -80,7 +81,7 @@ def auth(url=None, ask=False, username=None, service='moodle_mobile_app'):
     WorkTree.write_global_config(settings)
 
 
-@ParserManager.command(
+@pm.command(
     'initialize work tree',
     Argument('--force', help='overwrite the config', action='store_true'),
     Argument('-c', '--courseids', dest='course_ids', nargs='+', help='moodle course id', action='append')
@@ -119,7 +120,7 @@ def init(force=False, course_ids=None):
     wt.write_local_config('courseids = ' + str(course_ids))
 
 
-@ParserManager.command(
+@pm.command(
     'download metadata from server',
     Argument('-a', '--assignments', help='sync assignments', action='store_true'),
     Argument('-s', '--submissions', help='sync submissions', action='store_true'),
@@ -160,7 +161,7 @@ def sync(assignments=False, submissions=False, grades=False, users=False, files=
         print('finished')
 
 
-@ParserManager.command(
+@pm.command(
     'display various information about work tree',
     Argument('-a', '--assignmentids', dest='assignment_ids', nargs='+',
              help='show detailed status for assignment id', type=int),
@@ -205,7 +206,7 @@ def status(assignment_ids=None, submission_ids=None, full=False):
             course.print_short_status()
 
 
-@ParserManager.command(
+@pm.command(
     'retrieve files for grading',
     Argument('assignment_ids', nargs='*', type=int),
     Argument('--all', help='pull all due submissions, even old ones', action='store_true')
@@ -216,7 +217,7 @@ def pull(assignment_ids=None, all=False):
     frontend.download_files(assignment_ids)
 
 
-@ParserManager.command(
+@pm.command(
     'upload grades from files',
     Argument('grading_files', nargs='+', help='files containing grades', type=argparse.FileType())
 )
@@ -227,7 +228,7 @@ def grade(grading_files):
     frontend.upload_grades(upload_data)
 
 
-@ParserManager.command(
+@pm.command(
     'upload files to draft area',
     Argument('files', nargs='+', help='files to upload', type=argparse.FileType('rb'))
 )
@@ -236,7 +237,7 @@ def upload(files):
     frontend.upload_files(files)
 
 
-@ParserManager.command(
+@pm.command(
     'enrol in a course',
     Argument('keywords', nargs='+', help='some words to search for')
 )
@@ -300,7 +301,7 @@ def enrol(keywords):
                     # todo: this is pretty hacky and error prone, fix possibly soon, or maybe not. this has no priority.
 
 
-@ParserManager.command(
+@pm.command(
     'submit text or files to assignment for grading',
     Argument('-a', '--assignment_id', help='the assignment id to submit to.'),
     ArgumentGroup('online', 'for online text submission', [
@@ -375,7 +376,7 @@ def submit(text=None, textfiles=None, files=None, assignment_id=None):
     print(data)
 
 
-@ParserManager.command(
+@pm.command(
     'dump course countents, work in progress'
 )
 def dump():

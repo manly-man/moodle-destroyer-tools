@@ -1,9 +1,5 @@
 import argparse
 
-"""
-TODO: this only works for modules imported by mdt.py
-could rework this to work across modules.
-"""
 
 class ArgparseArgument:
     def add_to_parser(self, parser):
@@ -32,23 +28,24 @@ class ArgumentGroup(ArgparseArgument):
 
 
 class ParserManager:
-    known_commands = []
-    parser = argparse.ArgumentParser()
-    subparsers = parser.add_subparsers(help="internal sub command help")
+    # TODO: rework ParserManager to scan submodules for commands, move to commands module.
+    def __init__(self, name, help_text):
+        self.name = name
+        self.help = help_text
+        self.known_commands = []
+        self.parser = argparse.ArgumentParser()
+        self.subparsers = self.parser.add_subparsers(help=help_text)
 
-    @classmethod
-    def register(cls, name, help_text):
-        if name not in cls.known_commands:
-            cls.known_commands.append(name)
-        return cls.subparsers.add_parser(name, help=help_text)
+    def register(self, name, help_text):
+        if name not in self.known_commands:
+            self.known_commands.append(name)
+        return self.subparsers.add_parser(name, help=help_text)
 
-    @classmethod
-    def command(cls, help_text, *arguments):
+    def command(self, help_text, *arguments):
         def register_function(function):
-            sub = cls.register(function.__name__, help_text)
+            sub = self.register(function.__name__, help_text)
             for arg in arguments:
                 arg.add_to_parser(sub)
             sub.set_defaults(func=function)
 
         return register_function
-

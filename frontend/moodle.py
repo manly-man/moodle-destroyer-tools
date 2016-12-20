@@ -11,6 +11,7 @@ from util import interaction
 
 MAX_WORKERS = 10
 
+
 class MoodleFrontend:
     def __init__(self, worktree=None):
         # todo, read course from worktree config.
