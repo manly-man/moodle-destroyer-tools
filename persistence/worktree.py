@@ -32,9 +32,9 @@ class WorkTree:
 
         self._course_data = self._load_json_file(self.course_meta)
         self._user_data = self._load_json_file(self.user_meta)
-        self._assignment_data = AssignmentFolder(self.assignment_meta)
-        self._submission_data = SubmissionFolder(self.submission_meta)
-        self._grade_data = GradeFolder(self.grade_meta)
+        self._assignment_data = AssignmentFolder(self.meta_root)
+        self._submission_data = SubmissionFolder(self.meta_root)
+        self._grade_data = GradeFolder(self.meta_root)
 
     @staticmethod
     def _initialize(force):
@@ -67,13 +67,35 @@ class WorkTree:
     @staticmethod
     def get_global_config_values():
         try:
-            return GlobalConfig(WorkTree._load_json_file(WorkTree.get_global_config_filename()))
+            global_cfg = GlobalConfig(WorkTree._load_json_file(WorkTree.get_global_config_filename()))
         except TypeError:
             config_error_msg = """
             config couldn't be initalized.
-            If you created the config yourself, check for proper JSON formation.
+            If you created the config yourself, check for proper JSON format.
             """
             raise SystemExit(config_error_msg)
+        try:
+            local_config_file = WorkTree.get_local_config_file()
+            if local_config_file:
+                global_cfg.add_overrides(WorkTree._load_json_file(local_config_file))
+        except json.JSONDecodeError:
+            pass  # probably old ini-style config, ignore it
+
+        return global_cfg
+
+    @staticmethod
+    def get_config_values():
+        file_names = WorkTree.get_config_file_list()
+        global_config = WorkTree.get_global_config_values()
+        for name in file_names:
+            with open(name) as file:
+                try:
+                    values = json.load(file)
+                    global_config.add_overrides(values)
+                except json.decoder.JSONDecodeError:
+                    # probably old-style ini config
+                    pass
+        return global_config
 
     @staticmethod
     def create_global_config_file():
@@ -98,8 +120,18 @@ class WorkTree:
         work_tree = WorkTree.get_work_tree_root()
         if work_tree is not None:
             # default_config_files order is crucial: work_tree cfg overrides global
-            cfg_files.append(work_tree + '/.mdt/config')
+            cfg_files.append(work_tree + '.mdt/config')
         return cfg_files
+
+    @staticmethod
+    def get_local_config_file():
+        work_tree = WorkTree.get_work_tree_root()
+        if work_tree is not None and os.path.isfile(work_tree + '.mdt/config'):
+            return work_tree + '.mdt/config'
+
+        return None
+
+
 
     @staticmethod
     def get_work_tree_root():
@@ -218,14 +250,9 @@ class WorkTree:
     @staticmethod
     def write_global_config(config_dict):
         WorkTree._write_data(WorkTree.get_global_config_filename(), config_dict)
-        #with open(WorkTree.global_config(), 'w') as file:
-            #cfg_parser = configparser.ConfigParser()
-            #cfg_parser['global moodle settings'] = config_dict
-            #cfg_parser.write(file)
-            # json.dump(config_dict, file)
 
     def write_local_config(self, config_data):
-        self._write_config(self.config, config_data)
+        WorkTree._write_data(self.config, config_data)
 
     @staticmethod
     def safe_file_name(name):
