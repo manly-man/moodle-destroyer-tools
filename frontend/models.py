@@ -53,6 +53,12 @@ class GlobalConfig(JsonDictWrapper):
     @property
     def user_name(self): return self['user_name']
 
+    def add_overrides(self, overrides):
+        self._data.update(overrides)
+
+    def __str__(self):
+        return str(self._data)
+
 
 class GradingFile(JsonDictWrapper):
     @property

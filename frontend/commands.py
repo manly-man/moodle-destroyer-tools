@@ -30,9 +30,10 @@ def make_config_parser():
     Argument('--url', help='the moodle host name', required=False),
     Argument('-a', '--ask', help='will ask for all credentials, again', action='store_true'),
     Argument('-s', '--service', help='the webservice, has to be set explicitly, defaults to mobile api',
-             default='moodle_mobile_app')
+             default='moodle_mobile_app'),
+    Argument('--local', help='write auth info to local config', action='store_true')
 )
-def auth(url=None, ask=False, username=None, service='moodle_mobile_app'):
+def auth(url=None, ask=False, username=None, service='moodle_mobile_app', local=False):
     """
     Retreives a Web Service Token for the given user and host and saves it to the global config.
 
@@ -40,6 +41,7 @@ def auth(url=None, ask=False, username=None, service='moodle_mobile_app'):
     :param ask: set this to true, to get asked for input of known values anyway.
     :param username: the login for which you'd like to retrieve a token for.
     :param service: the configured Web Service, you'd like the token for.
+    :param local: write auth info to local file
     :return: nothing.
     """
 
@@ -73,7 +75,11 @@ def auth(url=None, ask=False, username=None, service='moodle_mobile_app'):
     del password
 
     # Writing values here once, to allow MoodleFrontend to read from it.
-    WorkTree.write_global_config(settings)
+    if not local:
+        WorkTree.write_global_config(settings)
+    else:
+        wt = WorkTree()
+        wt.write_local_config(settings)
 
     frontend = MoodleFrontend(True)
     settings['user_id'] = frontend.get_user_id()
@@ -384,3 +390,11 @@ def dump():
 
     frontend.get_course_content()
 
+
+@pm.command(
+    'dump config'
+)
+def config():
+    print(WorkTree.get_global_config_values())
+    for cfg in WorkTree.get_config_file_list():
+        print(cfg)
