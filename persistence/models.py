@@ -126,10 +126,10 @@ class JsonMetaDataFolder(JsonDataFolder):
 
 
 class AssignmentFolder(JsonDataFolder):
-    folder_name = 'assignments'
+    _folder_name = 'assignments'
 
     def __init__(self, meta_root):
-        super().__init__(meta_root + self.folder_name)
+        super().__init__(meta_root + self._folder_name)
 
     def update(self, json_data):
         response = models.CourseAssignmentResponse(json_data)
@@ -152,11 +152,11 @@ class AssignmentFolder(JsonDataFolder):
 
 
 class SubmissionFolder(JsonMetaDataFolder):
-    folder_name = 'submissions'
+    _folder_name = 'submissions'
     last_sync = 0
 
     def __init__(self, meta_root):
-        super().__init__(meta_root + self.folder_name)
+        super().__init__(meta_root + self._folder_name)
 
     def _update_submissions(self, assignment_id, submissions):
         local_list = models.MoodleSubmissionList(self[assignment_id])
@@ -184,11 +184,11 @@ class SubmissionFolder(JsonMetaDataFolder):
 
 
 class GradeFolder(JsonMetaDataFolder):
-    folder_name = 'grades'
+    _folder_name = 'grades'
     last_sync = 0
 
     def __init__(self, meta_root):
-        super().__init__(meta_root + self.folder_name)
+        super().__init__(meta_root + self._folder_name)
 
     def _update_grades(self, assignment_id, grades):
         local_list = models.MoodleGradeList(self[assignment_id])
