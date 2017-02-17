@@ -123,7 +123,7 @@ def init(force=False, course_ids=None):
 
     wt.courses = saved_data
 
-    wt.write_local_config('courseids = ' + str(course_ids))
+    wt.write_local_config({'courseids': str(course_ids)})
 
 
 @pm.command(
