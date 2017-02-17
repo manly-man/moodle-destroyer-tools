@@ -111,10 +111,6 @@ class MoodleFrontend:
             # print('finished. ' + ' '.join(output))
 
     def download_files(self, assignment_ids=None):
-        # import zipfile
-        # content = zipfile.ZipFile(filename)
-        # dirsplit = [a.split('/') for a in content.namelist()]
-        # content.extractall(path=None)
         courses = self.worktree.data
         assignments = []
         if assignment_ids is None or 0 == len(assignment_ids):

@@ -69,9 +69,9 @@ def print_progress(iteration, total, prefix='', suffix='', bar_length=100):
     percents = (iteration / float(total))
     bar = '█' * filled_length + '-' * (bar_length - filled_length)
     output_line = '\r{} |{}| {:>7.2%} {}'.format(prefix, bar, percents, suffix)
-    if len(output_line) > col_width :
+    if len(output_line) > col_width:
         diff = len(output_line) - col_width
-        suffix = suffix[diff:]
+        suffix = str(suffix)[diff:]
         output_line = '\r{} |{}| {:>7.2%} {}'.format(prefix, bar, percents, suffix)
     else:
         diff = 1 + col_width - len(output_line)

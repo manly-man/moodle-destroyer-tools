@@ -1,8 +1,11 @@
 import json
 import os
-import moodle.models as models
+
+from pathlib import Path
 from collections import Mapping
 from abc import abstractmethod
+
+import moodle.models as models
 # TODO, mebbe add locks for async usage.
 
 
@@ -37,13 +40,15 @@ class CachedMapping(Mapping):
         pass
 
 
-class CachedFile(Mapping):  # TODO: WIP
+class CachedFileMapping(Mapping):  # TODO: WIP
     def __init__(self, file_path):
         self._cache = None
         self.path = file_path
 
     def __iter__(self):
-        pass
+        if self._cache is None:
+            self._cache = self._read_file(self.path)
+        return iter(self._cache)
 
     def __getitem__(self, key):
         if self._cache is None:
@@ -51,27 +56,36 @@ class CachedFile(Mapping):  # TODO: WIP
         return self._cache[key]
 
     def __len__(self):
-        pass
+        if self._cache is None:
+            self._cache = self._read_file(self.path)
+        return len(self._cache)
 
     @abstractmethod
     def _read_file(self, file_path):
-        pass
+        return {}
+
+
+class CachedJsonFile(CachedFileMapping):
+    def _read_file(self, file_path):
+        return _read_json(file_path)
 
 
 class JsonDataFolder(CachedMapping):
-    def __init__(self, folder):
+    def __init__(self, root_folder: Path, init=False):
         super().__init__()
-        self._folder = folder + '/'
+        self._folder = root_folder / self.folder_name
+        if init:
+            self._folder.mkdir(exist_ok=True)
 
     def _read_data(self, key):  # CachedMapping
-        filename = self._folder + str(key)
+        filename = self._folder / str(key)
         try:
             return _read_json(filename)
         except FileNotFoundError:
             raise KeyError(key)
 
     def _write_data(self, key, value):  # CachedMutableMapping
-        filename = self._folder + str(key)
+        filename = self._folder / str(key)
         _dump_json(filename, value)
 
     def _setitem(self, key, value):
@@ -79,57 +93,56 @@ class JsonDataFolder(CachedMapping):
         self._write_data(key, value)
 
     def __iter__(self):
-        for filename in os.listdir(self._folder):
-            yield int(filename)
+        for file in self._folder.iterdir():
+            yield int(file.name)
 
     def __len__(self):
-        return len(os.listdir(self._folder))
+        return len(list(self.__iter__()))
+
+    @property
+    @abstractmethod
+    def folder_name(self):
+        return 'folder_name'
 
 
 class JsonMetaDataFolder(JsonDataFolder):
     _meta_file_suffix = '_meta'
 
-    def __init__(self, folder):
-        super().__init__(folder)
-        self._meta_file_path = folder + self._meta_file_suffix
+    def __init__(self, root_folder: Path, init=False):
+        super().__init__(root_folder, init)
+        self._meta_file_path = root_folder / (self.folder_name + self._meta_file_suffix)
         self._read_meta()
 
     def _read_meta(self):
         filename = self._meta_file_path
         try:
             meta = _read_json(filename)
+            for k, v in meta.items():
+                setattr(self, k, v)
         except FileNotFoundError:
-            return
-        for k, v in meta.items():
-            setattr(self, k, v)
+            pass
 
     def _write_meta(self):
         meta = {k: v for k, v in vars(self).items() if not k.startswith('_')}
         _dump_json(self._meta_file_path, meta)
 
     def __iter__(self):
-        names = set(os.listdir(self._folder))
-        try:
-            names.remove(self._meta_file_suffix)
-        except KeyError:
-            pass
-        for name in names:
-            yield int(name)
+        for file in self._folder.iterdir():
+            yield int(file.name)
 
     def __len__(self):
-        names = set(os.listdir(self._folder))
-        try:
-            names.remove(self._meta_file_suffix)
-        except KeyError:
-            pass
-        return len(names)
+        return len(set(self._folder.iterdir()))
+
+    @property
+    @abstractmethod
+    def folder_name(self):
+        return 'folder_name'
 
 
 class AssignmentFolder(JsonDataFolder):
-    _folder_name = 'assignments'
-
-    def __init__(self, meta_root):
-        super().__init__(meta_root + self._folder_name)
+    @property
+    def folder_name(self):
+        return 'assignments'
 
     def update(self, json_data):
         response = models.CourseAssignmentResponse(json_data)
@@ -152,11 +165,11 @@ class AssignmentFolder(JsonDataFolder):
 
 
 class SubmissionFolder(JsonMetaDataFolder):
-    _folder_name = 'submissions'
-    last_sync = 0
+    @property
+    def folder_name(self):
+        return 'submissions'
 
-    def __init__(self, meta_root):
-        super().__init__(meta_root + self._folder_name)
+    last_sync = 0
 
     def _update_submissions(self, assignment_id, submissions):
         local_list = models.MoodleSubmissionList(self[assignment_id])
@@ -184,11 +197,11 @@ class SubmissionFolder(JsonMetaDataFolder):
 
 
 class GradeFolder(JsonMetaDataFolder):
-    _folder_name = 'grades'
-    last_sync = 0
+    @property
+    def folder_name(self):
+        return 'grades'
 
-    def __init__(self, meta_root):
-        super().__init__(meta_root + self._folder_name)
+    last_sync = 0
 
     def _update_grades(self, assignment_id, grades):
         local_list = models.MoodleGradeList(self[assignment_id])
@@ -216,3 +229,83 @@ class GradeFolder(JsonMetaDataFolder):
         self.last_sync = time_of_sync
         self._write_meta()
         return result
+
+
+class Config(models.JsonDictWrapper):
+    error_msg = """
+    '{}' couldn't be found in your config file.
+    Maybe it's corrupted.
+    Either check your config file
+    or delete the entire file and create a new one.
+    """
+
+    @property
+    def service(self): return self['service']
+
+    @property
+    def token(self):
+        try:
+            return self['token']
+        except KeyError:
+            raise SystemExit(self.error_msg.format('token'))
+
+    @property
+    def user_id(self):
+        try:
+            return self['user_id']
+        except KeyError:
+            raise SystemExit(self.error_msg.format('user_id'))
+
+    @property
+    def url(self):
+        try:
+            return self['url']
+        except KeyError:
+            raise SystemExit(self.error_msg.format('url'))
+
+    @property
+    def user_name(self): return self['user_name']
+
+    def add_overrides(self, overrides):
+        self._data.update(overrides)
+
+    def __str__(self):
+        return str(self._data)
+
+
+class MdtConfig:
+    _file_name = 'config'
+
+    @classmethod
+    def global_config_locations(cls):
+        locations = []
+        try:
+            locations.append(os.environ['XDG_CONFIG_HOME'] + '/mdtconfig')
+        except KeyError:
+            pass
+        locations.append(os.path.expanduser('~/.config/mdtconfig'))
+        locations.append(os.path.expanduser('~/.mdtconfig'))
+        return locations
+
+    def __init__(self, meta_root=None, prefer_local=False, init=False):
+        self.prefer_local = prefer_local
+        self.global_cfg = self.read_global(init)
+        if meta_root:
+            self.local_cfg = {}
+
+    def read_global(self, init):
+        locations = self.global_config_locations()
+        for file_name in locations:
+            try:
+                with open(file_name) as file:
+                    return Config(json.load(file))
+            except FileNotFoundError:
+                pass
+        if not self.prefer_local or init:
+            text = 'could not find global config, creating {}'
+            print(text.format(locations[0]))
+            with open(locations[0], 'w') as cfg_file:
+                cfg_file.write('{}')
+            return {}
+        return None
+
