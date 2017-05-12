@@ -475,7 +475,20 @@ class Submission(MoodleSubmission):
 
     @property
     def files(self):
+        """
+        returns all files of the submission.
+        also has the problem with empty groups.
+        team submissions that have no existing groups are discarded.
+        assumption: argument `assignments` will contain the fully assembled data, so users and groups are populated.
+        FIXME: submissions with empty groups.
+        
+        :return: the files if submission is valid. 
+        """
         files = []
+        if self.assignment.is_team_submission:
+            if self.group_id not in self.assignment.course.groups:
+                print(f'Assignment: {self.assignment}, group for submission: {self.id} has no members! \n will not download.')
+                return []
         for p in self._plugins:
             files += p.files
         return files
