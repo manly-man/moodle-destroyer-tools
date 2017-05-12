@@ -144,7 +144,7 @@ class Course(MoodleCourse):
             group.members.append(user)
 
     def __str__(self):
-        return '{:40} id:{:5d} short: {}'.format(self.full_name[0:39], self.id, self.short_name)
+        return f'{self.full_name[0:39]:40} id:{self.id:5d} short: {self.short_name}'
 
     def __repr__(self):
         return repr((self.full_name, self.id, self.short_name))
@@ -184,7 +184,7 @@ class User(MoodleUser):
             self._groups[group.id] = group
 
     def __str__(self):
-        return '{:20} id:{:5d} groups:{}'.format(self.name, self.id, str(self.groups))
+        return f'{self.name:20} id:{self.id:5d} groups:{self.groups}'
 
 
 class Group(MoodleGroup):
@@ -193,7 +193,7 @@ class Group(MoodleGroup):
         self.members = []
 
     def __str__(self):
-        return '{:10} id:{:5d} '.format(self.name, self.id)
+        return f'{self.name:10} id:{self.id:5d} '
 
 
 class Assignment(MoodleAssignment):
@@ -259,7 +259,7 @@ class Assignment(MoodleAssignment):
         return head.format(self.id) + ',\n'.join(sorted(content)) + end
 
     def __str__(self):
-        return '{:40} id:{:5d}'.format(self.name[0:39], self.id)
+        return f'{self.name[0:39]:40} id:{self.id:5d}'
 
     @property
     def valid_submission_count(self):
@@ -282,8 +282,9 @@ class Assignment(MoodleAssignment):
         return self.is_due and not all_graded
 
     def short_status_string(self, indent=0):
-        fmt_string = ' ' * indent + str(self) + ' submissions:{:3d} due:{:1} graded:{:1}'
-        return fmt_string.format(self.valid_submission_count, self.is_due, not self.needs_grading)
+        fmt_string = ' ' * indent + str(self) + f' submissions:{self.valid_submission_count:3d}'
+        fmt_string += f' due:{self.is_due:1} graded:{not self.needs_grading:1}'
+        return fmt_string
 
     def detailed_status_string(self, indent=0):
         string = ' ' * indent + str(self) + '\n'
