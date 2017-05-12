@@ -237,6 +237,9 @@ class Assignment(MoodleAssignment):
 
         if self.is_team_submission:
             for s_id, s in self.submissions.items():
+                if s.group_id not in self.course.groups:
+                    # FIXME: invalid grouping
+                    continue
                 group = self.course.groups[s.group_id]
                 grade = 0.0
                 if s.grade is not None:
