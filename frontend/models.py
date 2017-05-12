@@ -371,9 +371,22 @@ class Submission(MoodleSubmission):
             return self.status_single_submission_string(indent=indent)
 
     def get_team_members_and_grades(self):
-        group = self.assignment.course.groups[self.group_id]
-        grades = self.assignment.grades
-        members = group.members
+        """
+        When users switch groups and a group might not exist as a result thereof.
+        This as such is not a problem.
+        But, according to moodle's logic, a past submission is still connected to the group.
+        As a result, accessing the group will fail, since no user is associated with it.
+        To work around this, the local `members` variable is set to an empty list.
+        TODO: think about a reasonable fix. 
+        TODO: inform user about discrepancy.
+        """
+        try:
+            group = self.assignment.course.groups[self.group_id]
+            grades = self.assignment.grades
+            members = group.members
+        except KeyError:
+            members = []
+
         graded_users = {}
         ungraded_users = {}
         for user in members:
