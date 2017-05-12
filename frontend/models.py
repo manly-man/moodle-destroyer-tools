@@ -494,9 +494,18 @@ class Submission(MoodleSubmission):
 
     @property
     def prefix(self):
+        """
+        Same problem as in get_team_members_and_grades
+        
+        """
         if self.assignment.is_team_submission:
-            group = self.assignment.course.groups[self.group_id]
-            return group.name
+            try:
+                group = self.assignment.course.groups[self.group_id]
+                return group.name
+            except KeyError:
+                print(f'Assignment: {self.assignment}, group for submission: {self.id} has no members')
+                return 'UNKNOWN_GROUP'
+
         else:
             user = self.assignment.course.users[self.user_id]
             return user.name
