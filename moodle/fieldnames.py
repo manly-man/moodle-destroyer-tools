@@ -80,6 +80,7 @@ class JsonFieldNames:
     is_dir = 'isdir'
     license = 'license'
     message = 'message'
+    mime_type = "mimetype"
     modified = 'modified'
     modicon = 'modicon'
     modname = 'modname'

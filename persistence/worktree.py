@@ -306,18 +306,17 @@ class WorkTree:
         for a in assignments:
             for s in a.submissions.values():
                 a_folder = self.root / self.formatted_assignment_folder(a)
-                print(a_folder)
                 s_files = s.files
                 if len(s_files) > 1:
                     s_folder = a_folder / self.safe_file_name(s.prefix)
                     for file in s_files:
-                        file.path = s_folder / file.path[1:]
+                        file.path = s_folder / file.path[1:] / file.name
                         files.append(file)
                 elif len(s_files) == 1:
                     file = s_files[0]
                     path = self.safe_file_name(s.prefix) + '--'
                     path += file.path[1:].replace('/', '_')
-                    file.path = a_folder / path
+                    file.path = a_folder / file.name
                     files.append(file)
         self.create_folders(files)
         return files

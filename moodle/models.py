@@ -449,6 +449,18 @@ class AssignmentSubmissionResponse(JsonDictWrapper):
                                             def file_path(self): return self[Jn.file_path]
 
                                             @property
+                                            def file_name(self): return self[Jn.file_name]
+
+                                            @property
+                                            def file_size(self): return self[Jn.file_size]
+
+                                            @property
+                                            def mime_type(self): return self[Jn.mime_type]
+
+                                            @property
+                                            def time_modified(self): return self[Jn.time_modified]
+
+                                            @property
                                             def url(self): return self[Jn.file_url]
 
                             class EditorFieldList(JsonListWrapper):

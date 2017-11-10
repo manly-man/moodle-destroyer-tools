@@ -401,7 +401,7 @@ class Submission(MoodleSubmission):
         graded_users = {}
         ungraded_users = {}
         for user in members:
-            if user.id in grades:
+            if user.id in grades and grades[user.id].value is not None:
                 graded_users[user.id] = grades[user.id]
             else:
                 ungraded_users[user.id] = user
@@ -464,7 +464,10 @@ class Submission(MoodleSubmission):
 
     @property
     def is_single_submission_graded(self):
-        return self.user_id in self.assignment.grades
+        try:
+            return self.assignment.grades[self.user_id].value is not None
+        except KeyError:
+            return False
 
     def status_single_submission_string(self, indent=0):
         user = self.assignment.course.users[self.user_id]
@@ -544,12 +547,13 @@ class Grade(MoodleGrade):
 
     @property
     def value(self):
-        value = self.grade
-        if '' == value:
+        try:
+            result = float(self.grade)
+            if 0 > result:
+                return None
+            return result
+        except ValueError:
             return None
-        else:
-            return float(value)
-
 
 class Plugin(MoodlePlugin):
     def __init__(self, data, submission):
@@ -646,6 +650,12 @@ class File(MoodleSubmissionFile):
     @path.setter
     def path(self, value):
         self._new_path = value
+
+    @property
+    def name(self): return self.file_name
+
+    @property
+    def size(self): return self.file_size
 
     @property
     def meta_data_params(self): return file_meta_dict_from_url(self.url)
