@@ -42,3 +42,18 @@ def parse_api(soup):
 if __name__ == '__main__':
     print(main())
 
+"""
+scrapyscript:
+url = 'https://demo.moodle.net'
+ws_api = '/admin/webservice/documentation.php'
+login = '/login/index.php'
+logindata = {'username': 'admin', 'password': 'sandbox'}
+
+fetch(url)
+request = scrapy.FormRequest.from_response(response, formdata=logindata, method='POST')
+fetch(request)
+fetch(url+ws_api)
+funcs = response.css('div.collapsibleregion')
+for func in funcs:
+    print(func.css('strong').xpath('text()').extract())  # ['funcname']
+"""

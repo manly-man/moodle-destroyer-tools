@@ -42,10 +42,10 @@ class ParserManager:
         return self.subparsers.add_parser(name, help=help_text)
 
     def command(self, help_text, *arguments):
-        def register_function(function):
-            sub = self.register(function.__name__, help_text)
+        def register_function(decorated_fn):
+            sub = self.register(decorated_fn.__name__, help_text)
             for arg in arguments:
                 arg.add_to_parser(sub)
-            sub.set_defaults(func=function)
+            sub.set_defaults(func=decorated_fn)
 
         return register_function

@@ -1,4 +1,4 @@
-from collections import Mapping, Sequence, Sized
+from collections import Mapping, Sequence, Sized, namedtuple as nt
 
 from moodle.fieldnames import JsonFieldNames as Jn
 

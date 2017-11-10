@@ -89,7 +89,7 @@ class MoodleFrontend:
                         file = future_to_file[future]
                         response = models.FileMetaDataResponse(future.result())
                         for file in response.files:
-                            print(file.author)
+                            print(file)
                 except KeyboardInterrupt:
                     print('stopping…')
                     tpe.shutdown()

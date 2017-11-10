@@ -383,7 +383,7 @@ def submit(text=None, textfiles=None, files=None, assignment_id=None):
 
 
 @pm.command(
-    'dump course countents, work in progress'
+    'dump course contents, work in progress'
 )
 def dump():
     frontend = MoodleFrontend()
