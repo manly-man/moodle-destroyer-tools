@@ -2,6 +2,7 @@ from abc import ABCMeta, abstractmethod
 from collections import Mapping, Sequence, Sized
 from moodle.parsers import strip_mlang
 
+
 class JsonWrapper(Sized):
     def __len__(self):
         return len(self._data)

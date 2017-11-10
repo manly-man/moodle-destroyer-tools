@@ -3,128 +3,168 @@ import json
 import os
 import re
 
+from pathlib import Path
+
 from frontend.models import Course, GlobalConfig
 from moodle.fieldnames import JsonFieldNames as Jn
 from persistence.models import AssignmentFolder, SubmissionFolder, GradeFolder
+from util import zipwrangler
 
 
 class WorkTree:
+    DATA_FOLDER = '.mdt'
+    GLOBAL_CONFIG_LOCATIONS = [
+        Path.home() / '.config' / 'mdtconfig',
+        Path.home() / '.mdtconfig'
+    ]
+    try:
+        xdg = Path(os.environ['XDG_CONFIG_HOME']) / 'mdtconfig'
+        GLOBAL_CONFIG_LOCATIONS = [xdg] + GLOBAL_CONFIG_LOCATIONS
+    except KeyError:
+        pass
+    LOCAL_CONFIG = 'config'
+    USERS = 'users'
+    COURSES = 'courses'
+    SYNC = 'sync'
+    MOODLE = 'moodle'
+
     def __init__(self, init=False, force=False, skip_init=False):
         if skip_init:
             return
 
-        self.root = self.get_work_tree_root()
+        self.root = self.find_work_tree_root()
         if self.root is None and not init:
             raise NotInWorkTree()
 
         if init:
             self.root = self._initialize(force)
 
-        self.meta_root = self.root + '.mdt/'
-        self.config = self.meta_root + 'config'
-        self.user_meta = self.meta_root + 'users'
-        self.sync_meta = self.meta_root + 'sync'
-        self.moodle_meta = self.meta_root + 'moodle'
-        self.course_meta = self.meta_root + 'courses'
-        self.assignment_meta = self.meta_root + 'assignments'
-        self.submission_meta = self.meta_root + 'submissions'
-        self.grade_meta = self.meta_root + 'grades'
+        self.data_root = self.root / self.DATA_FOLDER
+        self.config = self.data_root / self.LOCAL_CONFIG
+        self.user_data = self.data_root / self.USERS
+        self.sync_data = self.data_root / self.SYNC
+        self.moodle_data = self.data_root / self.MOODLE
+        self.course_data = self.data_root / self.COURSES
 
-        self._course_data = self._load_json_file(self.course_meta)
-        self._user_data = self._load_json_file(self.user_meta)
-        self._assignment_data = AssignmentFolder(self.assignment_meta)
-        self._submission_data = SubmissionFolder(self.submission_meta)
-        self._grade_data = GradeFolder(self.grade_meta)
+        self._course_data = self._load_json_file(self.course_data)
+        self._user_data = self._load_json_file(self.user_data)
+        self._assignment_data = AssignmentFolder(self.data_root, init)
+        self._submission_data = SubmissionFolder(self.data_root, init)
+        self._grade_data = GradeFolder(self.data_root, init)
 
-    @staticmethod
-    def _initialize(force):
+    @classmethod
+    def _initialize(cls, force):
         try:
-            os.makedirs('.mdt/assignments', exist_ok=force)
-            os.makedirs('.mdt/submissions', exist_ok=force)
-            os.makedirs('.mdt/grades', exist_ok=force)
-            if force or not os.path.isfile('.mdt/users'):
-                with open('.mdt/users', 'w') as users:
-                    users.write('[]')
-            if force or not os.path.isfile('.mdt/courses'):
-                with open('.mdt/courses', 'w') as courses:
-                    courses.write('[]')
-            return os.getcwd() + '/'
+            root = Path.cwd() / cls.DATA_FOLDER
+            root.mkdir(exist_ok=force)
+            users = root / cls.USERS
+            courses = root / cls.COURSES
+            if force or not users.is_file():
+                users.write_text('[]')
+            if force or not courses.is_file():
+                courses.write_text('[]')
+            return Path.cwd()
         except FileExistsError:
             raise
 
-    @staticmethod
-    def get_global_config_filename():
-        if 'XDG_CONFIG_HOME' in os.environ:
-            if os.path.isfile(os.environ['XDG_CONFIG_HOME'] + '/mdtconfig'):
-                return os.environ['XDG_CONFIG_HOME'] + '/mdtconfig'
-        elif os.path.isfile(os.path.expanduser('~/.config/mdtconfig')):
-            return os.path.expanduser('~/.config/mdtconfig')
-        elif os.path.isfile(os.path.expanduser('~/.mdtconfig')):
-            return os.path.expanduser('~/.mdtconfig')
+    @classmethod
+    def get_global_config_filename(cls):
+        for path in cls.GLOBAL_CONFIG_LOCATIONS:
+            if path.is_file():
+                return path
         else:
-            return WorkTree.create_global_config_file()
+            return cls.create_global_config_file()
 
     @staticmethod
     def get_global_config_values():
         try:
-            return GlobalConfig(WorkTree._load_json_file(WorkTree.get_global_config_filename()))
+            global_cfg = GlobalConfig(WorkTree._load_json_file(WorkTree.get_global_config_filename()))
         except TypeError:
             config_error_msg = """
             config couldn't be initalized.
-            If you created the config yourself, check for proper JSON formation.
+            If you created the config yourself, check for proper JSON format.
             """
             raise SystemExit(config_error_msg)
+        try:
+            local_config_file = WorkTree.get_local_config_file()
+            if local_config_file:
+                global_cfg.add_overrides(WorkTree._load_json_file(local_config_file))
+        except json.JSONDecodeError:
+            pass  # probably old ini-style config, ignore it
+
+        return global_cfg
 
     @staticmethod
-    def create_global_config_file():
-        file = ''
-        if 'XDG_CONFIG_HOME' in os.environ:
-            if os.path.isdir(os.environ['XDG_CONFIG_HOME']):
-                file = os.environ['XDG_CONFIG_HOME'] + '/mdtconfig'
-        elif os.path.isdir(os.path.expanduser('~/.config')):
-            file = os.path.expanduser('~/.config/mdtconfig')
+    def get_config_values():
+        file_names = WorkTree.get_config_file_list()
+        global_config = WorkTree.get_global_config_values()
+        for name in file_names:
+            with open(name) as file:
+                try:
+                    values = json.load(file)
+                    global_config.add_overrides(values)
+                except json.decoder.JSONDecodeError:
+                    # probably old-style ini config
+                    pass
+        return global_config
+
+    @classmethod
+    def create_global_config_file(cls):
+        for path in cls.GLOBAL_CONFIG_LOCATIONS:
+            if path.parent.is_dir():
+                print(f'could not find global config, creating {path}')
+                path.write_text('{}')
+                return path
         else:
-            file = os.path.expanduser('~/.mdtconfig')
-        text = 'could not find global config, creating {}'
-        print(text.format(file))
-        with open(file, 'w') as cfg_file:
-            cfg_file.write('{}')
-        return file
+            print(f'could not find a location for global config, tried: {cls.GLOBAL_CONFIG_LOCATIONS}')
+            raise ValueError()
 
-    @staticmethod
-    def get_config_file_list():
-        global_config = WorkTree.get_global_config_filename()
+    @classmethod
+    def get_config_file_list(cls):
+        global_config = cls.get_global_config_filename()
         cfg_files = [global_config]
-        work_tree = WorkTree.get_work_tree_root()
+        work_tree = cls.find_work_tree_root()
         if work_tree is not None:
             # default_config_files order is crucial: work_tree cfg overrides global
-            cfg_files.append(work_tree + '/.mdt/config')
+            cfg_files.append(work_tree / cls.DATA_FOLDER / cls.LOCAL_CONFIG)
         return cfg_files
 
-    @staticmethod
-    def get_work_tree_root():
-        """ determines the work tree root by looking at the .mdt folder in cwd or parent folders
-        :returns the work tree root as String or None
+    @classmethod
+    def get_local_config_file(cls):
+        work_tree = cls.find_work_tree_root()
+
+        if work_tree is None:
+            return None
+
+        config = work_tree / cls.DATA_FOLDER / cls.LOCAL_CONFIG
+        if not config.is_file():
+            return None
+
+        return config
+
+    @classmethod
+    def find_work_tree_root(cls):
         """
-        cwd = os.getcwd()
-        repo = None
-        while not os.path.isdir('.mdt'):
-            if '/' == os.getcwd():
-                os.chdir(cwd)
-                return None
-            os.chdir(os.pardir)
-        if os.path.isdir('.mdt'):
-            repo = os.getcwd()
-        os.chdir(cwd)
-        return repo + '/'
+        determines the work tree root by looking at the .mdt folder in cwd or parent folders
+
+        :returns the work tree root as Path or None
+        """
+        cwd = Path.cwd()
+        if (cwd / cls.DATA_FOLDER).is_dir():
+            return cwd
+        for parent in cwd.parents:
+            if (parent / cls.DATA_FOLDER).is_dir():
+                return parent
+        else:
+            return None
 
     @property
     def in_root(self):
-        return os.path.isdir('.mdt')
+        return (Path.cwd() / self.DATA_FOLDER).is_dir()
 
     @property
     def in_tree(self):
-        return self.root is not None
+        return self.find_work_tree_root() is not None
 
     @property
     def data(self):
@@ -175,7 +215,7 @@ class WorkTree:
 
     @courses.setter
     def courses(self, value):
-        self._write_data(self.course_meta, value)
+        self._write_data(self.course_data, value)
         self._course_data = value
 
     @property
@@ -188,7 +228,7 @@ class WorkTree:
 
     @users.setter
     def users(self, value):
-        self._write_data(self.user_meta, value)
+        self._write_data(self.user_data, value)
         self._user_data = value
 
     @staticmethod
@@ -218,71 +258,66 @@ class WorkTree:
     @staticmethod
     def write_global_config(config_dict):
         WorkTree._write_data(WorkTree.get_global_config_filename(), config_dict)
-        #with open(WorkTree.global_config(), 'w') as file:
-            #cfg_parser = configparser.ConfigParser()
-            #cfg_parser['global moodle settings'] = config_dict
-            #cfg_parser.write(file)
-            # json.dump(config_dict, file)
 
     def write_local_config(self, config_data):
-        self._write_config(self.config, config_data)
+        WorkTree._write_data(self.config, config_data)
 
-    @staticmethod
-    def safe_file_name(name):
+    @classmethod
+    def safe_file_name(cls, name):
         return re.sub(r'\W', '_', name)
 
-    @staticmethod
-    def assignment_folder(assignment):
-        return WorkTree.safe_file_name('{}--{:d}'.format(assignment.name, assignment.id)) + '/'
+    @classmethod
+    def formatted_assignment_folder(cls, assignment):
+        return Path(cls.safe_file_name(f'{assignment.name}--{assignment.id:d}'))
 
     def write_grading_and_html_file(self, assignment):
-        #TODO: check if submission was after deadline and write to grading file
-        a_folder = self.assignment_folder(assignment)
-        filename = 'gradingfile.json'
-        if os.path.isfile(a_folder + filename):
-            new_name = 'gradingfile_{:02d}.json'
-            i = 0
-            filename = new_name.format(i)
-            while os.path.isfile(a_folder + filename):
-                i += 1
-                filename = new_name.format(i)
-            print('grading file exists, writing to: {}'.format(filename))
-        os.makedirs(a_folder, exist_ok=True)
+        # TODO: check if submission was after deadline and write to grading file
+        a_folder = self.root / self.formatted_assignment_folder(assignment)
+        grade_file = a_folder / 'gradingfile.json'
+        if grade_file.is_file():
+            counter = 0
+            grade_file = a_folder / f'gradingfile_{counter:02d}.json'
+            while grade_file.is_file():
+                counter += 1
+                grade_file = a_folder / f'gradingfile_{counter:02d}.json'
+            print(f'grading file exists, writing to: {grade_file}')
+        a_folder.mkdir(exist_ok=True)
 
-        with open(a_folder + filename, 'w') as grading_file:
-            grading_file.write(assignment.grading_file_content)
+        grade_file.write_text(assignment.grading_file_content)
 
-        html = assignment.merged_html
-        if html is not None:
-            with open(a_folder + '00_merged_submissions.html', 'w') as merged_html:
-                merged_html.write(html)
+        html_content = assignment.merged_html
+        if html_content is not None:
+            html_file = a_folder / '00_merged_submissions.html'
+            html_file.write_text(html_content)
 
     def create_folders(self, files):
-        folders = set([os.path.dirname(f.path) for f in files])
+        folders = set([f.path.parent for f in files])
         for folder in folders:
-            os.makedirs(folder, exist_ok=True)
+            folder.mkdir(exist_ok=True, parents=True)
 
     def write_submission_file(self, file, content):
         with open(file.path, 'wb') as fd:
             fd.write(content)
+        if file.path.suffix == '.zip':
+            zipwrangler.clean_unzip_with_temp_dir(file.path, target=file.path.parent, remove_zip=True)
 
     def prepare_download(self, assignments):
         files = []
         for a in assignments:
             for s in a.submissions.values():
-                a_folder = self.assignment_folder(a)
+                a_folder = self.root / self.formatted_assignment_folder(a)
+                print(a_folder)
                 s_files = s.files
                 if len(s_files) > 1:
-                    s_folder = a_folder + '/' + self.safe_file_name(s.prefix)
+                    s_folder = a_folder / self.safe_file_name(s.prefix)
                     for file in s_files:
-                        file.path = s_folder + file.path
+                        file.path = s_folder / file.path[1:]
                         files.append(file)
-                        # print(folder + file.path)
                 elif len(s_files) == 1:
                     file = s_files[0]
-                    path = a_folder + '/' + self.safe_file_name(s.prefix) + '--'
+                    path = self.safe_file_name(s.prefix) + '--'
                     path += file.path[1:].replace('/', '_')
-                    file.path = path
+                    file.path = a_folder / path
                     files.append(file)
         self.create_folders(files)
         return files

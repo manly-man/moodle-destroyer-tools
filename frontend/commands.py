@@ -17,21 +17,23 @@ from util import interaction
 from frontend.cmdparser import ParserManager, Argument, ArgumentGroup
 
 log = logging.getLogger('wstools')
+pm = ParserManager('wstools', 'internal sub command help')
 
 
 def make_config_parser():
-    return ParserManager.parser
+    return pm.parser
 
 
-@ParserManager.command(
+@pm.command(
     'retrieve access token from server',
     Argument('-u', '--username', dest='username', help='username', required=False),
     Argument('--url', help='the moodle host name', required=False),
     Argument('-a', '--ask', help='will ask for all credentials, again', action='store_true'),
     Argument('-s', '--service', help='the webservice, has to be set explicitly, defaults to mobile api',
-             default='moodle_mobile_app')
+             default='moodle_mobile_app'),
+    Argument('--local', help='write auth info to local config', action='store_true')
 )
-def auth(url=None, ask=False, username=None, service='moodle_mobile_app'):
+def auth(url=None, ask=False, username=None, service='moodle_mobile_app', local=False):
     """
     Retreives a Web Service Token for the given user and host and saves it to the global config.
 
@@ -39,6 +41,7 @@ def auth(url=None, ask=False, username=None, service='moodle_mobile_app'):
     :param ask: set this to true, to get asked for input of known values anyway.
     :param username: the login for which you'd like to retrieve a token for.
     :param service: the configured Web Service, you'd like the token for.
+    :param local: write auth info to local file
     :return: nothing.
     """
 
@@ -72,7 +75,11 @@ def auth(url=None, ask=False, username=None, service='moodle_mobile_app'):
     del password
 
     # Writing values here once, to allow MoodleFrontend to read from it.
-    WorkTree.write_global_config(settings)
+    if not local:
+        WorkTree.write_global_config(settings)
+    else:
+        wt = WorkTree()
+        wt.write_local_config(settings)
 
     frontend = MoodleFrontend(True)
     settings['user_id'] = frontend.get_user_id()
@@ -80,7 +87,7 @@ def auth(url=None, ask=False, username=None, service='moodle_mobile_app'):
     WorkTree.write_global_config(settings)
 
 
-@ParserManager.command(
+@pm.command(
     'initialize work tree',
     Argument('--force', help='overwrite the config', action='store_true'),
     Argument('-c', '--courseids', dest='course_ids', nargs='+', help='moodle course id', action='append')
@@ -116,10 +123,10 @@ def init(force=False, course_ids=None):
 
     wt.courses = saved_data
 
-    wt.write_local_config('courseids = ' + str(course_ids))
+    wt.write_local_config({'courseids': str(course_ids)})
 
 
-@ParserManager.command(
+@pm.command(
     'download metadata from server',
     Argument('-a', '--assignments', help='sync assignments', action='store_true'),
     Argument('-s', '--submissions', help='sync submissions', action='store_true'),
@@ -160,7 +167,7 @@ def sync(assignments=False, submissions=False, grades=False, users=False, files=
         print('finished')
 
 
-@ParserManager.command(
+@pm.command(
     'display various information about work tree',
     Argument('-a', '--assignmentids', dest='assignment_ids', nargs='+',
              help='show detailed status for assignment id', type=int),
@@ -205,7 +212,7 @@ def status(assignment_ids=None, submission_ids=None, full=False):
             course.print_short_status()
 
 
-@ParserManager.command(
+@pm.command(
     'retrieve files for grading',
     Argument('assignment_ids', nargs='*', type=int),
     Argument('--all', help='pull all due submissions, even old ones', action='store_true')
@@ -216,7 +223,7 @@ def pull(assignment_ids=None, all=False):
     frontend.download_files(assignment_ids)
 
 
-@ParserManager.command(
+@pm.command(
     'upload grades from files',
     Argument('grading_files', nargs='+', help='files containing grades', type=argparse.FileType())
 )
@@ -227,7 +234,7 @@ def grade(grading_files):
     frontend.upload_grades(upload_data)
 
 
-@ParserManager.command(
+@pm.command(
     'upload files to draft area',
     Argument('files', nargs='+', help='files to upload', type=argparse.FileType('rb'))
 )
@@ -236,7 +243,7 @@ def upload(files):
     frontend.upload_files(files)
 
 
-@ParserManager.command(
+@pm.command(
     'enrol in a course',
     Argument('keywords', nargs='+', help='some words to search for')
 )
@@ -300,7 +307,7 @@ def enrol(keywords):
                     # todo: this is pretty hacky and error prone, fix possibly soon, or maybe not. this has no priority.
 
 
-@ParserManager.command(
+@pm.command(
     'submit text or files to assignment for grading',
     Argument('-a', '--assignment_id', help='the assignment id to submit to.'),
     ArgumentGroup('online', 'for online text submission', [
@@ -375,11 +382,19 @@ def submit(text=None, textfiles=None, files=None, assignment_id=None):
     print(data)
 
 
-@ParserManager.command(
-    'dump course countents, work in progress'
+@pm.command(
+    'dump course contents, work in progress'
 )
 def dump():
     frontend = MoodleFrontend()
 
     frontend.get_course_content()
 
+
+@pm.command(
+    'dump config'
+)
+def config():
+    print(WorkTree.get_global_config_values())
+    for cfg in WorkTree.get_config_file_list():
+        print(cfg)

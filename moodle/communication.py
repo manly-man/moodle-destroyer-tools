@@ -29,11 +29,11 @@ class MoodleSessionCore(requests.Session):
         self.rest_format = rest_format
         self.url = moodle_url
 
-    def post_web_service(self, function, args=None):
+    def post_web_service(self, ws_function, args=None):
         needed_args = {
             Jn.moodle_ws_rest_format: self.rest_format,
             Jn.ws_token: self.token,
-            Jn.ws_function: function
+            Jn.ws_function: ws_function
         }
         if args is None:
             args = needed_args
@@ -51,7 +51,7 @@ class MoodleSessionCore(requests.Session):
                 raise MoodleException.generate_exception(**payload)
             return payload
         except json.JSONDecodeError:
-            log.error('moodle sent an unexpected response:\n {}'.format(response.text))
+            log.error(f'moodle sent an unexpected response:\n {response.text}')
             raise SystemExit(1)
 
     def get_token(self, user_name, password, service='moodle_mobile_app'):
@@ -80,16 +80,16 @@ class MoodleSessionCore(requests.Session):
         try:
             payload = response.json()
         except json.JSONDecodeError:
-            log.error('Moodle returned unexpected values, expected valid json: {}'.format(response.text))
+            log.error(f'Moodle returned unexpected values, expected valid json:\n {response.text}')
             raise SystemExit(1)
 
         try:
             return payload[Jn.token]
         except KeyError:
             if payload.get('errorcode', None) == 'invalidlogin':
-                log.warning('wrong authentication information?\n {}'.format(str(payload)))
+                log.warning(f'wrong authentication information?\n {str(payload)}')
             else:
-                log.error('Something went wrong:\n {}'.format(str(payload)))
+                log.error(f'Something went wrong:\n {str(payload)}')
 
     def upload_files(self, fd_list, file_path='/', file_area='draft', item_id=0):
         endpoint = '/webservice/upload.php'
@@ -97,7 +97,7 @@ class MoodleSessionCore(requests.Session):
 
         upload_info = []
         for num, fd in enumerate(fd_list):
-            file_number = 'file_{:d}'.format(num)
+            file_number = f'file_{num:d}'
             file_name = os.path.basename(fd.name)
             (file_type, encoding) = mimetypes.guess_type(fd.name)
             upload_info.append((file_number, (file_name, fd, file_type)))
@@ -121,7 +121,7 @@ class MoodleSessionCore(requests.Session):
                 raise MoodleException.generate_exception(**payload)
             return payload
         except json.JSONDecodeError:
-            log.error('moodle sent an unexpected response, expected valid json:\n {}'.format(response.text))
+            log.error(f'moodle sent an unexpected response, expected valid json:\n {response.text}')
             raise SystemExit(1)
 
     def download_file(self, file_url):

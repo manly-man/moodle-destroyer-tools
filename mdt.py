@@ -46,7 +46,7 @@ def execute_external(sub_command):
 
 
 def internal_cmd():
-    return commands.ParserManager.known_commands
+    return commands.pm.known_commands
 
 
 def check_for_sub_command():

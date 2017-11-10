@@ -11,6 +11,7 @@ from util import interaction
 
 MAX_WORKERS = 10
 
+
 class MoodleFrontend:
     def __init__(self, worktree=None):
         # todo, read course from worktree config.
@@ -45,12 +46,12 @@ class MoodleFrontend:
             try:
                 response = self.session.core_enrol_get_enrolled_users(course_id=cid, options=options)
                 users[int(cid)] = response
-                output += '{:5d}:got {:4d}\n'.format(cid, len(response))
+                output += f'{cid:5d}:got {len(response):4d}\n'
             except AccessDenied as denied:
-                message = '{:d} denied access to users: {}\n'.format(cid, denied)
+                message = f'{cid:d} denied access to users: {denied}\n'
                 output += message
             except InvalidResponse as e:
-                message = 'Moodle encountered an error: msg:{} \n debug:{}\n'.format(e.message, e.debug_message)
+                message = f'Moodle encountered an error: msg:{e.message} \n debug:{e.debug_message}\n'
                 output += message
 
         self.worktree.users = users
@@ -88,7 +89,7 @@ class MoodleFrontend:
                         file = future_to_file[future]
                         response = models.FileMetaDataResponse(future.result())
                         for file in response.files:
-                            print(file.author)
+                            print(file)
                 except KeyboardInterrupt:
                     print('stopping…')
                     tpe.shutdown()
@@ -110,10 +111,6 @@ class MoodleFrontend:
             # print('finished. ' + ' '.join(output))
 
     def download_files(self, assignment_ids=None):
-        # import zipfile
-        # content = zipfile.ZipFile(filename)
-        # dirsplit = [a.split('/') for a in content.namelist()]
-        # content.extractall(path=None)
         courses = self.worktree.data
         assignments = []
         if assignment_ids is None or 0 == len(assignment_ids):
@@ -254,8 +251,7 @@ class MoodleFrontend:
 
             wrapped.team_submission = assignment.is_team_submission
 
-            print(' assignment {:5d}, team_submission: {}'.format(assignment.id,
-                                                                  assignment.is_team_submission))
+            print(f' assignment {assignment.id:5d}, team_submission: {assignment.is_team_submission}')
 
             for grade in wrapped.grades:
                 submission = assignment.submissions[grade.id]

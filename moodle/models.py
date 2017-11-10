@@ -1,4 +1,4 @@
-from collections import Mapping, Sequence, Sized
+from collections import Mapping, Sequence, Sized, namedtuple as nt
 
 from moodle.fieldnames import JsonFieldNames as Jn
 
@@ -24,7 +24,7 @@ class JsonListWrapper(JsonWrapper, Sequence):
 
     def __init__(self, json_list):
         if not issubclass(type(json_list), Sequence):
-            raise TypeError('received type {}, expected list'.format(type(json_list)))
+            raise TypeError(f'received type {type(json_list)}, expected Sequence')
         super().__init__(json_list)
 
     def __iter__(self):
@@ -54,7 +54,7 @@ class JsonDictWrapper(JsonWrapper, Mapping):
 
     def __init__(self, json_dict):
         if not issubclass(type(json_dict), Mapping):
-            raise TypeError('received type {}, expected dict'.format(type(json_dict)))
+            raise TypeError(f'received type {type(json_dict)}, expected Mapping')
         super().__init__(json_dict)
 
     __marker = object()
@@ -102,7 +102,7 @@ class CourseListResponse(JsonListWrapper):
         @property
         def visible(self): return self[Jn.visible]
 
-        def __str__(self): return '{:40} id:{:5d} short: {}'.format(self.full_name[0:39], self.id, self.short_name)
+        def __str__(self): return f'{self.full_name[0:39]:40} id:{self.id:5d} short: {self.short_name}'
 
 
 class EnrolledUsersListResponse(JsonListWrapper):
@@ -339,7 +339,7 @@ class AssignmentSubmissionResponse(JsonDictWrapper):
                 # no (new) submissions, can ignore
                 pass
             else:
-                log.warn('{}: {}'.format(warning.warning_code, warning.message))
+                log.warning(f'{warning.warning_code}: {warning.message}')
 
     @property
     def warnings(self): return self.WarningList(self[Jn.warnings])
@@ -477,7 +477,7 @@ class AssignmentGradeResponse(JsonDictWrapper):
                 # grades empty, no warning necessary
                 pass
             elif warning.warning_code == "1":
-                log.warn('{:5d}: {}'.format(warning.item_id, warning.message))
+                log.warning(f'{warning.item_id:5d}: {warning.message}')
 
     @property
     def assignments(self): return self.AssignmentList(self[Jn.assignments])
@@ -786,8 +786,7 @@ class FileUploadResponse(JsonListWrapper):
 
         class Error(JsonDictWrapper):
             def __str__(self):
-                return 'file: {}, path: {}, type {}, error {}'.format(
-                    self.file_name, self.file_path, self.error_type, self.error)
+                return f'file: {self.file_name}, path: {self.file_path}, type {self.error_type}, error {self.error}'
 
             @property
             def file_name(self): return self['filename']
