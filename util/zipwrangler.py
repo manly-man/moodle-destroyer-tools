@@ -37,7 +37,11 @@ def clean_unzip_with_temp_dir(zipfilename: Path, target=None, ignore_list=ignore
         contents = list(temp.iterdir())
         while len(contents) == 1:
             content = contents.pop()
-            contents = list(content.iterdir())
+            if content.is_dir():
+                contents = list(content.iterdir())
+            else:
+                contents = [content]
+                break
 
         for i in contents:
             shutil.move(str(i), str(target))
